@@ -58,8 +58,6 @@
 		<property name="dataSource" ref="dataSource"></property>
 		<!-- mybatis全局配置文件的位置 -->
 		<property name="configLocation" value="classpath:mybatis-config-spring.xml"></property>
-		<!-- mapper配置文件位置 -->
-		<property name="mapperLocations" value="classpath:mapper/*.xml"></property>
 	</bean>
 	
 	<!-- 扫描所有的mapper接口，让这些mapper接口能够自动注入 -->
