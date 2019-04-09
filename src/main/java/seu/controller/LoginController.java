@@ -7,6 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import seu.async.EventConsumer;
+import seu.async.EventModel;
+import seu.async.EventType;
 import seu.base.CodeEnum;
 import seu.base.CommonResponse;
 import seu.exceptions.COIPIBException;
@@ -18,6 +21,8 @@ import seu.service.UserService;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class LoginController {
@@ -29,12 +34,17 @@ public class LoginController {
     @Autowired
     EmailService emailService;
 
+    @Autowired
+    EventConsumer eventConsumer;
+
     @ResponseBody
     @RequestMapping("/register")
     public String register(User user, HttpServletRequest request) {
         try {
             String ticket = userService.register(user);
-            emailService.sendEmail(user.getEmail(), ticket, request);
+            EventModel eventModel = new EventModel(EventType.EMAIL,
+                    userService.buildActiveEmail(user.getEmail(), ticket, request));
+            eventConsumer.submit(eventModel);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "注册成功").toJSONString();
         } catch (COIPIBException e) {
             LOGGER.info("注册失败", e);

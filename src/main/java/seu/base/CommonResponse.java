@@ -2,11 +2,13 @@ package seu.base;
 
 import com.alibaba.fastjson.JSON;
 
+import java.util.Map;
+
 public class CommonResponse {
 
     int code;
     String msg;
-    Object data;
+    Map<String, Object> data;
 
     public int getCode() {
         return code;
@@ -28,7 +30,7 @@ public class CommonResponse {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(Map<String, Object> data) {
         this.data = data;
     }
 

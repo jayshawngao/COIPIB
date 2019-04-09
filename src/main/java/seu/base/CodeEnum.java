@@ -18,11 +18,6 @@ public enum CodeEnum {
     SERVER_ERROR(400),
 
     /**
-     * 邮件服务错误
-     */
-    EMAIL_ERROR(401),
-
-    /**
      * 账户错误
      */
     USER_ERROR(500),

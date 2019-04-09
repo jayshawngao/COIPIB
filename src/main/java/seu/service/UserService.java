@@ -11,9 +11,13 @@ import seu.dao.UserDAO;
 import seu.exceptions.COIPIBException;
 import seu.model.LoginTicket;
 import seu.model.User;
+import seu.util.COIPIBUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -109,6 +113,16 @@ public class UserService {
         }
         user.setActive(0);
         userDAO.update(user);
+    }
+
+    public Map<String, Object> buildActiveEmail(String email, String ticket, HttpServletRequest request) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("to", email);
+        map.put("subject", "COIPIB-账号激活");
+        String text = "<html><p><h3>这是一封激活邮件</h3></p><p><h3><a href="
+                + COIPIBUtil.getAPPURL(request) + "active/?ticket=" + ticket +">点击这里激活您的账号</a>" + "</h3></p></html>";
+        map.put("text", text);
+        return map;
     }
 
 }

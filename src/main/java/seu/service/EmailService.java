@@ -10,11 +10,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import seu.base.CodeEnum;
 import seu.exceptions.COIPIBException;
-import seu.util.COIPIBUtil;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,30 +41,32 @@ public class EmailService implements InitializingBean {
     	return matcher.matches();
     }
     
-    public boolean sendEmail(String to, String ticket, HttpServletRequest request) throws COIPIBException, MessagingException {
-        checkBeforeSendEmail(to, ticket, request);
-        String html = "<html><p><h3>这是一封激活邮件</h3></p><p><h3><a href="
-                + COIPIBUtil.getAPPURL(request) + "active/?ticket=" + ticket +">点击链接激活</a>" + "</h3></p></html>";
+    public boolean sendEmail(Map<String, Object> map) throws Exception {
+        checkBeforeSendEmail(map);
+
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,true,"utf-8");
         helper.setFrom(from);
-        helper.setTo(to);
-        helper.setSubject("COIPIB-账户激活");
-        helper.setText(html,true);
+        helper.setTo((String)map.get("to"));
+        helper.setSubject((String)map.get("subject"));
+        helper.setText((String)map.get("text"),true);
         mailSender.send(message);
         return true;
 
     }
 
-    private void checkBeforeSendEmail(String email, String ticket, HttpServletRequest request) throws COIPIBException{
-        if (StringUtils.isBlank(email)) {
-            throw new COIPIBException(CodeEnum.EMAIL_ERROR, "邮件地址为空！");
+    private void checkBeforeSendEmail(Map<String, Object> map) throws COIPIBException{
+        if (map == null) {
+            throw new COIPIBException("邮件参数不能为空！");
         }
-        if (StringUtils.isBlank(ticket)) {
-            throw new COIPIBException(CodeEnum.EMAIL_ERROR, "ticket为空！");
+        if (StringUtils.isBlank((String)map.get("to"))) {
+            throw new COIPIBException("邮件地址不能为空！");
         }
-        if (request == null) {
-            throw new COIPIBException(CodeEnum.EMAIL_ERROR, "request为空！");
+        if (StringUtils.isBlank((String)map.get("subject"))) {
+            throw new COIPIBException("邮件名不能为空！");
+        }
+        if (StringUtils.isBlank((String)map.get("text"))) {
+            throw new COIPIBException("邮件正文不能为空！");
         }
     }
 
