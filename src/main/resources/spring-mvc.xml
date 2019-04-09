@@ -16,6 +16,13 @@
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" 
 		p:prefix="/" p:suffix=".jsp"></bean>
 
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<!-- 配置拦截器，拦截所有controller -->
+			<mvc:mapping path="/**"/>
+			<bean class="seu.interceptor.PassportInterceptor" ></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
 	
 	<mvc:annotation-driven >
 	        <mvc:message-converters>

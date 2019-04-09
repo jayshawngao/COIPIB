@@ -35,10 +35,9 @@ public class CommonResponse {
     public CommonResponse() {
     }
 
-    public CommonResponse(int code, String msg, Object data) {
+    public CommonResponse(int code, String msg) {
         this.code = code;
         this.msg = msg;
-        this.data = data;
     }
 
     public String toJSONString() {

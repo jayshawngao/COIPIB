@@ -18,6 +18,11 @@ public enum CodeEnum {
      */
     SERVER_ERROR(400),
 
+    /**
+     * 账户错误
+     */
+    USER_ERROR(500),
+
 
     /**
      * 未知错误
@@ -38,4 +43,7 @@ public enum CodeEnum {
         return null;
     }
 
+    public int getCode() {
+        return code;
+    }
 }
