@@ -12,17 +12,20 @@ public enum CodeEnum {
      */
     DATABASE_ERROR(300),
 
-
     /**
      * 服务器错误
      */
     SERVER_ERROR(400),
 
     /**
+     * 邮件服务错误
+     */
+    EMAIL_ERROR(401),
+
+    /**
      * 账户错误
      */
     USER_ERROR(500),
-
 
     /**
      * 未知错误

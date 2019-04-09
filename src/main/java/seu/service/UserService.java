@@ -11,12 +11,9 @@ import seu.dao.UserDAO;
 import seu.exceptions.COIPIBException;
 import seu.model.LoginTicket;
 import seu.model.User;
-import seu.util.MailSender;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -55,7 +52,7 @@ public class UserService {
         if (StringUtils.isBlank(user.getPassword())) {
             throw new COIPIBException(CodeEnum.USER_ERROR, "密码不能为空！");
         }
-        if (StringUtils.isBlank(user.getEmail()) || !MailSender.isMail(user.getEmail())) {
+        if (StringUtils.isBlank(user.getEmail()) || !EmailService.isMail(user.getEmail())) {
             throw new COIPIBException(CodeEnum.USER_ERROR, "邮箱不合法！");
         }
 
@@ -83,8 +80,8 @@ public class UserService {
         LoginTicket ticket = new LoginTicket();
         ticket.setUserId(userId);
         Date date = new Date();
-        // 一个小时过期
-        date.setTime(date.getTime() + 3600*1000);
+        // 一天过期
+        date.setTime(date.getTime() + 3600*24*1000);
         ticket.setExpireTime(new Timestamp(date.getTime()));
         ticket.setStatus(0);
         ticket.setTicket(UUID.randomUUID().toString().replaceAll("-", ""));
@@ -96,6 +93,22 @@ public class UserService {
 
     public void logout(String ticket) {
         loginTicketDAO.updateStatus(ticket,1);
+    }
+
+    public void active(String ticket) throws COIPIBException{
+        if (StringUtils.isBlank(ticket)) {
+            throw new COIPIBException(CodeEnum.USER_ERROR, "ticket不能为空！");
+        }
+        LoginTicket loginTicket = loginTicketDAO.selectByTicket(ticket);
+        if (loginTicket == null || loginTicket.getUserId() == null) {
+            return;
+        }
+        User user = userDAO.selectById(loginTicket.getUserId());
+        if (user == null) {
+            return;
+        }
+        user.setActive(0);
+        userDAO.update(user);
     }
 
 }

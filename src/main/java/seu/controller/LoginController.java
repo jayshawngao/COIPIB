@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -12,30 +11,36 @@ import seu.base.CodeEnum;
 import seu.base.CommonResponse;
 import seu.exceptions.COIPIBException;
 import seu.model.User;
+import seu.service.EmailService;
 import seu.service.UserService;
 
+
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class LoginController {
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
     UserService userService;
 
+    @Autowired
+    EmailService emailService;
+
     @ResponseBody
     @RequestMapping("/register")
-    public String register(User user, HttpServletResponse response) {
+    public String register(User user, HttpServletRequest request) {
         try {
             String ticket = userService.register(user);
-            addCookie(ticket, response);
+            emailService.sendEmail(user.getEmail(), ticket, request);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "注册成功").toJSONString();
         } catch (COIPIBException e) {
-            logger.info("注册失败", e);
+            LOGGER.info("注册失败", e);
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            logger.info("未知错误", e);
+            LOGGER.info("未知错误", e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -48,10 +53,10 @@ public class LoginController {
             addCookie(ticket, response);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "登录成功").toJSONString();
         } catch (COIPIBException e) {
-            logger.info("登录失败", e);
+            LOGGER.info("登录失败", e);
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            logger.info("未知错误", e);
+            LOGGER.info("未知错误", e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
 
@@ -70,7 +75,22 @@ public class LoginController {
             userService.logout(ticket);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "退出成功").toJSONString();
         } catch (Exception e) {
-            logger.info("未知错误", e);
+            LOGGER.info("未知错误", e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping("/active")
+    public String active(String ticket) {
+        try {
+            userService.active(ticket);
+            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "激活成功").toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info("激活失败", e);
+            return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
+        } catch (Exception e) {
+            LOGGER.info("未知错误", e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }

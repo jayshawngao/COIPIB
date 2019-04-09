@@ -14,7 +14,7 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 	
-	<context:property-placeholder location="classpath:db.properties"/>
+	<context:property-placeholder location="classpath:*.properties"/>
 	 
 	<!-- 因为spring-mvc负责Controller层的配置，所以这里要排除Controller，防止重复配置 -->
 	<context:component-scan base-package="seu.*">
