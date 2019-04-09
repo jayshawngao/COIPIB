@@ -26,7 +26,7 @@ public class LoginController {
 
     @ResponseBody
     @RequestMapping("/register")
-    public String register(User user, Model model, HttpServletResponse response) {
+    public String register(User user, HttpServletResponse response) {
         try {
             String ticket = userService.register(user);
             addCookie(ticket, response);
@@ -42,7 +42,7 @@ public class LoginController {
 
     @ResponseBody
     @RequestMapping("/login")
-    public String login(User user, Model model, HttpServletResponse response) {
+    public String login(User user, HttpServletResponse response) {
         try {
             String ticket = userService.login(user);
             addCookie(ticket, response);

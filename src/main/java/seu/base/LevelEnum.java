@@ -1,6 +1,6 @@
 package seu.base;
 
-public enum LevenEnum {
+public enum LevelEnum {
 
     VISITOR(0),
 
@@ -11,7 +11,7 @@ public enum LevenEnum {
     ADMIN(3);
 
     int code;
-    LevenEnum (int code) {
+    LevelEnum(int code) {
         this.code = code;
     }
 
