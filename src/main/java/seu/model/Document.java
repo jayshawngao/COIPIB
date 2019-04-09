@@ -36,7 +36,7 @@ public class Document {
     /**
      * 0 删除；1 未删除
      */
-    private Integer delete;
+    private Integer deleted;
 
     private Timestamp createTime;
 
@@ -138,12 +138,12 @@ public class Document {
         this.active = active;
     }
 
-    public Integer getDelete() {
-        return delete;
+    public Integer getDeleted() {
+        return deleted;
     }
 
-    public void setDelete(Integer delete) {
-        this.delete = delete;
+    public void setDeleted(Integer deleted) {
+        this.deleted = deleted;
     }
 
     public Timestamp getCreateTime() {

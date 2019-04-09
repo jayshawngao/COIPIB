@@ -13,7 +13,7 @@ public class Affiliation {
     /**
      * 0 删除；1 未删除
      */
-    private Integer delete;
+    private Integer deleted;
 
     private Timestamp createTime;
 
@@ -43,12 +43,12 @@ public class Affiliation {
         this.parentId = parentId;
     }
 
-    public Integer getDelete() {
-        return delete;
+    public Integer getDeleted() {
+        return deleted;
     }
 
     public void setDelete(Integer delete) {
-        this.delete = delete;
+        this.deleted = deleted;
     }
 
     public Timestamp getCreateTime() {
@@ -68,5 +68,26 @@ public class Affiliation {
     }
 
     public Affiliation() {
+    }
+
+    public Affiliation(Integer id, String name, Integer parentId, Integer deleted, Timestamp createTime, Timestamp updateTime) {
+        this.id = id;
+        this.name = name;
+        this.parentId = parentId;
+        this.deleted = deleted;
+        this.createTime = createTime;
+        this.updateTime = updateTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Affiliation{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", parentId=" + parentId +
+                ", deleted=" + deleted +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                '}';
     }
 }
