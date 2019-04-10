@@ -6,10 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import seu.async.EventConsumer;
 import seu.async.EventModel;
 import seu.async.EventType;
+import seu.base.CodeCaptchaServlet;
 import seu.base.CodeEnum;
 import seu.base.CommonResponse;
 import seu.exceptions.COIPIBException;
@@ -105,4 +109,24 @@ public class LoginController {
         }
     }
 
+    /**
+     * 判断验证码是否正确
+     * @param code 验证码
+     * @return 返回json数据
+     */
+    @RequestMapping("/checkCode")
+    @ResponseBody
+    public String checkCode(@RequestParam("code") String code){
+        try{
+            userService.checkCode(code);
+            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "验证码正确").toJSONString();
+        }catch (COIPIBException e){
+            LOGGER.info("验证码错误", e);
+            return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
+        }catch (Exception e){
+            LOGGER.info("未知错误");
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+        }
+
+    }
 }

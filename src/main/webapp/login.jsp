@@ -3,120 +3,101 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:set var="ctx" value="${pageContext.request.contextPath }"/>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!doctype html>
+<html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; Charset=gb2312">
-    <meta http-equiv="Content-Language" content="zh-CN">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-    <title>COIPIB</title>
-    <link rel="stylesheet" href="./static/plug/layui/css/layui.css">
-    <!--font-awesome-->
-    <link href="./static/plug/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
+    <meta charset="UTF-8">
+    <title>COIPIB - 登陆页面</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4,
+    initial-scale=0.8,target-densitydpi=low-dpi" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+
     <!--全局样式表-->
     <link href="./static/css/global.css" rel="stylesheet"/>
+    <!--Layui-->
+    <link href="static/plug/layui/css/layui.css" rel="stylesheet"/>
+    <%--<link rel="shortcut icon" href="./static/images/Logo_40.png" type="image/x-icon">--%>
+    <link rel="stylesheet" href="./static/css/login/font.css">
+    <link rel="stylesheet" href="./static/css/login/xadmin.css">
 </head>
-<body class="layui-layout-body">
-<div class="layui-layout layui-layout-admin">
-    <div class="layui-header">
-        <div class="layui-logo" style="font-weight: bold">COIPIB</div>
-        <!-- 头部区域（可配合layui已有的水平导航） -->
-        <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item"><a href="">文件</a></li>
-            <li class="layui-nav-item"><a href="">编辑</a></li>
-            <li class="layui-nav-item"><a href="">文献</a></li>
-            <li class="layui-nav-item"><a href="">窗口</a></li>
-            <li class="layui-nav-item"><a href="">帮助</a></li>
-            <li class="layui-nav-item"><a href="">搜索</a></li>
-        </ul>
-        <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item"><a href="">登录</a></li>
-            <li class="layui-nav-item">
-                <input type="text" name="" class="layui-input" id="" placeholder="请输入：关键字">
-            </li>
-            <li class="layui-nav-item">
-                <button class="layui-btn" lay-submit="" lay-filter="formSearch">搜索</button>
-            </li>
 
-        </ul>
-
-    </div>
-
-    <div class="layui-side layui-bg-black">
-        <div class="layui-side-scroll">
-            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                <li class="layui-nav-item layui-nav-itemed layui-this">
-                    <a class="" href="javascript:void(0);" onclick="doClickName('一带一路')">一带一路</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('东南亚与南亚')">东南亚与南亚</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('非洲')">非洲</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('中东与西亚')">中东与西亚</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('其他')">其他</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('未分类')">未分类</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('回收站')">回收站</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="layui-body">
-        <!-- 内容主体区域 -->
-
-        <!--左边文章列表-->
-        <div class="blog-main">
-            <div class="blog-main-left" style="background-color: #00acd8">
-                <div style="padding: 15px;" id="body-content-left"> 一带一路 左边</div>
+<body class="login-bg">
+<div class="login layui-anim layui-anim-up">
+    <div class="message">COIPIB - 登录</div>
+    <div id="darkbannerwrap"></div>
+    <form class="layui-form" action="" method="post">
+        <input type="text" name="username" id="username" lay-verify="required|username" placeholder="请输入用户名"
+               autocomplete="off" class="layui-input">
+        <hr class="hr15">
+        <input type="password" name="password" id="password" lay-verify="required" placeholder="请输入密码"
+               autocomplete="off" class="layui-input">
+        <hr class="hr15">
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <input type="text" name="code" id="code" lay-verify="required|code" placeholder="请输入验证码"
+                       autocomplete="off" class="layui-input">
             </div>
-            <!--右边小栏目-->
-            <div class="blog-main-right" style="background-color: orange">
-                <div style="padding: 15px;" id="body-content-right">一带一路 右边</div>
-            </div>
+            <label class="field-wrap" style="cursor:pointer;">
+                <img src="${ctx}/captchaServlet" id="captchaImg" align='absmiddle' height="40px"
+                     style="margin-top: 5px" onclick="changeCaptcha()">
+            </label>
+            <span id="code_span" style="color: green"></span>
         </div>
-        <div class="clear"></div>
-    </div>
-
-    <div class="layui-footer" style="background-color: #00FF00">
-        <!-- 底部固定区域 -->
-        底部固定区域
-    </div>
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <p style="text-align: left"><a href="register.jsp">没有账号？前往注册</a></p>
+            </div>
+            <label class="field-wrap" style="cursor:pointer;">
+                <p style="text-align: right"><a href="#">忘记密码？</a></p>
+            </label>
+        </div>
+        <button style="width: 100%" class="layui-btn layui-btn-radius" lay-submit="" lay-filter="submit">登录</button>
+        <hr class="hr15" >
+    </form>
 </div>
+<!-- layui.js -->
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
-    //JavaScript代码区域
-    layui.use('element', function () {
-        var element = layui.element;
 
+    layui.use(['form', 'layer'], function(){
+        var form = layui.form;
+        var layer = layui.layer;
+        // 自定义验证规则
+        var verifyCode = true;
+        form.verify({
+
+            code: function (value) {
+                $.ajax({
+                    type: 'post',
+                    url: '/checkCode',
+                    data: {"code": value},
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        var code = data['code'];
+                        var msg = data['msg'];
+                        if(code !== 200){
+                            layer.msg(msg, {icon: 5});
+                        }
+                    }
+                });
+            },
+
+        });
+        //监听提交
+        form.on('submit(submit)', function(){
+            // if(!verifyUsername || !verifyCode){
+            //     return false;
+            // }
+        });
     });
 
-    function doClickName(name) {
-        // name = encodeURI(name);
-        // $.ajax({
-        //     type: 'post',
-        //     url: "/index",
-        //     data: {"name": name},
-        //     dataType: "json",
-        //     success:function (data) {
-        //         var message = data['message'];
-        //         console.log(message);
-        //         $("#body-content-left").text(message + "左边");
-        //     }
-        // });
-        $("#body-content-left").text(name + " 左边");
-        $("#body-content-right").text(name + " 右边");
-        <%--location = "${ctx}/index?name=" + name;--%>
+    // 更换验证码
+    function changeCaptcha(){
+        $("#captchaImg").attr('src', '${ctx}/captchaServlet?t=' + (new Date().getTime()));
     }
 </script>
 </body>

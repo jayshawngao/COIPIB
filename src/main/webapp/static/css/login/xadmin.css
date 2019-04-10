@@ -19,8 +19,8 @@ body{
     min-height: 100%;
 }
 .login-bg{
-    /*background: #eeeeee url() 0 0 no-repeat;*/
-     background:url(../../images/background_modify.jpg) no-repeat center;
+    background: #3f3f3f 0 0 no-repeat;
+     /*background:url(../../images/background_modify.jpg) no-repeat center;*/
     background-size: cover;
     overflow: hidden;
 }

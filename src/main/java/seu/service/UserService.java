@@ -4,6 +4,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import seu.base.CodeCaptchaServlet;
 import seu.base.CodeEnum;
 
 import seu.dao.LoginTicketDAO;
@@ -93,8 +96,6 @@ public class UserService {
         return ticket.getTicket();
     }
 
-
-
     public void logout(String ticket) {
         loginTicketDAO.updateStatus(ticket,1);
     }
@@ -125,4 +126,14 @@ public class UserService {
         return map;
     }
 
+    // 检查验证码是否正确
+    public void checkCode(String code) throws COIPIBException{
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            String validationCode = (String) attrs.getRequest().getSession().getAttribute(CodeCaptchaServlet.VALIDATION_CODE);
+            if(!code.equalsIgnoreCase(validationCode)){
+                throw new COIPIBException(CodeEnum.USER_ERROR, "验证码不正确！");
+            }else if(code == null || code.equals("")){
+                throw new COIPIBException(CodeEnum.USER_ERROR, "验证码不能为空");
+            }
+    }
 }

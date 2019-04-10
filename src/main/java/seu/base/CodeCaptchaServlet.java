@@ -1,4 +1,4 @@
-package com.blog.common;
+package seu.base;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
