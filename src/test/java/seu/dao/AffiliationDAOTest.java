@@ -19,7 +19,8 @@ public class AffiliationDAOTest extends BaseTest {
         Affiliation affiliation = new Affiliation();
         affiliation.setName("1112");
         affiliation.setParentId(0);
-        System.out.println(affiliationDAO.insert(affiliation));
+        affiliationDAO.insert(affiliation);
+        System.out.println(affiliation.getId());
     }
 
     @Test
@@ -33,11 +34,11 @@ public class AffiliationDAOTest extends BaseTest {
 
     @Test
     public void testSelectAll(){
-        System.out.println(affiliationDAO.selectAllAffiliation());
+        System.out.println(affiliationDAO.selectFirstLevel());
     }
 
     @Test
     public void testSelectById(){
-        System.out.println(affiliationDAO.selectById(2));
+        System.out.println(affiliationDAO.selectChildren(2));
     }
 }
