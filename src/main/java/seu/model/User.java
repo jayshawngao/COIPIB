@@ -1,6 +1,6 @@
 package seu.model;
 
-import seu.base.LevenEnum;
+import seu.base.LevelEnum;
 
 import java.sql.Timestamp;
 
@@ -15,7 +15,7 @@ public class User {
     private String email;
 
     /**
-     * @see LevenEnum
+     * @see LevelEnum
      */
     private Integer level;
 

@@ -14,7 +14,7 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 	
-	<context:property-placeholder location="classpath:db.properties"/>
+	<context:property-placeholder location="classpath:config.properties"/>
 	 
 	<!-- 因为spring-mvc负责Controller层的配置，所以这里要排除Controller，防止重复配置 -->
 	<context:component-scan base-package="seu.*">
@@ -44,7 +44,7 @@
         <!-- 允许的空闲时间 -->
         <property name="keepAliveSeconds" value="200" />
         <!-- 线程池维护线程的最大数量 -->
-        <property name="maxPoolSize" value="1" />
+        <property name="maxPoolSize" value="10" />
         <!-- 缓存队列 -->
         <property name="queueCapacity" value="20" />
         <!-- 对拒绝task的处理策略 -->

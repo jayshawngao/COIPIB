@@ -21,4 +21,8 @@ public class COIPIBException extends Exception{
         super(msg);
         this.codeEnum = codeEnum;
     }
+
+    public COIPIBException(String msg) {
+        super(msg);
+    }
 }

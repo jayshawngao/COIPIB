@@ -12,7 +12,6 @@ public enum CodeEnum {
      */
     DATABASE_ERROR(300),
 
-
     /**
      * 服务器错误
      */
@@ -22,7 +21,6 @@ public enum CodeEnum {
      * 账户错误
      */
     USER_ERROR(500),
-
 
     /**
      * 未知错误
