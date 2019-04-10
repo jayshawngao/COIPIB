@@ -1,0 +1,91 @@
+.truncate {
+    display: inline-block;
+    height: 65px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.page-info{
+    background-color: #F5F5DC;
+}
+
+/* 小屏幕（平板，大于等于 768px） */
+@media (min-width: 768px) {
+    .total-page, .jump-page{
+        display: none;
+    }
+
+}
+.pager {
+    padding-left: 0;
+    margin: 20px 0;
+    text-align: center;
+    list-style: none
+}
+
+.pager:before, .pager:after {
+    display: table;
+    content: " "
+}
+
+.pager:after {
+    clear: both
+}
+
+.pager:before, .pager:after {
+    display: table;
+    content: " "
+}
+
+.pager:after {
+    clear: both
+}
+
+.pager li {
+    display: inline
+}
+
+.pager li > a, .pager li > span {
+    display: inline-block;
+    padding: 5px 14px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 15px
+}
+
+.pager div > li > a, .pager div > li > span, .jump {
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 15px
+}
+
+.pager li > div {
+    display: inline-block;
+}
+
+.selectPageNum{
+    padding: 3px;
+    width: 45px;
+}
+
+.pager li > a:hover, .pager li > a:focus, .jump:hover {
+    text-decoration: none;
+    background-color: #eee
+}
+
+.pager .next > a, .pager .next > span {
+    float: right
+}
+
+.pager .previous > a, .pager .previous > span {
+    float: left
+}
+
+.pager .disabled > a, .pager .disabled > a:hover, .pager .disabled > a:focus, .pager .disabled > span {
+    color: #999;
+    cursor: not-allowed;
+    background-color: #fff
+}
