@@ -61,7 +61,9 @@
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
-
+    $(function () {
+        changeCaptcha();
+    });
     // layui.use(['form', 'layer'], function(){
     //     var form = layui.form;
     //     var layer = layui.layer;
@@ -117,7 +119,9 @@
 
     // 更换验证码
     function changeCaptcha() {
-        $("#captchaImg").attr('src', '${ctx}/captchaServlet?t=' + (new Date().getTime()));
+        $.get('/codeCaptcha', function (data) {
+            $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
+        });
     }
 
     function submitLogin() {

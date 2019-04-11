@@ -92,7 +92,7 @@ public class LoginController {
             userService.logout(ticket);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "退出成功").toJSONString();
         } catch (Exception e) {
-            LOGGER.info("未知错误", e);
+            LOGGER.info("/logout", e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -110,27 +110,6 @@ public class LoginController {
             LOGGER.error("/active", e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
-    }
-
-    /**
-     * 判断验证码是否正确
-     * @param code 验证码
-     * @return 返回json数据
-     */
-    @RequestMapping("/checkCode")
-    @ResponseBody
-    public String checkCode(@RequestParam("code") String code){
-        try{
-            userService.checkCode(code);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "验证码正确").toJSONString();
-        }catch (COIPIBException e){
-            LOGGER.info("验证码错误", e.getMessage());
-            return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
-        }catch (Exception e){
-            LOGGER.error("/checkCode", e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
-        }
-
     }
 
     @RequestMapping("/codeCaptcha")

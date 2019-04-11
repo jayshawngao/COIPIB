@@ -54,16 +54,4 @@
     <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
 
-  <!--验证码-->
-  <servlet>
-    <servlet-name>CaptchaServlet</servlet-name>
-    <servlet-class>
-      seu.base.CodeCaptchaServlet
-    </servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>CaptchaServlet</servlet-name>
-    <url-pattern>/captchaServlet</url-pattern>
-  </servlet-mapping>
-
 </web-app>

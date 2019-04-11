@@ -132,14 +132,4 @@ public class UserService {
         return map;
     }
 
-    // 检查验证码是否正确
-    public void checkCode(String code) throws COIPIBException{
-        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            String validationCode = (String) attrs.getRequest().getSession().getAttribute(CodeCaptchaServlet.VALIDATION_CODE);
-            if(!code.equalsIgnoreCase(validationCode)){
-                throw new COIPIBException(CodeEnum.USER_ERROR, "验证码不能为空!");
-            }else if(StringUtils.isBlank(code)){
-                throw new COIPIBException(CodeEnum.USER_ERROR, "验证码不正确！");
-            }
-    }
 }
