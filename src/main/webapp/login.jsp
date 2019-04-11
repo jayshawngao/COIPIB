@@ -11,8 +11,8 @@
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4,
-    initial-scale=0.8,target-densitydpi=low-dpi" />
-    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
 
     <!--全局样式表-->
     <link href="./static/css/global.css" rel="stylesheet"/>
@@ -28,15 +28,15 @@
     <div class="message">COIPIB - 登录</div>
     <div id="darkbannerwrap"></div>
     <form class="layui-form" action="" method="post">
-        <input type="text" name="username" id="username" lay-verify="required|username" placeholder="请输入用户名"
+        <input type="text" name="username" id="username" placeholder="请输入用户名"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
-        <input type="password" name="password" id="password" lay-verify="required" placeholder="请输入密码"
+        <input type="password" name="password" id="password" placeholder="请输入密码"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <input type="text" name="code" id="code" lay-verify="required|code" placeholder="请输入验证码"
+                <input type="text" name="valCode" id="valCode" placeholder="请输入验证码"
                        autocomplete="off" class="layui-input">
             </div>
             <label class="field-wrap" style="cursor:pointer;">
@@ -53,8 +53,8 @@
                 <p style="text-align: right"><a href="#">忘记密码？</a></p>
             </label>
         </div>
-        <button style="width: 100%" class="layui-btn layui-btn-radius" lay-submit="" lay-filter="submit">登录</button>
-        <hr class="hr15" >
+        <button style="width: 100%" class="layui-btn layui-btn-radius" onclick="submitLogin()">登录</button>
+        <hr class="hr15">
     </form>
 </div>
 <!-- layui.js -->
@@ -62,42 +62,77 @@
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
 
-    layui.use(['form', 'layer'], function(){
-        var form = layui.form;
-        var layer = layui.layer;
-        // 自定义验证规则
-        var verifyCode = true;
-        form.verify({
-
-            code: function (value) {
-                $.ajax({
-                    type: 'post',
-                    url: '/checkCode',
-                    data: {"code": value},
-                    dataType: 'json',
-                    async: false,
-                    success: function (data) {
-                        var code = data['code'];
-                        var msg = data['msg'];
-                        if(code !== 200){
-                            layer.msg(msg, {icon: 5});
-                        }
-                    }
-                });
-            },
-
-        });
-        //监听提交
-        form.on('submit(submit)', function(){
-            // if(!verifyUsername || !verifyCode){
-            //     return false;
-            // }
-        });
-    });
+    // layui.use(['form', 'layer'], function(){
+    //     var form = layui.form;
+    //     var layer = layui.layer;
+    //     var $ = layui.jquery;
+    //     // 自定义验证规则
+    //     var verifyCode = true;
+    //     form.verify({
+    //
+    //         username: function (value) {
+    //             $.ajax({
+    //                 type: 'post',
+    //                 url: '/login',
+    //                 data: {"name": value},
+    //                 dataType: 'json',
+    //                 async: false,
+    //                 success: function (data) {
+    //                     var code = data['code'];
+    //                     var msg = data['msg'];
+    //                     if(code !== 200){
+    //                         layer.msg(msg, {icon: 5});
+    //                     }
+    //                 }
+    //             });
+    //         },
+    //
+    //         code: function (value) {
+    //             $.ajax({
+    //                 type: 'post',
+    //                 url: '/checkCode',
+    //                 data: {"code": value},
+    //                 dataType: 'json',
+    //                 async: false,
+    //                 success: function (data) {
+    //                     var code = data['code'];
+    //                     var msg = data['msg'];
+    //                     if(code !== 200){
+    //                         layer.msg(msg, {icon: 5});
+    //                     }
+    //                 }
+    //             });
+    //         },
+    //
+    //
+    //
+    //     });
+    //     //监听提交
+    //     form.on('submit(submit)', function(){
+    //         // if(!verifyUsername || !verifyCode){
+    //             return false;
+    //         // }
+    //     });
+    // });
 
     // 更换验证码
-    function changeCaptcha(){
+    function changeCaptcha() {
         $("#captchaImg").attr('src', '${ctx}/captchaServlet?t=' + (new Date().getTime()));
+    }
+
+    function submitLogin() {
+        var username = $("#username").val();
+        var password = $("#password").val();
+        var valCode = $("#valCode").val();
+        $.ajax({
+            type: 'post',
+            url: '/checkCode',
+            data: {"name": username, "password": password, "code": valCode},
+            dataType: 'json',
+            success: function (data) {
+
+            }
+        });
     }
 </script>
 </body>

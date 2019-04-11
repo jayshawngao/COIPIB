@@ -38,7 +38,6 @@
                 <button class="layui-btn" lay-submit="" lay-filter="formSearch">搜索</button>
             </li>
         </ul>
-
     </div>
 
     <div class="layui-side layui-bg-black">

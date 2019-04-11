@@ -51,10 +51,10 @@ public class LoginController {
             eventConsumer.submit(eventModel);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "注册成功").toJSONString();
         } catch (COIPIBException e) {
-            LOGGER.info("注册失败", e);
+            LOGGER.info("注册失败", e.getMessage());
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.info("未知错误", e);
+            LOGGER.info("未知错误", e.getMessage());
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -67,13 +67,12 @@ public class LoginController {
             addCookie(ticket, response);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "登录成功").toJSONString();
         } catch (COIPIBException e) {
-            LOGGER.info("登录失败", e);
+            LOGGER.info("登录失败", e.getMessage());
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.info("未知错误", e);
+            LOGGER.info("未知错误", e.getMessage());
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
-
     }
 
     private void addCookie(String ticket, HttpServletResponse response) {
@@ -89,7 +88,7 @@ public class LoginController {
             userService.logout(ticket);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "退出成功").toJSONString();
         } catch (Exception e) {
-            LOGGER.info("未知错误", e);
+            LOGGER.info("未知错误", e.getMessage());
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -101,10 +100,10 @@ public class LoginController {
             userService.active(ticket);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "激活成功").toJSONString();
         } catch (COIPIBException e) {
-            LOGGER.info("激活失败", e);
+            LOGGER.info("激活失败", e.getMessage());
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.info("未知错误", e);
+            LOGGER.info("未知错误", e.getMessage());
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -121,7 +120,7 @@ public class LoginController {
             userService.checkCode(code);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "验证码正确").toJSONString();
         }catch (COIPIBException e){
-            LOGGER.info("验证码错误", e);
+            LOGGER.info("验证码错误", e.getMessage());
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.info("未知错误");
