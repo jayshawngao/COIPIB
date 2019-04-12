@@ -53,8 +53,13 @@
                 <p style="text-align: right"><a href="#">忘记密码？</a></p>
             </label>
         </div>
-        <button style="width: 100%" class="layui-btn layui-btn-radius" onclick="submitLogin()">登录</button>
+        <button style="width: 100%" class="layui-btn layui-btn-radius" onclick="return submitLogin();">登录</button>
         <hr class="hr15">
+        <div class="layui-form-item" id="hint" style="display: none;">
+            <div class="layui-input-inline">
+                <p style="text-align: left; color: crimson;"></p>
+            </div>
+        </div>
     </form>
 </div>
 <!-- layui.js -->
@@ -125,9 +130,18 @@
     }
 
     function submitLogin() {
+        debugger;
         var username = $("#username").val();
         var password = $("#password").val();
         var valCode = $("#valCode").val();
+
+        var hint = checkLoginInfo(username, password, valCode);
+        if (hint != "") {
+            $("#hint > div:nth-child(1) > p:nth-child(1)").text(hint);
+            $("#hint").show();
+            return false;
+        }
+
         $.ajax({
             type: 'post',
             url: '/checkCode',
@@ -137,6 +151,13 @@
 
             }
         });
+    }
+
+    function checkLoginInfo(username, password, valCode) {
+        if (username == "" || username == null) return "请输入用户名！";
+        if (password == "" || password == null) return "请输入密码！";
+        if (valCode == "" || valCode == null) return "请输入验证码！";
+        return "";
     }
 </script>
 </body>
