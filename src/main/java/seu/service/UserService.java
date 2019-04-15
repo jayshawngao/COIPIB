@@ -38,8 +38,8 @@ public class UserService {
 
     }
 
-    public String login(User user) throws COIPIBException {
-        checkBeforeLogin(user);
+    public String login(User user, String rand, String oldRand) throws COIPIBException {
+        checkBeforeLogin(user, rand, oldRand);
 
         User old = userDAO.selectByName(user.getName());
         if (!StringUtils.equals(old.getPassword(), user.getPassword())) {
@@ -67,12 +67,18 @@ public class UserService {
 
     }
 
-    private void checkBeforeLogin(User user) throws COIPIBException {
+    private void checkBeforeLogin(User user, String rand, String oldRand) throws COIPIBException {
         if (StringUtils.isBlank(user.getName())) {
             throw new COIPIBException(CodeEnum.USER_ERROR, "用户名不能为空！");
         }
         if (StringUtils.isBlank(user.getPassword())) {
             throw new COIPIBException(CodeEnum.USER_ERROR, "密码不能为空！");
+        }
+        if (StringUtils.isBlank(rand)) {
+            throw new COIPIBException(CodeEnum.USER_ERROR, "验证码不能为空！");
+        }
+        if (!StringUtils.equals(rand, oldRand)) {
+            throw new COIPIBException(CodeEnum.USER_ERROR, "验证码输入错误！");
         }
         User old = userDAO.selectByName(user.getName());
         if (old == null) {
@@ -92,8 +98,6 @@ public class UserService {
         loginTicketDAO.persist(ticket);
         return ticket.getTicket();
     }
-
-
 
     public void logout(String ticket) {
         loginTicketDAO.updateStatus(ticket,1);

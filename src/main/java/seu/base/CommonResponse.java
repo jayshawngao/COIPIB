@@ -42,6 +42,12 @@ public class CommonResponse {
         this.msg = msg;
     }
 
+    public CommonResponse(int code, String msg, Map<String, Object> data) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+    }
+
     public String toJSONString() {
         return JSON.toJSONString(this);
     }
