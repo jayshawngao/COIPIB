@@ -33,7 +33,7 @@ public class EmailService implements InitializingBean {
     private String from;
 
     private JavaMailSenderImpl mailSender;
-    private static String regex = "^[a-zA-Z0-9][a-zA-Z0-9_\\.]+[a-zA-Z0-9]@[a-z0-9]{2,7}(\\.[a-z]{2,3}){1,3}$";
+    private static String regex = "[\\w\\.\\-]+@([\\w\\-]+\\.)+[\\w\\-]+";
     private static Pattern pattern = Pattern.compile(regex);
     
     public static boolean isMail(String s){

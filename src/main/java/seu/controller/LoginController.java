@@ -1,13 +1,11 @@
 package seu.controller;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import seu.async.EventConsumer;
 import seu.async.EventModel;
@@ -16,7 +14,7 @@ import seu.base.CodeEnum;
 import seu.base.CommonResponse;
 import seu.exceptions.COIPIBException;
 import seu.model.User;
-import seu.service.CodeCaptchaService;
+import seu.service.CaptchaService;
 import seu.service.EmailService;
 import seu.service.UserService;
 
@@ -40,43 +38,51 @@ public class LoginController {
     EventConsumer eventConsumer;
 
     @Autowired
-    CodeCaptchaService codeCaptchaService;
+    CaptchaService captchaService;
 
     @ResponseBody
     @RequestMapping("/register")
-    public String register(User user, HttpServletRequest request) {
+    public String register(User user, String codeCaptcha, String emailCaptcha, HttpServletRequest request, HttpServletResponse response) {
         try {
             user.setName(user.getName().trim());
             user.setEmail(user.getEmail().trim());
-            String ticket = userService.register(user);
-            EventModel eventModel = new EventModel(EventType.EMAIL,
-                    userService.buildActiveEmail(user.getEmail(), ticket, request));
-            eventConsumer.submit(eventModel);
+            String oldCodeCaptcha = (String)request.getSession().getAttribute("codeCaptcha");
+            String oldEmailCaptcha = (String)request.getSession().getAttribute("emailCaptcha");
+            String oldEmail = (String)request.getSession().getAttribute("email");
+            String ticket = userService.register(user, oldEmail, codeCaptcha, emailCaptcha, oldCodeCaptcha, oldEmailCaptcha);
+            addCookie(ticket, response);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "注册成功").toJSONString();
         } catch (COIPIBException e) {
-            LOGGER.info(e.getMessage() + " parameter:user={}", user);
+            LOGGER.info(e.getMessage() + " parameter:user={}, oldEmail={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}", user,
+                    request.getSession().getAttribute("email"),
+                    codeCaptcha, emailCaptcha, request.getSession().getAttribute("codeCaptcha"),
+                    request.getSession().getAttribute("emailCaptcha"));
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/register parameter:user={}", user, e);
+            LOGGER.error("/register parameter:user={}, oldEmail={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}", user,
+                    request.getSession().getAttribute("email"),
+                    codeCaptcha, emailCaptcha, request.getSession().getAttribute("codeCaptcha"),
+                    request.getSession().getAttribute("emailCaptcha"), e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
 
     @ResponseBody
     @RequestMapping("/login")
-    public String login(User user, String validationCode, HttpServletRequest request, HttpServletResponse response) {
+    public String login(String nameEmail, String password, String codeCaptcha, HttpServletRequest request, HttpServletResponse response) {
         try {
-             String oldValidationCode = (String)request.getSession().getAttribute("validationCode");
-            String ticket = userService.login(user, validationCode, oldValidationCode);
+            nameEmail = nameEmail.trim();
+            String oldCodeCaptcha = (String) request.getSession().getAttribute("codeCaptcha");
+            String ticket = userService.login(nameEmail, password, codeCaptcha, oldCodeCaptcha);
             addCookie(ticket, response);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "登录成功").toJSONString();
         } catch (COIPIBException e) {
-            LOGGER.info(e.getMessage() + " parameter:user={}, validationCode={}, oldValidationCode={}", user, validationCode,
-                    request.getSession().getAttribute("validationCode"));
+            LOGGER.info(e.getMessage() + " parameter:nameEmail={}, password={}, codeCaptcha={}, oldCodeCaptcha={}",
+                    nameEmail, password, codeCaptcha, request.getSession().getAttribute("codeCaptcha"));
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/login parameter:user={}, validationCode={}, oldValidationCode={}", user, validationCode,
-                    request.getSession().getAttribute("validationCode"), e);
+            LOGGER.error("/login parameter:nameEmail={}, password={}, codeCaptcha={}, oldCodeCaptcha={}",
+                    nameEmail, password, codeCaptcha, request.getSession().getAttribute("codeCaptcha"), e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
 
@@ -95,40 +101,52 @@ public class LoginController {
             userService.logout(ticket);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "退出成功").toJSONString();
         } catch (Exception e) {
-            LOGGER.info("/logout parameter:ticket={}", ticket, e);
+            LOGGER.error("/logout parameter:ticket={}", ticket, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
 
-    @ResponseBody
-    @RequestMapping("/active")
-    public String active(String ticket) {
-        try {
-            userService.active(ticket);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "激活成功").toJSONString();
-        } catch (COIPIBException e) {
-            LOGGER.info(e.getMessage() + " parameter:ticket={}", ticket);
-            return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
-        } catch (Exception e) {
-            LOGGER.error("/active parameter:ticket={}", ticket, e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
-        }
-    }
 
     @RequestMapping("/codeCaptcha")
     @ResponseBody
     public String codeCaptcha(HttpServletRequest request) {
         try {
-            request.getSession().removeAttribute("validationCode");
-            String validationCode = codeCaptchaService.genValidationCode();
-            request.getSession().setAttribute("validationCode", validationCode);
-            String image = codeCaptchaService.getImageString(validationCode);
+            request.getSession().removeAttribute("codeCaptcha");
+            String codeCaptcha = captchaService.genCaptcha();
+            request.getSession().setAttribute("codeCaptcha", codeCaptcha);
+            String image = captchaService.getImageString(codeCaptcha);
             HashMap<String, Object> data = new HashMap<>();
             data.put("image", image);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "验证码生成成功", data).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/codeCaptcha", e);
             return new CommonResponse(CodeEnum.USER_ERROR.getCode(), e.getMessage()).toJSONString();
+        }
+    }
+
+    @RequestMapping("/emailCaptcha")
+    @ResponseBody
+    public String emailCaptcha(String email, String codeCaptcha, HttpServletRequest request) {
+        try {
+            email = email.trim();
+            String oldCodeCaptcha = (String)request.getSession().getAttribute("codeCaptcha");
+            userService.checkBeforeEmailCaptcha(email, codeCaptcha, oldCodeCaptcha);
+            request.getSession().removeAttribute("emailCaptcha");
+            request.getSession().removeAttribute("email");
+            String emailCaptcha = captchaService.genCaptcha();
+            request.getSession().setAttribute("emailCaptcha", emailCaptcha);
+            request.getSession().setAttribute("email", email);
+            EventModel eventModel = new EventModel(EventType.EMAIL, userService.buildEmailCaptcha(email, emailCaptcha, request));
+            eventConsumer.submit(eventModel);
+            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "邮箱验证码发送成功").toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:email={},codeCaptcha={}, oldCodeCaptcha={}", email, codeCaptcha,
+                    request.getSession().getAttribute("codeCaptcha"));
+            return new CommonResponse(CodeEnum.USER_ERROR.getCode(), e.getMessage()).toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/emailCaptcha parameter:email={},codeCaptcha={}, oldCodeCaptcha={}", email, codeCaptcha,
+                    request.getSession().getAttribute("codeCaptcha"), e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
 }

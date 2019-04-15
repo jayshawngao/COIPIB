@@ -27,7 +27,10 @@
     <div class="message">COIPIB - 注册</div>
     <div id="darkbannerwrap"></div>
     <form class="layui-form" action="" method="post">
-        <input type="text" name="username" id="username" lay-verify="required|email|username" placeholder="请输入邮箱"
+        <input type="text" name="username" id="username" lay-verify="required|username" placeholder="请输入用户名"
+               autocomplete="off" class="layui-input">
+        <hr class="hr15">
+        <input type="text" name="email" id="email" lay-verify="required|email" placeholder="请输入邮箱"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
         <input type="password" name="password" id="password" lay-verify="required|password" placeholder="请输入密码"
@@ -38,7 +41,7 @@
         <hr class="hr15">
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <input type="text" name="code" id="code" lay-verify="required|code" placeholder="请输入验证码"
+                <input type="text" name="codeCaptcha" id="codeCaptcha" lay-verify="required|codeCaptcha" placeholder="请输入验证码"
                        autocomplete="off" class="layui-input">
             </div>
             <label class="field-wrap" style="cursor:pointer;">
@@ -46,6 +49,15 @@
                      style="margin-top: 5px" onclick="changeCaptcha()">
             </label>
             <span id="code_span" style="color: green"></span>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <input type="text" name="emailCaptcha" id="emailCaptcha" lay-verify="required|emailCaptcha"  placeholder="请输入邮箱验证码"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <label class="field-wrap" style="float:left;">
+                <button style="width: 100%" class="layui-btn layui-btn-radius" onclick="return sendEmail();">发送邮件</button>
+            </label>
         </div>
         <div class="layui-form-item">
             <div class="layui-input-inline">
@@ -71,41 +83,101 @@
             $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
         });
     }
+
+    function sendEmail() {
+        var email = $("#email").val();
+        var codeCaptcha = $("#codeCaptcha").val();
+        $.ajax({
+            type: 'get',
+            url: '/emailCaptcha',
+            data: {"email": email, "codeCaptcha": codeCaptcha},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.msg(data.msg, {icon: 2});
+                    changeCaptcha();
+                    return false;
+                }
+            }
+        });
+        return false;
+    }
+
     layui.use(['form', 'layer'], function(){
         var form = layui.form;
         var layer = layui.layer;
-        // 自定义验证规则
-        var verifyCode = true;
-        form.verify({
+        var $ = layui.jquery;
 
-            code: function (value) {
-                $.ajax({
-                    url: '/checkCode',
-                    data: {"code": value},
-                    dataType: 'json',
-                    async: false,
-                    success: function (data) {
-                        var message = data['message'];
-                        if(message === 'isNull'){
-                            verifyCode = false;
-                            layer.msg("缓存验证码为空，请刷新页面", {icon: 5});
-                        }else if(message === 'codeError'){
-                            verifyCode = false;
-                            layer.msg("验证码错误", {icon: 5});
-                        }else {
-                            verifyCode = true;
-                        }
-                    }
-                });
-            },
-
-        });
+        function checkRegisterInfo(username, email, password, rePassword, codeCaptcha, emailCaptcha) {
+            if (username.trim() == "" || username.trim() == null) return "请输入用户名！";
+            if (email.trim() == "" || email.trim() == null) return "请输入邮箱！";
+            if (password == "" || password == null) return "请输入密码！";
+            if (rePassword == "" || rePassword == null) return "请输入确认密码！";
+            if (codeCaptcha == "" || codeCaptcha == null) return "请输入验证码！";
+            if (emailCaptcha == "" || emailCaptcha == null) return "请输入邮箱验证码！";
+            if (!(password==rePassword)) return "两次输入密码不一致！";
+            return "";
+        }
         //监听提交
         form.on('submit(submit)', function(){
-            // if(!verifyUsername || !verifyCode){
-            //     return false;
-            // }
+            var username = $("#username").val();
+            var email = $("#email").val();
+            var password = $("#password").val();
+            var rePassword = $("#rePassword").val();
+            var codeCaptcha = $("#codeCaptcha").val();
+            var emailCaptcha = $("#emailCaptcha").val();
+
+            var hint = checkRegisterInfo(username, email, password, rePassword, codeCaptcha, emailCaptcha);
+            if (hint != "") {
+                layer.msg(hint, {icon:2});
+                return false;
+            }
+
+            $.ajax({
+                type: 'post',
+                url: '/register',
+                data: {"name": username, "email":email, "password": password, "codeCaptcha": codeCaptcha, "emailCaptcha": emailCaptcha},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.code !== 200) {
+                        layer.msg(data.msg,{icon: 2});
+                        changeCaptcha();
+                        return false;
+                    } else {
+                        location = "${ctx}/";
+                    }
+
+                }
+            });
+            return false;
         });
+
+        // // 自定义验证规则
+        // var verifyCode = true;
+        // form.verify({
+        //
+        //     code: function (value) {
+        //         $.ajax({
+        //             url: '/checkCode',
+        //             data: {"code": value},
+        //             dataType: 'json',
+        //             async: false,
+        //             success: function (data) {
+        //                 var message = data['message'];
+        //                 if(message === 'isNull'){
+        //                     verifyCode = false;
+        //                     layer.msg("缓存验证码为空，请刷新页面", {icon: 5});
+        //                 }else if(message === 'codeError'){
+        //                     verifyCode = false;
+        //                     layer.msg("验证码错误", {icon: 5});
+        //                 }else {
+        //                     verifyCode = true;
+        //                 }
+        //             }
+        //         });
+        //     },
+        //
+        // });
     });
 
 </script>

@@ -28,7 +28,7 @@
     <div class="message">COIPIB - 登录</div>
     <div id="darkbannerwrap"></div>
     <form class="layui-form" action="" method="post">
-        <input type="text" name="username" id="username" placeholder="请输入用户名"
+        <input type="text" name="nameEmail" id="nameEmail" placeholder="请输入用户名/邮箱"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
         <input type="password" name="password" id="password" placeholder="请输入密码"
@@ -36,7 +36,7 @@
         <hr class="hr15">
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <input type="text" name="validationCode" id="validationCode" placeholder="请输入验证码"
+                <input type="text" name="codeCaptcha" id="codeCaptcha" placeholder="请输入验证码"
                        autocomplete="off" class="layui-input">
             </div>
             <label class="field-wrap" style="cursor:pointer;">
@@ -53,9 +53,7 @@
                 <p style="text-align: right"><a href="#">忘记密码？</a></p>
             </label>
         </div>
-        <button style="width: 100%" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">登录</button>
-        <hr class="hr15">
-        <button id="activeEmail" style="width: 100%" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">登录</button>
+        <button style="width: 100%;" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">登录</button>
     </form>
 </div>
 <!-- layui.js -->
@@ -76,20 +74,20 @@
         var layer = layui.layer;
         var $ = layui.jquery;
 
-        function checkLoginInfo(username, password, validationCode) {
-            if (username.trim() == "" || username.trim() == null) return "请输入用户名！";
+        function checkLoginInfo(nameEmail, password, codeCaptcha) {
+            if (nameEmail.trim() == "" || nameEmail.trim() == null) return "请输入用户名/邮箱！";
             if (password == "" || password == null) return "请输入密码！";
-            if (validationCode == "" || validationCode == null) return "请输入验证码！";
+            if (codeCaptcha == "" || codeCaptcha == null) return "请输入验证码！";
             return "";
         }
 
         //监听提交
         form.on('submit(submit)', function(){
-            var username = $("#username").val();
+            var nameEmail = $("#nameEmail").val();
             var password = $("#password").val();
-            var validationCode = $("#validationCode").val();
+            var codeCaptcha = $("#codeCaptcha").val();
 
-            var hint = checkLoginInfo(username, password, validationCode);
+            var hint = checkLoginInfo(nameEmail, password, codeCaptcha);
             if (hint != "") {
                 layer.msg(hint, {icon:2});
                 return false;
@@ -98,13 +96,13 @@
             $.ajax({
                 type: 'post',
                 url: '/login',
-                data: {"name": username, "password": password, "validationCode": validationCode},
+                data: {"nameEmail": nameEmail, "password": password, "codeCaptcha": codeCaptcha},
                 dataType: 'json',
                 success: function (data) {
                     if (data.code !== 200) {
                         layer.msg(data.msg,{icon: 2});
-                    } else if (data.code == 501) {
-                        $("#activeEmail").html("<button style=\"width: 100%\" class=\"layui-btn layui-btn-radius\" lay-filter=\"submit\" lay-submit=\"\">登录</button>");
+                        changeCaptcha();
+                        return false;
                     } else {
                         location = "${ctx}/";
                     }
@@ -118,7 +116,7 @@
     //     var verifyCode = true;
     //     form.verify({
     //
-    //         username: function (value) {
+    //         nameEmail: function (value) {
     //             $.ajax({
     //                 type: 'post',
     //                 url: '/login',
