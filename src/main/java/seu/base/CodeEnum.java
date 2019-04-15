@@ -23,6 +23,11 @@ public enum CodeEnum {
     USER_ERROR(500),
 
     /**
+     * 账号未激活
+     */
+    USER_INACTIVE_ERROR(501),
+
+    /**
      * 未知错误
      */
     UNKNOWN_ERROR(1000);

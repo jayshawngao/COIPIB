@@ -36,11 +36,11 @@
         <hr class="hr15">
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <input type="text" name="valCode" id="valCode" placeholder="请输入验证码"
+                <input type="text" name="validationCode" id="validationCode" placeholder="请输入验证码"
                        autocomplete="off" class="layui-input">
             </div>
             <label class="field-wrap" style="cursor:pointer;">
-                <img src="${ctx}/captchaServlet" id="captchaImg" align='absmiddle' height="40px"
+                <img src="" id="captchaImg" align='absmiddle' height="40px"
                      style="margin-top: 5px" onclick="changeCaptcha()">
             </label>
             <span id="code_span" style="color: green"></span>
@@ -53,13 +53,9 @@
                 <p style="text-align: right"><a href="#">忘记密码？</a></p>
             </label>
         </div>
-        <button style="width: 100%" class="layui-btn layui-btn-radius" onclick="return submitLogin();">登录</button>
+        <button style="width: 100%" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">登录</button>
         <hr class="hr15">
-        <div class="layui-form-item" id="hint" style="display: none;">
-            <div class="layui-input-inline">
-                <p style="text-align: left; color: crimson;"></p>
-            </div>
-        </div>
+        <button id="activeEmail" style="width: 100%" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">登录</button>
     </form>
 </div>
 <!-- layui.js -->
@@ -69,10 +65,55 @@
     $(function () {
         changeCaptcha();
     });
-    // layui.use(['form', 'layer'], function(){
-    //     var form = layui.form;
-    //     var layer = layui.layer;
-    //     var $ = layui.jquery;
+    // 更换验证码
+    function changeCaptcha() {
+        $.get('/codeCaptcha', function (data) {
+            $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
+        });
+    }
+    layui.use(['form', 'layer'], function() {
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+
+        function checkLoginInfo(username, password, validationCode) {
+            if (username.trim() == "" || username.trim() == null) return "请输入用户名！";
+            if (password == "" || password == null) return "请输入密码！";
+            if (validationCode == "" || validationCode == null) return "请输入验证码！";
+            return "";
+        }
+
+        //监听提交
+        form.on('submit(submit)', function(){
+            var username = $("#username").val();
+            var password = $("#password").val();
+            var validationCode = $("#validationCode").val();
+
+            var hint = checkLoginInfo(username, password, validationCode);
+            if (hint != "") {
+                layer.msg(hint, {icon:2});
+                return false;
+            }
+
+            $.ajax({
+                type: 'post',
+                url: '/login',
+                data: {"name": username, "password": password, "validationCode": validationCode},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.code !== 200) {
+                        layer.msg(data.msg,{icon: 2});
+                    } else if (data.code == 501) {
+                        $("#activeEmail").html("<button style=\"width: 100%\" class=\"layui-btn layui-btn-radius\" lay-filter=\"submit\" lay-submit=\"\">登录</button>");
+                    } else {
+                        location = "${ctx}/";
+                    }
+
+                }
+            });
+            return false;
+        });
+
     //     // 自定义验证规则
     //     var verifyCode = true;
     //     form.verify({
@@ -114,51 +155,9 @@
     //
     //
     //     });
-    //     //监听提交
-    //     form.on('submit(submit)', function(){
-    //         // if(!verifyUsername || !verifyCode){
-    //             return false;
-    //         // }
-    //     });
-    // });
 
-    // 更换验证码
-    function changeCaptcha() {
-        $.get('/codeCaptcha', function (data) {
-            $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
-        });
-    }
+    });
 
-    function submitLogin() {
-        debugger;
-        var username = $("#username").val();
-        var password = $("#password").val();
-        var valCode = $("#valCode").val();
-
-        var hint = checkLoginInfo(username, password, valCode);
-        if (hint != "") {
-            $("#hint > div:nth-child(1) > p:nth-child(1)").text(hint);
-            $("#hint").show();
-            return false;
-        }
-
-        $.ajax({
-            type: 'post',
-            url: '/checkCode',
-            data: {"name": username, "password": password, "code": valCode},
-            dataType: 'json',
-            success: function (data) {
-
-            }
-        });
-    }
-
-    function checkLoginInfo(username, password, valCode) {
-        if (username == "" || username == null) return "请输入用户名！";
-        if (password == "" || password == null) return "请输入密码！";
-        if (valCode == "" || valCode == null) return "请输入验证码！";
-        return "";
-    }
 </script>
 </body>
 </html>

@@ -22,7 +22,7 @@ public class EmailHandler implements EventHandler {
         try {
             emailService.sendEmail(model.getMap());
         } catch (Exception e) {
-            LOGGER.error("邮件发送失败，parameter：{}", model.getMap(), e);
+            LOGGER.error("邮件发送失败，parameter:map={}", model.getMap(), e);
         }
     }
 

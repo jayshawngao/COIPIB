@@ -2,6 +2,7 @@ package seu.service;
 
 import org.apache.commons.lang3.StringUtils;
 
+import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seu.base.CodeEnum;
@@ -38,12 +39,15 @@ public class UserService {
 
     }
 
-    public String login(User user, String rand, String oldRand) throws COIPIBException {
-        checkBeforeLogin(user, rand, oldRand);
+    public String login(User user, String validationCode, String oldValidationCode) throws COIPIBException {
+        checkBeforeLogin(user, validationCode, oldValidationCode);
 
         User old = userDAO.selectByName(user.getName());
         if (!StringUtils.equals(old.getPassword(), user.getPassword())) {
             throw new COIPIBException(CodeEnum.USER_ERROR, "密码错误！");
+        }
+        if (old.getActive() == 1) {
+            throw new COIPIBException(CodeEnum.USER_INACTIVE_ERROR, "该账号尚未激活！");
         }
 
         return addLoginTicket(old.getId());
@@ -67,18 +71,18 @@ public class UserService {
 
     }
 
-    private void checkBeforeLogin(User user, String rand, String oldRand) throws COIPIBException {
+    private void checkBeforeLogin(User user, String validationCode, String oldValidationCode) throws COIPIBException {
+        if (!StringUtils.equals(validationCode, oldValidationCode)) {
+            throw new COIPIBException(CodeEnum.USER_ERROR, "验证码输入错误！");
+        }
         if (StringUtils.isBlank(user.getName())) {
             throw new COIPIBException(CodeEnum.USER_ERROR, "用户名不能为空！");
         }
         if (StringUtils.isBlank(user.getPassword())) {
             throw new COIPIBException(CodeEnum.USER_ERROR, "密码不能为空！");
         }
-        if (StringUtils.isBlank(rand)) {
+        if (StringUtils.isBlank(validationCode)) {
             throw new COIPIBException(CodeEnum.USER_ERROR, "验证码不能为空！");
-        }
-        if (!StringUtils.equals(rand, oldRand)) {
-            throw new COIPIBException(CodeEnum.USER_ERROR, "验证码输入错误！");
         }
         User old = userDAO.selectByName(user.getName());
         if (old == null) {
@@ -105,18 +109,21 @@ public class UserService {
 
     public void active(String ticket) throws COIPIBException{
         if (StringUtils.isBlank(ticket)) {
-            throw new COIPIBException(CodeEnum.USER_ERROR, "ticket不能为空！");
+            throw new COIPIBException(CodeEnum.USER_INACTIVE_ERROR, "ticket不能为空！");
         }
         LoginTicket loginTicket = loginTicketDAO.selectByTicket(ticket);
-        if (loginTicket == null || loginTicket.getUserId() == null) {
-            return;
+        if (loginTicket != null && loginTicket.getExpireTime().after(new Date())
+                    && loginTicket.getStatus() == 0 && loginTicket.getUserId() != null) {
+            User user = userDAO.selectById(loginTicket.getUserId());
+            if (user != null) {
+                user.setActive(0);
+                userDAO.update(user);
+            }
+        } else {
+            throw new COIPIBException(CodeEnum.USER_INACTIVE_ERROR, "该激活邮件已失效！");
         }
-        User user = userDAO.selectById(loginTicket.getUserId());
-        if (user == null) {
-            return;
-        }
-        user.setActive(0);
-        userDAO.update(user);
+
+
     }
 
     public Map<String, Object> buildActiveEmail(String email, String ticket, HttpServletRequest request) {
@@ -124,7 +131,7 @@ public class UserService {
         map.put("to", email);
         map.put("subject", "COIPIB-账号激活");
         String text = "<html><p><h3>这是一封激活邮件</h3></p><p><h3><a href="
-                + COIPIBUtil.getAPPURL(request) + "active/?ticket=" + ticket +">点击这里激活您的账号</a>" + "</h3></p></html>";
+                + COIPIBUtil.getAPPURL(request) + "active/?ticket=" + ticket +">点击这里激活您的账号</a> 【24小时内有效】" + "</h3></p></html>";
         map.put("text", text);
         return map;
     }

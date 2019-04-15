@@ -29,7 +29,6 @@ import java.util.HashMap;
 @Controller
 public class LoginController {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);
-    public static final String VALIDATION_CODE = "VALIDATION_CODE";
 
     @Autowired
     UserService userService;
@@ -47,33 +46,37 @@ public class LoginController {
     @RequestMapping("/register")
     public String register(User user, HttpServletRequest request) {
         try {
+            user.setName(user.getName().trim());
+            user.setEmail(user.getEmail().trim());
             String ticket = userService.register(user);
             EventModel eventModel = new EventModel(EventType.EMAIL,
                     userService.buildActiveEmail(user.getEmail(), ticket, request));
             eventConsumer.submit(eventModel);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "注册成功").toJSONString();
         } catch (COIPIBException e) {
-            LOGGER.info("注册失败", e.getMessage());
+            LOGGER.info(e.getMessage() + " parameter:user={}", user);
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/register", e);
+            LOGGER.error("/register parameter:user={}", user, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
 
     @ResponseBody
     @RequestMapping("/login")
-    public String login(User user, String rand, HttpServletRequest request, HttpServletResponse response) {
+    public String login(User user, String validationCode, HttpServletRequest request, HttpServletResponse response) {
         try {
-            String oldRand = (String)request.getSession().getAttribute(VALIDATION_CODE);
-            String ticket = userService.login(user, rand, oldRand);
+             String oldValidationCode = (String)request.getSession().getAttribute("validationCode");
+            String ticket = userService.login(user, validationCode, oldValidationCode);
             addCookie(ticket, response);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "登录成功").toJSONString();
         } catch (COIPIBException e) {
-            LOGGER.info("登录失败", e.getMessage());
+            LOGGER.info(e.getMessage() + " parameter:user={}, validationCode={}, oldValidationCode={}", user, validationCode,
+                    request.getSession().getAttribute("validationCode"));
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/login", e);
+            LOGGER.error("/login parameter:user={}, validationCode={}, oldValidationCode={}", user, validationCode,
+                    request.getSession().getAttribute("validationCode"), e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
 
@@ -92,7 +95,7 @@ public class LoginController {
             userService.logout(ticket);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "退出成功").toJSONString();
         } catch (Exception e) {
-            LOGGER.info("/logout", e);
+            LOGGER.info("/logout parameter:ticket={}", ticket, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -104,10 +107,10 @@ public class LoginController {
             userService.active(ticket);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "激活成功").toJSONString();
         } catch (COIPIBException e) {
-            LOGGER.info("激活失败", e.getMessage());
+            LOGGER.info(e.getMessage() + " parameter:ticket={}", ticket);
             return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/active", e);
+            LOGGER.error("/active parameter:ticket={}", ticket, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -116,14 +119,13 @@ public class LoginController {
     @ResponseBody
     public String codeCaptcha(HttpServletRequest request) {
         try {
-            request.getSession().removeAttribute(VALIDATION_CODE);
-            String rand = codeCaptchaService.genRand();
-            request.getSession().setAttribute(VALIDATION_CODE, rand);
-            String image = codeCaptchaService.getImageString(rand);
+            request.getSession().removeAttribute("validationCode");
+            String validationCode = codeCaptchaService.genValidationCode();
+            request.getSession().setAttribute("validationCode", validationCode);
+            String image = codeCaptchaService.getImageString(validationCode);
             HashMap<String, Object> data = new HashMap<>();
-            data.put(VALIDATION_CODE, rand);
             data.put("image", image);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "验证码生成成功！", data).toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "验证码生成成功", data).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/codeCaptcha", e);
             return new CommonResponse(CodeEnum.USER_ERROR.getCode(), e.getMessage()).toJSONString();

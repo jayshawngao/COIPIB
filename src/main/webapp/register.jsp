@@ -42,7 +42,7 @@
                        autocomplete="off" class="layui-input">
             </div>
             <label class="field-wrap" style="cursor:pointer;">
-                <img src="${ctx}/captchaServlet" id="captchaImg" align='absmiddle' height="40px"
+                <img src="" id="captchaImg" align='absmiddle' height="40px"
                      style="margin-top: 5px" onclick="changeCaptcha()">
             </label>
             <span id="code_span" style="color: green"></span>
@@ -62,7 +62,15 @@
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
-
+    $(function () {
+        changeCaptcha();
+    });
+    // 更换验证码
+    function changeCaptcha() {
+        $.get('/codeCaptcha', function (data) {
+            $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
+        });
+    }
     layui.use(['form', 'layer'], function(){
         var form = layui.form;
         var layer = layui.layer;
@@ -100,10 +108,6 @@
         });
     });
 
-    // 更换验证码
-    function changeCaptcha(){
-        $("#captchaImg").attr('src', '${ctx}/captchaServlet?t=' + (new Date().getTime()));
-    }
 </script>
 </body>
 </html>
