@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="seu.dao.DocumentDAO">
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		insert into document(name,keywords,digest,topic,affiliation_id, year,
+				note, attachment, editor_id, auth)
+	    values(#{name}, #{keywords}, #{digest}, #{topic}, #{affiliation_id}, #{year},
+	    	#{note}, #{attachment}, #{editor_id}, #{auth});
+	</insert>
+	<sql id="condition">
+		<if test="name!=null">
+			name = #{name},
+		</if>
+		<if test="keywords!=null">
+			keywords = #{keywords},
+		</if>
+		<if test="digest!=null">
+			digest = #{digest},
+		</if>
+		<if test="topic!=null">
+			topic = #{topic},
+		</if>
+		<if test="affiliationId!=null">
+			affiliation_id = #{affiliationId},
+		</if>
+		<if test="year!=null">
+			year = #{year},
+		</if>
+		<if test="note!=null">
+			note = #{note},
+		</if>
+		<if test="attachment!=null">
+			attachment = #{attachment},
+		</if>
+		<if test="editorId!=null">
+			editor_id = #{editorId},
+		</if>
+		<if test="auth!=null">
+			auth = #{auth},
+		</if>
+	</sql>
+	<update id="updateDocument">
+		update document set
+		<trim suffixOverrides=",">
+
+		update_time = now(),
+		</trim>
+		where id = #{id};
+	</update>
+</mapper>
