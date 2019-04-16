@@ -21,6 +21,15 @@
     <%--<link rel="shortcut icon" href="./static/images/Logo_40.png" type="image/x-icon">--%>
     <link rel="stylesheet" href="./static/css/login/font.css">
     <link rel="stylesheet" href="./static/css/login/xadmin.css">
+    <style>
+        .disableEmail, .disableEmail:focus {
+            pointer-events: none !important;
+            cursor: none !important;
+            color: #D2D2D2 !important;
+            background-color: #9E9E9E !important;
+            opacity: 1 !important;
+        }
+    </style>
 </head>
 
 <body class="login-bg">
@@ -28,9 +37,30 @@
     <div class="message">COIPIB - 找回密码</div>
     <div id="darkbannerwrap"></div>
     <form class="layui-form" action="" method="post">
-        <input type="text" name="nameEmail" id="nameEmail" placeholder="请输入注册邮箱"
+        <input type="text" name="email" id="email" lay-verify="required|email" placeholder="请输入注册邮箱"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <input type="text" name="codeCaptcha" id="codeCaptcha" lay-verify="required|codeCaptcha" placeholder="请输入验证码"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <label class="field-wrap" style="cursor:pointer;">
+                <img src="" id="captchaImg" align='absmiddle' height="40px"
+                     style="margin-top: 5px" onclick="changeCaptcha()">
+            </label>
+            <span id="code_span" style="color: green"></span>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-inline">
+                <input type="text" name="emailCaptcha" id="emailCaptcha" lay-verify="required|emailCaptcha"  placeholder="请输入邮箱验证码"
+                       autocomplete="off" class="layui-input">
+            </div>
+            <label class="field-wrap" style="float:left; margin-top: 6px;">
+                <button style="width: 100%;" class="layui-btn layui-btn-radius" id="sendEmail" onclick="return false;">发送邮件</button>
+            </label>
+            <label style="float:left; margin-top: 6px; display: none;" class="field-wrap layui-btn layui-btn-radius disableEmail" id="disableSendEmail">60s</label>
+        </div>
         <button style="width: 100%;" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">找回密码</button>
     </form>
 </div>
@@ -38,42 +68,81 @@
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
+    $(function () {
+        changeCaptcha();
+        $("#sendEmail").unbind("click").bind("click", function () {
+            sendEmail();
+        });
+    });
+    // 更换验证码
+    function changeCaptcha() {
+        $.get('/reglogin/codeCaptcha', function (data) {
+            $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
+        });
+    }
+
+    function sendEmail() {
+        var email = $("#email").val();
+        var codeCaptcha = $("#codeCaptcha").val();
+        $.ajax({
+            type: 'get',
+            url: '/reglogin/emailCaptcha',
+            data: {"email": email, "codeCaptcha": codeCaptcha},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.msg(data.msg, {icon: 2});
+                    changeCaptcha();
+                    return false;
+                } else {
+                    suspendEmailService();
+                }
+            }
+        });
+        return false;
+    }
+
+    function suspendEmailService() {
+        $("#sendEmail").hide();
+        $("#disableSendEmail").show();
+
+        var time = 60;
+        var p = $("#disableSendEmail")[0];
+        var set = setInterval(function () {
+            time--;
+            p.innerHTML = time + "s";
+            if (time === 0) {
+                $("#sendEmail").show();
+                $("#disableSendEmail").hide();
+                clearInterval(set);
+            }
+        }, 1000);
+    };
+
     layui.use(['form', 'layer'], function() {
         var form = layui.form;
         var layer = layui.layer;
         var $ = layui.jquery;
 
-        function checkLoginInfo(nameEmail, password, codeCaptcha) {
-            if (nameEmail.trim() == "" || nameEmail.trim() == null) return "请输入注册邮箱！";
+        function checkInfo(email, codeCaptcha, emailCaptcha) {
+            if (email.trim() == "" || email.trim() == null) return "请输入注册邮箱！";
+            if (codeCaptcha == "" || codeCaptcha == null) return "请输入验证码！";
+            if (emailCaptcha == "" || emailCaptcha == null) return "请输入邮箱验证码！";
             return "";
         }
 
         //监听提交
         form.on('submit(submit)', function(){
-            var nameEmail = $("#nameEmail").val();
+            var email = $("#email").val();
+            var  codeCaptcha = $("#codeCaptcha").val();
+            var emailCaptcha = $("#emailCaptcha").val();
 
-            var hint = checkLoginInfo(nameEmail);
+            var hint = checkInfo(email, codeCaptcha, emailCaptcha);
             if (hint != "") {
                 layer.msg(hint, {icon:2});
                 return false;
             }
 
-            <%--$.ajax({--%>
-                <%--type: 'post',--%>
-                <%--url: '/login',--%>
-                <%--data: {"nameEmail": nameEmail, "password": password, "codeCaptcha": codeCaptcha},--%>
-                <%--dataType: 'json',--%>
-                <%--success: function (data) {--%>
-                    <%--if (data.code !== 200) {--%>
-                        <%--layer.msg(data.msg,{icon: 2});--%>
-                        <%--changeCaptcha();--%>
-                        <%--return false;--%>
-                    <%--} else {--%>
-                        <%--location = "${ctx}/";--%>
-                    <%--}--%>
-
-                <%--}--%>
-            <%--});--%>
             return false;
         });
     });

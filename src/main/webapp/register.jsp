@@ -49,7 +49,7 @@
         <input type="password" name="password" id="password" lay-verify="required|password" placeholder="请输入密码"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
-        <input type="password" name="rePassword" id="rePassword" lay-verify="required" placeholder="请确认密码"
+        <input type="password" name="rePassword" id="rePassword" lay-verify="required|rePassword" placeholder="请确认密码"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
         <div class="layui-form-item">
@@ -129,11 +129,11 @@
                     layer.msg(data.msg, {icon: 2});
                     changeCaptcha();
                     return false;
+                } else {
+                    suspendEmailService();
                 }
-                suspendEmailService();
             }
         });
-        suspendEmailService();
         return false;
     }
 
