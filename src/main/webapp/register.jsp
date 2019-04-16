@@ -171,12 +171,12 @@
         }
         //监听提交
         form.on('submit(submit)', function(){
-            var username = $("#username").value();
-            var email = $("#email").value();
-            var password = $("#password").value();
-            var rePassword = $("#rePassword").value();
-            var codeCaptcha = $("#codeCaptcha").value();
-            var emailCaptcha = $("#emailCaptcha").value();
+            var username = $("#username").val();
+            var email = $("#email").val();
+            var password = $("#password").val();
+            var rePassword = $("#rePassword").val();
+            var codeCaptcha = $("#codeCaptcha").val();
+            var emailCaptcha = $("#emailCaptcha").val();
 
             var hint = checkRegisterInfo(username, email, password, rePassword, codeCaptcha, emailCaptcha);
             if (hint != "") {
@@ -190,7 +190,7 @@
                 data: {"name": username, "email":email, "password": password, "codeCaptcha": codeCaptcha, "emailCaptcha": emailCaptcha},
                 dataType: 'json',
                 success: function (data) {
-                    if (data.value !== 200) {
+                    if (data.code !== 200) {
                         layer.msg(data.msg,{icon: 2});
                         changeCaptcha();
                         return false;
