@@ -30,7 +30,7 @@
             <li class="layui-nav-item"><a href="">搜索</a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item"><a href="./login.jsp">登录</a></li>
+            <li class="layui-nav-item"><a href="/login">登录</a></li>
             <li class="layui-nav-item">
                 <input type="text" name="" class="layui-input" id="" placeholder="请输入：关键字">
             </li>

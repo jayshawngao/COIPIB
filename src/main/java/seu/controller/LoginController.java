@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
+@RequestMapping("/reglogin")
 @Controller
 public class LoginController {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoginController.class);

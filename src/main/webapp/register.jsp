@@ -75,7 +75,7 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <p style="text-align: left"><a href="login.jsp">已有账号？前往登录</a></p>
+                <p style="text-align: left"><a href="/login">已有账号？前往登录</a></p>
             </div>
         </div>
         <button style="width: 100%" class="layui-btn layui-btn-radius" lay-submit="" lay-filter="submit">注册</button>
@@ -111,7 +111,7 @@
 
     // 更换验证码
     function changeCaptcha() {
-        $.get('/codeCaptcha', function (data) {
+        $.get('/reglogin/codeCaptcha', function (data) {
             $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
         });
     }
@@ -121,7 +121,7 @@
         var codeCaptcha = $("#codeCaptcha").val();
         $.ajax({
             type: 'get',
-            url: '/emailCaptcha',
+            url: '/reglogin/emailCaptcha',
             data: {"email": email, "codeCaptcha": codeCaptcha},
             dataType: 'json',
             success: function (data) {
@@ -186,7 +186,7 @@
 
             $.ajax({
                 type: 'post',
-                url: '/register',
+                url: '/reglogin/register',
                 data: {"name": username, "email":email, "password": password, "codeCaptcha": codeCaptcha, "emailCaptcha": emailCaptcha},
                 dataType: 'json',
                 success: function (data) {
