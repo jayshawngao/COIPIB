@@ -1,6 +1,7 @@
 package seu.model;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class Document {
 
@@ -8,7 +9,7 @@ public class Document {
 
     private String name;
 
-    // ；分隔多个关键词
+    // 逗号分隔多个关键词
     private String keywords;
 
     // 摘要 abstract是保留关键字
@@ -17,6 +18,8 @@ public class Document {
     private String topic;
 
     private Integer affiliationId;
+
+    private List<String> affiliationList;
 
     private Integer year;
 
@@ -90,6 +93,14 @@ public class Document {
 
     public void setAffiliationId(Integer affiliationId) {
         this.affiliationId = affiliationId;
+    }
+
+    public List<String> getAffiliationList() {
+        return affiliationList;
+    }
+
+    public void setAffiliationList(List<String> affiliationList) {
+        this.affiliationList = affiliationList;
     }
 
     public Integer getYear() {
@@ -184,6 +195,7 @@ public class Document {
                 ", digest='" + digest + '\'' +
                 ", topic='" + topic + '\'' +
                 ", affiliationId=" + affiliationId +
+                ", affiliationList=" + affiliationList +
                 ", year=" + year +
                 ", note='" + note + '\'' +
                 ", attachment='" + attachment + '\'' +

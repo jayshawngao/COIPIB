@@ -114,7 +114,7 @@
                     affiliationList.forEach(function (element) {
                         if (element.deleted == 1) {
                             var name = element.name;
-                            var allChildren = getAllChildren(element.parentId);
+                            var allChildren = getAllChildren(element.id);
                             html = html + '<li class="layui-nav-item layui-nav-itemed layui-this">\n'
                                 + '<a class="" href="javascript:void(0);" onclick="doClickName(\'' + name + '\')">' + name + '</a>\n'
                                 + allChildren;
