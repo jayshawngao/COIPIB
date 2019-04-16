@@ -83,9 +83,9 @@
 
         //监听提交
         form.on('submit(submit)', function(){
-            var nameEmail = $("#nameEmail").val();
-            var password = $("#password").val();
-            var codeCaptcha = $("#codeCaptcha").val();
+            var nameEmail = $("#nameEmail").value();
+            var password = $("#password").value();
+            var codeCaptcha = $("#codeCaptcha").value();
 
             var hint = checkLoginInfo(nameEmail, password, codeCaptcha);
             if (hint != "") {
@@ -99,7 +99,7 @@
                 data: {"nameEmail": nameEmail, "password": password, "codeCaptcha": codeCaptcha},
                 dataType: 'json',
                 success: function (data) {
-                    if (data.code !== 200) {
+                    if (data.value !== 200) {
                         layer.msg(data.msg,{icon: 2});
                         changeCaptcha();
                         return false;
@@ -124,26 +124,26 @@
     //                 dataType: 'json',
     //                 async: false,
     //                 success: function (data) {
-    //                     var code = data['code'];
+    //                     var value = data['value'];
     //                     var msg = data['msg'];
-    //                     if(code !== 200){
+    //                     if(value !== 200){
     //                         layer.msg(msg, {icon: 5});
     //                     }
     //                 }
     //             });
     //         },
     //
-    //         code: function (value) {
+    //         value: function (value) {
     //             $.ajax({
     //                 type: 'post',
     //                 url: '/checkCode',
-    //                 data: {"code": value},
+    //                 data: {"value": value},
     //                 dataType: 'json',
     //                 async: false,
     //                 success: function (data) {
-    //                     var code = data['code'];
+    //                     var value = data['value'];
     //                     var msg = data['msg'];
-    //                     if(code !== 200){
+    //                     if(value !== 200){
     //                         layer.msg(msg, {icon: 5});
     //                     }
     //                 }

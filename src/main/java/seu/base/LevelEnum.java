@@ -10,12 +10,12 @@ public enum LevelEnum {
 
     ADMIN(3);
 
-    int code;
-    LevelEnum(int code) {
-        this.code = code;
+    int value;
+    LevelEnum(int value) {
+        this.value = value;
     }
 
-    public int getCode() {
-        return code;
+    public int getValue() {
+        return value;
     }
 }

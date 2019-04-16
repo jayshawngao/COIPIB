@@ -51,19 +51,19 @@ public class LoginController {
             String oldEmail = (String)request.getSession().getAttribute("email");
             String ticket = userService.register(user, oldEmail, codeCaptcha, emailCaptcha, oldCodeCaptcha, oldEmailCaptcha);
             addCookie(ticket, response);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "注册成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "注册成功").toJSONString();
         } catch (COIPIBException e) {
             LOGGER.info(e.getMessage() + " parameter:user={}, oldEmail={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}", user,
                     request.getSession().getAttribute("email"),
                     codeCaptcha, emailCaptcha, request.getSession().getAttribute("codeCaptcha"),
                     request.getSession().getAttribute("emailCaptcha"));
-            return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/register parameter:user={}, oldEmail={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}", user,
                     request.getSession().getAttribute("email"),
                     codeCaptcha, emailCaptcha, request.getSession().getAttribute("codeCaptcha"),
                     request.getSession().getAttribute("emailCaptcha"), e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 
@@ -75,15 +75,15 @@ public class LoginController {
             String oldCodeCaptcha = (String) request.getSession().getAttribute("codeCaptcha");
             String ticket = userService.login(nameEmail, password, codeCaptcha, oldCodeCaptcha);
             addCookie(ticket, response);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "登录成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "登录成功").toJSONString();
         } catch (COIPIBException e) {
             LOGGER.info(e.getMessage() + " parameter:nameEmail={}, password={}, codeCaptcha={}, oldCodeCaptcha={}",
                     nameEmail, password, codeCaptcha, request.getSession().getAttribute("codeCaptcha"));
-            return new CommonResponse(e.getCodeEnum().getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/login parameter:nameEmail={}, password={}, codeCaptcha={}, oldCodeCaptcha={}",
                     nameEmail, password, codeCaptcha, request.getSession().getAttribute("codeCaptcha"), e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
 
     }
@@ -99,10 +99,10 @@ public class LoginController {
     public String logout(@CookieValue("ticket") String ticket) {
         try {
             userService.logout(ticket);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "退出成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "退出成功").toJSONString();
         } catch (Exception e) {
             LOGGER.error("/logout parameter:ticket={}", ticket, e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 
@@ -117,10 +117,10 @@ public class LoginController {
             String image = captchaService.getImageString(codeCaptcha);
             HashMap<String, Object> data = new HashMap<>();
             data.put("image", image);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "验证码生成成功", data).toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "验证码生成成功", data).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/codeCaptcha", e);
-            return new CommonResponse(CodeEnum.USER_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.USER_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 
@@ -138,15 +138,15 @@ public class LoginController {
             request.getSession().setAttribute("email", email);
             EventModel eventModel = new EventModel(EventType.EMAIL, userService.buildEmailCaptcha(email, emailCaptcha, request));
             eventConsumer.submit(eventModel);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "邮箱验证码发送成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "邮箱验证码发送成功").toJSONString();
         } catch (COIPIBException e) {
             LOGGER.info(e.getMessage() + " parameter:email={},codeCaptcha={}, oldCodeCaptcha={}", email, codeCaptcha,
                     request.getSession().getAttribute("codeCaptcha"));
-            return new CommonResponse(CodeEnum.USER_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.USER_ERROR.getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/emailCaptcha parameter:email={},codeCaptcha={}, oldCodeCaptcha={}", email, codeCaptcha,
                     request.getSession().getAttribute("codeCaptcha"), e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 }
