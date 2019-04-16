@@ -85,15 +85,15 @@
     }
 
     function sendEmail() {
-        var email = $("#email").val();
-        var codeCaptcha = $("#codeCaptcha").val();
+        var email = $("#email").value();
+        var codeCaptcha = $("#codeCaptcha").value();
         $.ajax({
             type: 'get',
             url: '/emailCaptcha',
             data: {"email": email, "codeCaptcha": codeCaptcha},
             dataType: 'json',
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.value !== 200) {
                     layer.msg(data.msg, {icon: 2});
                     changeCaptcha();
                     return false;
@@ -120,12 +120,12 @@
         }
         //监听提交
         form.on('submit(submit)', function(){
-            var username = $("#username").val();
-            var email = $("#email").val();
-            var password = $("#password").val();
-            var rePassword = $("#rePassword").val();
-            var codeCaptcha = $("#codeCaptcha").val();
-            var emailCaptcha = $("#emailCaptcha").val();
+            var username = $("#username").value();
+            var email = $("#email").value();
+            var password = $("#password").value();
+            var rePassword = $("#rePassword").value();
+            var codeCaptcha = $("#codeCaptcha").value();
+            var emailCaptcha = $("#emailCaptcha").value();
 
             var hint = checkRegisterInfo(username, email, password, rePassword, codeCaptcha, emailCaptcha);
             if (hint != "") {
@@ -139,7 +139,7 @@
                 data: {"name": username, "email":email, "password": password, "codeCaptcha": codeCaptcha, "emailCaptcha": emailCaptcha},
                 dataType: 'json',
                 success: function (data) {
-                    if (data.code !== 200) {
+                    if (data.value !== 200) {
                         layer.msg(data.msg,{icon: 2});
                         changeCaptcha();
                         return false;
@@ -156,10 +156,10 @@
         // var verifyCode = true;
         // form.verify({
         //
-        //     code: function (value) {
+        //     value: function (value) {
         //         $.ajax({
         //             url: '/checkCode',
-        //             data: {"code": value},
+        //             data: {"value": value},
         //             dataType: 'json',
         //             async: false,
         //             success: function (data) {

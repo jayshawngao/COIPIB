@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import seu.async.EventHandler;
 import seu.async.EventModel;
 import seu.async.EventType;
-import seu.exceptions.COIPIBException;
 import seu.service.EmailService;
 
 

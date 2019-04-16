@@ -32,21 +32,12 @@ public enum CodeEnum {
      */
     UNKNOWN_ERROR(1000);
 
-    int code;
-    CodeEnum(int code){
-        this.code = code;
+    int value;
+    CodeEnum(int value){
+        this.value = value;
     }
 
-    CodeEnum getCode(int code) {
-        for (CodeEnum codeEnum: CodeEnum.values()) {
-            if (codeEnum.code == code) {
-                return codeEnum;
-            }
-        }
-        return null;
-    }
-
-    public int getCode() {
-        return code;
+    public int getValue() {
+        return value;
     }
 }

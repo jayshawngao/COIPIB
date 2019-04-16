@@ -34,13 +34,13 @@ public class DocumentController {
     public String insertNewDocument(Document document){
         try{
             documentService.insertNewDocument(document);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "插入文档成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "插入文档成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: document={}", document);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.DATABASE_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/insert" + " parameter: document={}", document, e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 
@@ -63,13 +63,13 @@ public class DocumentController {
             is.close();
             HashMap<String, Object> data = new HashMap<>();
             data.put("attachment", response.encodeURL(request.getServletContext().getContextPath()+"/static/file/"+fileName));
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "文件上传成功", data).toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文件上传成功", data).toJSONString();
         }catch (IOException e){
             LOGGER.info(e.getMessage() + " parameter: file={}", file);
-            return new CommonResponse(CodeEnum.FILE_UPLOAD_ERROR.getCode(), "文件上传失败").toJSONString();
+            return new CommonResponse(CodeEnum.FILE_UPLOAD_ERROR.getValue(), "文件上传失败").toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/upload" + " parameter: file={}", file, e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 
@@ -78,13 +78,13 @@ public class DocumentController {
     public String moveDocumentToBin(Integer id){
         try{
             documentService.moveDocumentToBin(id);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "文档移入回收站").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档移入回收站").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.DATABASE_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/remove" + " parameter: id={}", id, e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 
@@ -93,13 +93,13 @@ public class DocumentController {
     public String deleteDocument(Integer id){
         try{
             documentService.deleteDocument(id);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "删除文档成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "删除文档成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.DATABASE_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/delete" + " parameter: id={}", id, e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 
@@ -110,10 +110,10 @@ public class DocumentController {
             HashMap<String, Object> data = new HashMap<>();
             List<Document> documents = documentService.showAllDocumentInBin();
             data.put("documentList", documents);
-            return new CommonResponse(CodeEnum.SUCCESS.getCode(), "显示回收站所有文档", data).toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "显示回收站所有文档", data).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/showBin", e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 

@@ -26,6 +26,8 @@ public class Document {
 
     private Integer editorId;
 
+    private String editor;
+
     private Integer auth;
 
     /**
@@ -122,6 +124,14 @@ public class Document {
         this.editorId = editorId;
     }
 
+    public String getEditor() {
+        return editor;
+    }
+
+    public void setEditor(String editor) {
+        this.editor = editor;
+    }
+
     public Integer getAuth() {
         return auth;
     }
@@ -178,6 +188,7 @@ public class Document {
                 ", note='" + note + '\'' +
                 ", attachment='" + attachment + '\'' +
                 ", editorId=" + editorId +
+                ", editor='" + editor + '\'' +
                 ", auth=" + auth +
                 ", active=" + active +
                 ", deleted=" + deleted +
