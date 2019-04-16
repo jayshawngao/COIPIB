@@ -33,7 +33,7 @@ public class AffiliationController {
             data.put("affiliationList", resultList);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "查询成功", data).toJSONString();
         }catch (Exception e){
-            LOGGER.error("/showFirstLayer");
+            LOGGER.error("/affiliation/showFirstLayer", e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -47,7 +47,7 @@ public class AffiliationController {
             data.put("childrenList", children);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "查询成功", data).toJSONString();
         }catch (Exception e){
-            LOGGER.error("/affiliation/showNextLayer");
+            LOGGER.error("/affiliation/showNextLayer parameter: parentId={}", parentId, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -62,10 +62,10 @@ public class AffiliationController {
             affiliationService.insertNewAffiliation(affiliation);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "插入归属地成功").toJSONString();
         }catch (COIPIBException e){
-            LOGGER.info(e.getMessage() + " parameter: name={}, parentName={}", affiliation.getName(), affiliation.getParentId());
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getCode(), "插入归属地到数据库时失败").toJSONString();
+            LOGGER.info(e.getMessage() + " parameter: affiliation={}", affiliation);
+            return new CommonResponse(CodeEnum.DATABASE_ERROR.getCode(), e.getMessage()).toJSONString();
         }catch (Exception e){
-            LOGGER.error("/affiliation/insert" + " parameter: name={}, parentName={}", affiliation.getName(), affiliation.getParentId());
+            LOGGER.error("/affiliation/insert" + " parameter: affiliation={}", affiliation, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -78,10 +78,10 @@ public class AffiliationController {
             affiliationService.deleteAffiliationById(id);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "删除归属地成功").toJSONString();
         }catch (COIPIBException e){
-            LOGGER.info(e.getMessage() + " parameter: id={}, parentName={}", id);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getCode(), "删除数据库中归属地失败").toJSONString();
+            LOGGER.info(e.getMessage() + " parameter: id={}", id);
+            return new CommonResponse(CodeEnum.DATABASE_ERROR.getCode(), e.getMessage()).toJSONString();
         }catch (Exception e){
-            LOGGER.error("/affiliation/delete" + " parameter: id={}, parentName={}", id);
+            LOGGER.error("/affiliation/delete" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -96,10 +96,10 @@ public class AffiliationController {
             affiliationService.EditAffiliation(affiliation);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "修改归属地成功").toJSONString();
         }catch (COIPIBException e){
-            LOGGER.info(e.getMessage() + " parameter: name={}, parentId={}", affiliation.getName(), affiliation.getParentId());
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getCode(), "插入归属地到数据库时失败").toJSONString();
+            LOGGER.info(e.getMessage() + " parameter: affiliation={}", affiliation);
+            return new CommonResponse(CodeEnum.DATABASE_ERROR.getCode(), e.getMessage()).toJSONString();
         }catch (Exception e){
-            LOGGER.error("/affiliation/update" + " parameter: name={}, parentId={}", affiliation.getName(), affiliation.getParentId());
+            LOGGER.error("/affiliation/update" + " parameter: affiliation={}", affiliation, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }
@@ -113,7 +113,7 @@ public class AffiliationController {
             data.put("affiliation", affiliation);
             return new CommonResponse(CodeEnum.SUCCESS.getCode(), "修改归属地成功", data).toJSONString();
         }catch (Exception e){
-            LOGGER.error("/affiliation/getById" + " parameter: id={}", id);
+            LOGGER.error("/affiliation/getById" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getCode(), e.getMessage()).toJSONString();
         }
     }

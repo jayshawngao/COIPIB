@@ -164,4 +164,25 @@ public class Document {
 
     public Document() {
     }
+
+    @Override
+    public String toString() {
+        return "Document{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", keywords='" + keywords + '\'' +
+                ", digest='" + digest + '\'' +
+                ", topic='" + topic + '\'' +
+                ", affiliationId=" + affiliationId +
+                ", year=" + year +
+                ", note='" + note + '\'' +
+                ", attachment='" + attachment + '\'' +
+                ", editorId=" + editorId +
+                ", auth=" + auth +
+                ", active=" + active +
+                ", deleted=" + deleted +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                '}';
+    }
 }
