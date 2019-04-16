@@ -30,7 +30,7 @@
             <li class="layui-nav-item"><a href="">搜索</a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item"><a href="./login.jsp">登录</a></li>
+            <li class="layui-nav-item"><a href="/login">登录</a></li>
             <li class="layui-nav-item">
                 <input type="text" name="" class="layui-input" id="" placeholder="请输入：关键字">
             </li>
@@ -43,28 +43,28 @@
     <div class="layui-side layui-bg-black">
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                <li class="layui-nav-item layui-nav-itemed layui-this">
-                    <a class="" href="javascript:void(0);" onclick="doClickName('一带一路')">一带一路</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('东南亚与南亚')">东南亚与南亚</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('非洲')">非洲</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('中东与西亚')">中东与西亚</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('其他')">其他</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('未分类')">未分类</a>
-                </li>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0);" onclick="doClickName('回收站')">回收站</a>
-                </li>
+            <ul class="layui-nav layui-nav-tree" lay-filter="test" id="verticalMenu">
+                <%--<li class="layui-nav-item layui-nav-itemed layui-this">--%>
+                    <%--<a class="" href="javascript:void(0);" onclick="doClickName('一带一路')">一带一路</a>--%>
+                <%--</li>--%>
+                <%--<li class="layui-nav-item layui-nav-itemed">--%>
+                    <%--<a href="javascript:void(0);" onclick="doClickName('东南亚与南亚')">东南亚与南亚</a>--%>
+                <%--</li>--%>
+                <%--<li class="layui-nav-item layui-nav-itemed">--%>
+                    <%--<a href="javascript:void(0);" onclick="doClickName('非洲')">非洲</a>--%>
+                <%--</li>--%>
+                <%--<li class="layui-nav-item layui-nav-itemed">--%>
+                    <%--<a href="javascript:void(0);" onclick="doClickName('中东与西亚')">中东与西亚</a>--%>
+                <%--</li>--%>
+                <%--<li class="layui-nav-item layui-nav-itemed">--%>
+                    <%--<a href="javascript:void(0);" onclick="doClickName('其他')">其他</a>--%>
+                <%--</li>--%>
+                <%--<li class="layui-nav-item layui-nav-itemed">--%>
+                    <%--<a href="javascript:void(0);" onclick="doClickName('未分类')">未分类</a>--%>
+                <%--</li>--%>
+                <%--<li class="layui-nav-item layui-nav-itemed">--%>
+                    <%--<a href="javascript:void(0);" onclick="doClickName('回收站')">回收站</a>--%>
+                <%--</li>--%>
             </ul>
         </div>
     </div>
@@ -93,6 +93,71 @@
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
+    $(function () {
+        getFirstLayer();
+    });
+
+    // 获取一级菜单并显示
+    function getFirstLayer() {
+        $.ajax({
+            async: false,
+            type: "get",
+            url: "/affiliation/showFirstLayer",
+            dataType: "json",
+            success:function (data) {
+                if (data.code != 200) {
+                    layer.msg(data.msg,{icon: 2});
+                    return false;
+                } else {
+                    var affiliationList = data.data.affiliationList;
+                    var html = "";
+                    affiliationList.forEach(function (element) {
+                        if (element.deleted == 1) {
+                            var name = element.name;
+                            var allChildren = getAllChildren(element.id);
+                            html = html + '<li class="layui-nav-item layui-nav-itemed layui-this">\n'
+                                + '<a class="" href="javascript:void(0);" onclick="doClickName(\'' + name + '\')">' + name + '</a>\n'
+                                + allChildren;
+                                + '</li>\n';
+                        }
+                    });
+                    $("#verticalMenu").html(html);
+                }
+            }
+        });
+    };
+
+    // 根据parentId获取二级菜单并返回html
+    function getAllChildren(parentId) {
+        var html = '';
+        $.ajax({
+            async: false,
+            type: "post",
+            url: "/affiliation/showNextLayer",
+            data: {parentId : parentId},
+            dataType: "json",
+            success:function (data) {
+                if (data.code != 200) {
+                    layer.msg(data.msg,{icon: 2});
+                    return '';
+                } else {
+                    var affiliationList = data.data.childrenList;
+                    if (affiliationList.length > 0) html = '<dl class="layui-nav-child">';
+                    affiliationList.forEach(function (element) {
+                        if (element.deleted == 1) {
+                            var name = element.name;
+                            html = html + '<dd><a href="javascript:;">'
+                                + name
+                                + '</a></dd>\n';
+                        }
+                    });
+                    if (affiliationList.length > 0) html = html + '</dl>';
+                }
+            }
+        });
+        return html;
+    }
+
     //JavaScript代码区域
     layui.use('element', function () {
         var element = layui.element;

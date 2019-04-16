@@ -28,7 +28,7 @@
     <div class="message">COIPIB - 登录</div>
     <div id="darkbannerwrap"></div>
     <form class="layui-form" action="" method="post">
-        <input type="text" name="username" id="username" placeholder="请输入用户名"
+        <input type="text" name="nameEmail" id="nameEmail" placeholder="请输入用户名/邮箱"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
         <input type="password" name="password" id="password" placeholder="请输入密码"
@@ -36,25 +36,24 @@
         <hr class="hr15">
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <input type="text" name="valCode" id="valCode" placeholder="请输入验证码"
+                <input type="text" name="codeCaptcha" id="codeCaptcha" placeholder="请输入验证码"
                        autocomplete="off" class="layui-input">
             </div>
             <label class="field-wrap" style="cursor:pointer;">
-                <img src="${ctx}/captchaServlet" id="captchaImg" align='absmiddle' height="40px"
+                <img src="" id="captchaImg" align='absmiddle' height="40px"
                      style="margin-top: 5px" onclick="changeCaptcha()">
             </label>
             <span id="code_span" style="color: green"></span>
         </div>
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <p style="text-align: left"><a href="register.jsp">没有账号？前往注册</a></p>
+                <p style="text-align: left"><a href="/register">没有账号？前往注册</a></p>
             </div>
             <label class="field-wrap" style="cursor:pointer;">
-                <p style="text-align: right"><a href="#">忘记密码？</a></p>
+                <p style="text-align: right"><a href="/findPassword">忘记密码？</a></p>
             </label>
         </div>
-        <button style="width: 100%" class="layui-btn layui-btn-radius" onclick="submitLogin()">登录</button>
-        <hr class="hr15">
+        <button style="width: 100%;" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">登录</button>
     </form>
 </div>
 <!-- layui.js -->
@@ -64,15 +63,60 @@
     $(function () {
         changeCaptcha();
     });
-    // layui.use(['form', 'layer'], function(){
-    //     var form = layui.form;
-    //     var layer = layui.layer;
-    //     var $ = layui.jquery;
+    // 更换验证码
+    function changeCaptcha() {
+        $.get('/reglogin/codeCaptcha', function (data) {
+            $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
+        });
+    }
+    layui.use(['form', 'layer'], function() {
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+
+        function checkLoginInfo(nameEmail, password, codeCaptcha) {
+            if (nameEmail.trim() == "" || nameEmail.trim() == null) return "请输入用户名/邮箱！";
+            if (password == "" || password == null) return "请输入密码！";
+            if (codeCaptcha == "" || codeCaptcha == null) return "请输入验证码！";
+            return "";
+        }
+
+        //监听提交
+        form.on('submit(submit)', function(){
+            var nameEmail = $("#nameEmail").value();
+            var password = $("#password").value();
+            var codeCaptcha = $("#codeCaptcha").value();
+
+            var hint = checkLoginInfo(nameEmail, password, codeCaptcha);
+            if (hint != "") {
+                layer.msg(hint, {icon:2});
+                return false;
+            }
+
+            $.ajax({
+                type: 'post',
+                url: '/reglogin/login',
+                data: {"nameEmail": nameEmail, "password": password, "codeCaptcha": codeCaptcha},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.value !== 200) {
+                        layer.msg(data.msg,{icon: 2});
+                        changeCaptcha();
+                        return false;
+                    } else {
+                        location = "${ctx}/";
+                    }
+
+                }
+            });
+            return false;
+        });
+
     //     // 自定义验证规则
     //     var verifyCode = true;
     //     form.verify({
     //
-    //         username: function (value) {
+    //         nameEmail: function (value) {
     //             $.ajax({
     //                 type: 'post',
     //                 url: '/login',
@@ -80,26 +124,26 @@
     //                 dataType: 'json',
     //                 async: false,
     //                 success: function (data) {
-    //                     var code = data['code'];
+    //                     var value = data['value'];
     //                     var msg = data['msg'];
-    //                     if(code !== 200){
+    //                     if(value !== 200){
     //                         layer.msg(msg, {icon: 5});
     //                     }
     //                 }
     //             });
     //         },
     //
-    //         code: function (value) {
+    //         value: function (value) {
     //             $.ajax({
     //                 type: 'post',
     //                 url: '/checkCode',
-    //                 data: {"code": value},
+    //                 data: {"value": value},
     //                 dataType: 'json',
     //                 async: false,
     //                 success: function (data) {
-    //                     var code = data['code'];
+    //                     var value = data['value'];
     //                     var msg = data['msg'];
-    //                     if(code !== 200){
+    //                     if(value !== 200){
     //                         layer.msg(msg, {icon: 5});
     //                     }
     //                 }
@@ -109,35 +153,9 @@
     //
     //
     //     });
-    //     //监听提交
-    //     form.on('submit(submit)', function(){
-    //         // if(!verifyUsername || !verifyCode){
-    //             return false;
-    //         // }
-    //     });
-    // });
 
-    // 更换验证码
-    function changeCaptcha() {
-        $.get('/codeCaptcha', function (data) {
-            $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
-        });
-    }
+    });
 
-    function submitLogin() {
-        var username = $("#username").val();
-        var password = $("#password").val();
-        var valCode = $("#valCode").val();
-        $.ajax({
-            type: 'post',
-            url: '/checkCode',
-            data: {"name": username, "password": password, "code": valCode},
-            dataType: 'json',
-            success: function (data) {
-
-            }
-        });
-    }
 </script>
 </body>
 </html>

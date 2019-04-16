@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import seu.async.EventHandler;
 import seu.async.EventModel;
 import seu.async.EventType;
-import seu.exceptions.COIPIBException;
 import seu.service.EmailService;
 
 
@@ -22,7 +21,7 @@ public class EmailHandler implements EventHandler {
         try {
             emailService.sendEmail(model.getMap());
         } catch (Exception e) {
-            LOGGER.error("邮件发送失败，parameter：{}", model.getMap(), e);
+            LOGGER.error("邮件发送失败，parameter:map={}", model.getMap(), e);
         }
     }
 

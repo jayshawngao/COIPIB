@@ -2,9 +2,7 @@ package seu.model;
 
 import java.sql.Timestamp;
 
-/**
- * 起到两个作用：记住已登录账号，作为激活邮件后缀
- */
+
 public class LoginTicket {
 
     private Integer id;

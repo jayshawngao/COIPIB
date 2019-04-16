@@ -16,9 +16,12 @@ public interface AffiliationDAO {
 
     public int update(Affiliation affiliation);
 
-    @Select({"select * from", TABLE_NAME, ";"})
-    public List<Affiliation> selectAllAffiliation();
+    @Select({"select * from", TABLE_NAME, "where parent_id=0 and deleted=1;"})
+    public List<Affiliation> selectFirstLevel();
 
-    @Select({"select * from", TABLE_NAME, "where id=#{id};"})
+    @Select({"select * from", TABLE_NAME, "where parent_id=#{id} and deleted=1;"})
+    public List<Affiliation> selectChildren(@Param("id") Integer id);
+
+    @Select({"select * from", TABLE_NAME, "where id=#{id} and deleted=1;"})
     public Affiliation selectById(@Param("id") Integer id);
 }

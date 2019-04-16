@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
-public class CodeCaptchaService {
+public class CaptchaService {
 
-    public String getImageString(String rand) throws IOException {
-        BufferedImage image = genImage(rand);
+    public String getImageString(String codeCaptcha) throws IOException {
+        BufferedImage image = genImage(codeCaptcha);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(image, "JPEG", baos);
         baos.flush();
@@ -26,7 +26,7 @@ public class CodeCaptchaService {
         return encoder.encode(data);
     }
 
-    public String genRand() {
+    public String genCaptcha() {
         // 去随机产生的验证码（4位数）
         int iniCount = 0;
         iniCount = (new Random()).nextInt(9999);
@@ -36,7 +36,7 @@ public class CodeCaptchaService {
         return iniCount + "";
     }
 
-    private BufferedImage genImage(String rand) {
+    private BufferedImage genImage(String codeCaptcha) {
         // 在内存中创建图像
         int iWidth = 113;
         int iHeight = 45;
@@ -56,7 +56,7 @@ public class CodeCaptchaService {
         // 将验证码显示到图像中
         g.setColor(Color.BLACK);
         g.setFont(new Font("宋体", Font.BOLD, 40));
-        g.drawString(rand, 5, 35);
+        g.drawString(codeCaptcha, 5, 35);
 
         // 随机产生100个干扰点，使图像中的验证码不易被其他程序探测到
         Map<Integer, Color> colors = new HashMap<>();
