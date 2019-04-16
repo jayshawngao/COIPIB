@@ -83,9 +83,9 @@
 
         //监听提交
         form.on('submit(submit)', function(){
-            var nameEmail = $("#nameEmail").value();
-            var password = $("#password").value();
-            var codeCaptcha = $("#codeCaptcha").value();
+            var nameEmail = $("#nameEmail").val();
+            var password = $("#password").val();
+            var codeCaptcha = $("#codeCaptcha").val();
 
             var hint = checkLoginInfo(nameEmail, password, codeCaptcha);
             if (hint != "") {
@@ -99,7 +99,7 @@
                 data: {"nameEmail": nameEmail, "password": password, "codeCaptcha": codeCaptcha},
                 dataType: 'json',
                 success: function (data) {
-                    if (data.value !== 200) {
+                    if (data.code !== 200) {
                         layer.msg(data.msg,{icon: 2});
                         changeCaptcha();
                         return false;
