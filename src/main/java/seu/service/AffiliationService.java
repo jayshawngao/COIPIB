@@ -42,4 +42,8 @@ public class AffiliationService {
             throw new COIPIBException(CodeEnum.DATABASE_ERROR, "数据库更新失败");
         }
     }
+
+    public Affiliation getById(Integer id){
+        return affiliationDAO.selectById(id);
+    }
  }

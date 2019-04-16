@@ -21,4 +21,7 @@ public interface AffiliationDAO {
 
     @Select({"select * from", TABLE_NAME, "where parent_id=#{id};"})
     public List<Affiliation> selectChildren(@Param("id") Integer id);
+
+    @Select({"select * from", TABLE_NAME, "where id=#{id}"})
+    public Affiliation selectById(@Param("id") Integer id);
 }

@@ -29,6 +29,9 @@ public interface DocumentDAO {
     @Select({"select * from", TABLE_NAME, "where deleted=1"})
     public List<Document> showAllDocumentNotDeleted();
 
+    @Update({"update",TABLE_NAME, "set active = 0 where id = #{id}"})
+    public Integer activeDocument(@Param("id") Integer id);
+
     /**
      * @TODO 特殊查询
      * */

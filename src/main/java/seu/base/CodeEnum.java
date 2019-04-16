@@ -18,6 +18,11 @@ public enum CodeEnum {
     SERVER_ERROR(400),
 
     /**
+     * 文件上传错误
+     * */
+    FILE_UPLOAD_ERROR(401),
+
+    /**
      * 账户错误
      */
     USER_ERROR(500),
