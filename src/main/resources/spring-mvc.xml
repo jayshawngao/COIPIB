@@ -24,6 +24,10 @@
 			<mvc:mapping path="/**"/>
 			<bean class="seu.interceptor.PassportInterceptor" ></bean>
 		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<bean class="seu.interceptor.LoginRequiredInterceptor" ></bean>
+		</mvc:interceptor>
 	</mvc:interceptors>
 	
 	<mvc:annotation-driven >
