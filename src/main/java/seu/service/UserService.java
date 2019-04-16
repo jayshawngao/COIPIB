@@ -104,10 +104,6 @@ public class UserService {
         if (!StringUtils.equals(codeCaptcha, oldCodeCaptcha)) {
             throw new COIPIBException(CodeEnum.USER_ERROR, "验证码错误！");
         }
-        User old = userDAO.selectByEmail(email);
-        if (old != null) {
-            throw new COIPIBException(CodeEnum.USER_ERROR, "该邮箱已被注册！");
-        }
     }
 
     private String addLoginTicket(int userId) {
