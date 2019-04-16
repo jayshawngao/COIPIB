@@ -19,6 +19,19 @@
     <link rel="stylesheet" href="./static/css/login/font.css">
     <link rel="stylesheet" href="./static/css/login/xadmin.css">
 
+    <style>
+        .rePassword, .rePassword:focus {
+            border-color: #f44336 !important;
+        }
+
+        .disableEmail, .disableEmail:focus {
+            pointer-events: none !important;
+            cursor: none !important;
+            color: #D2D2D2 !important;
+            background-color: #9E9E9E !important;
+            opacity: 1 !important;
+        }
+    </style>
 </head>
 
 <body class="login-bg">
@@ -55,9 +68,10 @@
                 <input type="text" name="emailCaptcha" id="emailCaptcha" lay-verify="required|emailCaptcha"  placeholder="请输入邮箱验证码"
                        autocomplete="off" class="layui-input">
             </div>
-            <label class="field-wrap" style="float:left;">
-                <button style="width: 100%" class="layui-btn layui-btn-radius" onclick="return sendEmail();">发送邮件</button>
+            <label class="field-wrap" style="float:left; margin-top: 6px;">
+                <button style="width: 100%;" class="layui-btn layui-btn-radius" id="sendEmail" onclick="return false;">发送邮件</button>
             </label>
+            <label style="float:left; margin-top: 6px; display: none;" class="field-wrap layui-btn layui-btn-radius disableEmail" id="disableSendEmail">60s</label>
         </div>
         <div class="layui-form-item">
             <div class="layui-input-inline">
@@ -76,7 +90,25 @@
 <script>
     $(function () {
         changeCaptcha();
+        checkIdentityOfPassword();
+        $("#sendEmail").unbind("click").bind("click", function () {
+           sendEmail();
+        });
     });
+
+    // 检查两次密码输入的一致性
+    function checkIdentityOfPassword() {
+        $("#rePassword").on("input propertychange", function () {
+            console.log(1);
+            $("#rePassword").addClass("rePassword");
+            var passWord = $("#password").val();
+            var rePassWord = $("#rePassword").val();
+            if (passWord == rePassWord) {
+                $("#rePassword").removeClass("rePassword");
+            }
+        });
+    }
+
     // 更换验证码
     function changeCaptcha() {
         $.get('/codeCaptcha', function (data) {
@@ -87,21 +119,40 @@
     function sendEmail() {
         var email = $("#email").val();
         var codeCaptcha = $("#codeCaptcha").val();
-        $.ajax({
-            type: 'get',
-            url: '/emailCaptcha',
-            data: {"email": email, "codeCaptcha": codeCaptcha},
-            dataType: 'json',
-            success: function (data) {
-                if (data.code !== 200) {
-                    layer.msg(data.msg, {icon: 2});
-                    changeCaptcha();
-                    return false;
-                }
-            }
-        });
+        // $.ajax({
+        //     type: 'get',
+        //     url: '/emailCaptcha',
+        //     data: {"email": email, "codeCaptcha": codeCaptcha},
+        //     dataType: 'json',
+        //     success: function (data) {
+        //         if (data.code !== 200) {
+        //             layer.msg(data.msg, {icon: 2});
+        //             changeCaptcha();
+        //             return false;
+        //         }
+        //         suspendEmailService();
+        //     }
+        // });
+        suspendEmailService();
         return false;
     }
+
+    function suspendEmailService() {
+        $("#sendEmail").hide();
+        $("#disableSendEmail").show();
+
+        var time = 60;
+        var p = $("#disableSendEmail")[0];
+        var set = setInterval(function () {
+            time--;
+            p.innerHTML = time + "s";
+            if (time === 0) {
+                $("#sendEmail").show();
+                $("#disableSendEmail").hide();
+                clearInterval(set);
+            }
+        }, 1000);
+    };
 
     layui.use(['form', 'layer'], function(){
         var form = layui.form;

@@ -50,7 +50,7 @@
                 <p style="text-align: left"><a href="register.jsp">没有账号？前往注册</a></p>
             </div>
             <label class="field-wrap" style="cursor:pointer;">
-                <p style="text-align: right"><a href="#">忘记密码？</a></p>
+                <p style="text-align: right"><a href="findPassword.jsp">忘记密码？</a></p>
             </label>
         </div>
         <button style="width: 100%;" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">登录</button>
