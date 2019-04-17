@@ -1,7 +1,9 @@
 package seu.dao;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import seu.model.User;
 
 
@@ -24,4 +26,6 @@ public interface UserDAO {
     @Select({"select ", SELECT_FIELDS, " from ", TABLE_NAME, " where email=#{email}"})
     User selectByEmail(String email);
 
+    @Update({"update ", TABLE_NAME, " set password=#{newPassword} where email=#{email}"})
+    Integer updatePassword(@Param("email") String email, @Param("newPassword") String newPassword);
 }

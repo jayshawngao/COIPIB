@@ -107,7 +107,6 @@ public class LoginController {
         }
     }
 
-
     @RequestMapping("/codeCaptcha")
     @ResponseBody
     public String codeCaptcha(HttpServletRequest request) {
@@ -123,6 +122,26 @@ public class LoginController {
             LOGGER.error("/codeCaptcha", e);
             return new CommonResponse(CodeEnum.USER_ERROR.getValue(), e.getMessage()).toJSONString();
         }
+    }
+
+    @RequestMapping("/modifyPassword")
+    @ResponseBody
+    public String modifyPassword(String newPassword, String confirmPassword, String codeCaptcha, HttpServletRequest request) {
+        try {
+            String email = (String)request.getSession().getAttribute("email");
+            String oldCodeCaptcha = (String) request.getSession().getAttribute("codeCaptcha");
+            userService.modifyPassword(email, newPassword, confirmPassword, codeCaptcha, oldCodeCaptcha);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "修改密码成功").toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:newPassword={}, confirmPassword={}, codeCaptcha={}, oldCodeCaptcha={}",
+                    newPassword, confirmPassword, codeCaptcha, request.getSession().getAttribute("codeCaptcha"));
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/modifyPassword parameter:newPassword={}, confirmPassword={}, codeCaptcha={}, oldCodeCaptcha={}",
+                    newPassword, confirmPassword, codeCaptcha, request.getSession().getAttribute("codeCaptcha"), e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+
     }
 
     @RequestMapping("/emailCaptcha")
@@ -147,6 +166,28 @@ public class LoginController {
         } catch (Exception e) {
             LOGGER.error("/emailCaptcha parameter:email={},codeCaptcha={}, oldCodeCaptcha={}", email, codeCaptcha,
                     request.getSession().getAttribute("codeCaptcha"), e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
+    @RequestMapping("/findPassword")
+    @ResponseBody
+    public String findPassword(String email, String codeCaptcha, String emailCaptcha, HttpServletRequest request){
+        try{
+            userService.checkEmail(email);
+            String oldCodeCaptcha = (String) request.getSession().getAttribute("codeCaptcha");
+            String oldEmailCaptcha = (String)request.getSession().getAttribute("emailCaptcha");
+            userService.checkBeforeFindPassword(codeCaptcha, oldCodeCaptcha, emailCaptcha, oldEmailCaptcha);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "找回密码成功").toJSONString();
+        }catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:email={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}",
+                    email, codeCaptcha, emailCaptcha, request.getSession().getAttribute("codeCaptcha"),
+                    request.getSession().getAttribute("emailCaptcha"));
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/findPassword parameter:email={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}",
+                    email, codeCaptcha, emailCaptcha, request.getSession().getAttribute("codeCaptcha"),
+                    request.getSession().getAttribute("emailCaptcha"), e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }

@@ -21,9 +21,13 @@ public class PageController {
         return "register";
     }
 
-    @RequestMapping("findPassword")
+    @RequestMapping("/findPassword")
     public String findPassword() {
         return "findPassword";
     }
 
+    @RequestMapping("/modifyPassword")
+    public String modifyPassword(){
+        return "modifyPassword";
+    }
 }

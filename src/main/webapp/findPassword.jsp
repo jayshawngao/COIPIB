@@ -37,12 +37,12 @@
     <div class="message">COIPIB - 找回密码</div>
     <div id="darkbannerwrap"></div>
     <form class="layui-form" action="" method="post">
-        <input type="text" name="email" id="email" lay-verify="required|email" placeholder="请输入注册邮箱"
+        <input type="text" name="email" id="email" lay-verify="request|email" placeholder="请输入注册邮箱"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <input type="text" name="codeCaptcha" id="codeCaptcha" lay-verify="required|codeCaptcha" placeholder="请输入验证码"
+                <input type="text" name="codeCaptcha" id="codeCaptcha" lay-verify="request" placeholder="请输入验证码"
                        autocomplete="off" class="layui-input">
             </div>
             <label class="field-wrap" style="cursor:pointer;">
@@ -53,7 +53,7 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <input type="text" name="emailCaptcha" id="emailCaptcha" lay-verify="required|emailCaptcha"  placeholder="请输入邮箱验证码"
+                <input type="text" name="emailCaptcha" id="emailCaptcha" lay-verify="request"  placeholder="请输入邮箱验证码"
                        autocomplete="off" class="layui-input">
             </div>
             <label class="field-wrap" style="float:left; margin-top: 6px;">
@@ -125,24 +125,39 @@
         var $ = layui.jquery;
 
         function checkInfo(email, codeCaptcha, emailCaptcha) {
-            if (email.trim() == "" || email.trim() == null) return "请输入注册邮箱！";
-            if (codeCaptcha == "" || codeCaptcha == null) return "请输入验证码！";
-            if (emailCaptcha == "" || emailCaptcha == null) return "请输入邮箱验证码！";
+            if (email.trim() === "" || email.trim() == null) return "请输入注册邮箱！";
+            if (codeCaptcha === "" || codeCaptcha == null) return "请输入验证码！";
+            if (emailCaptcha === "" || emailCaptcha == null) return "请输入邮箱验证码！";
             return "";
         }
 
         //监听提交
         form.on('submit(submit)', function(){
             var email = $("#email").val();
-            var  codeCaptcha = $("#codeCaptcha").val();
+            var codeCaptcha = $("#codeCaptcha").val();
             var emailCaptcha = $("#emailCaptcha").val();
-
             var hint = checkInfo(email, codeCaptcha, emailCaptcha);
-            if (hint != "") {
+
+            if (hint !== "") {
                 layer.msg(hint, {icon:2});
                 return false;
             }
 
+            $.ajax({
+                type: 'get',
+                url: '/reglogin/findPassword',
+                data: {"email": email, "codeCaptcha": codeCaptcha, "emailCaptcha": emailCaptcha},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.code !== 200) {
+                        layer.msg(data.msg, {icon: 2});
+                        changeCaptcha();
+                        return false;
+                    } else {
+                        window.location.href = "${ctx}/modifyPassword";
+                    }
+                }
+            });
             return false;
         });
     });

@@ -2,6 +2,7 @@ package seu.service;
 
 import org.apache.commons.lang3.StringUtils;
 
+import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seu.base.CodeEnum;
@@ -133,4 +134,40 @@ public class UserService {
         return map;
     }
 
+    public void modifyPassword(String email, String newPassword, String confirmPassword, String codeCaptcha, String oldCodeCaptcha) throws COIPIBException{
+        checkBeforeModifyPassword(email, newPassword, confirmPassword, codeCaptcha, oldCodeCaptcha);
+
+        userDAO.updatePassword(email, newPassword);
+    }
+
+    private void checkBeforeModifyPassword(String email,String newPassword, String confirmPassword,
+                                           String codeCaptcha, String oldCodeCaptcha) throws COIPIBException{
+
+        if(StringUtils.isEmpty(email)){
+           throw new COIPIBException(CodeEnum.USER_ERROR, "邮箱不能为空！");
+        }
+        if(!StringUtils.equals(newPassword, confirmPassword)){
+            throw new COIPIBException(CodeEnum.USER_ERROR, "输入密码不一致！");
+        }
+        if(!StringUtils.equals(codeCaptcha, oldCodeCaptcha)){
+            throw new COIPIBException(CodeEnum.USER_ERROR, "验证码错误");
+        }
+    }
+
+    // 验证找回密码页
+    public void checkBeforeFindPassword(String codeCaptcha, String oldCodeCaptcha, String emailCaptcha, String oldEmailCaptcha) throws COIPIBException{
+        if(!StringUtils.equals(codeCaptcha, oldCodeCaptcha)){
+            throw new COIPIBException(CodeEnum.USER_ERROR, "验证码错误!");
+        }
+        if(!StringUtils.equals(emailCaptcha, oldEmailCaptcha)){
+            throw new COIPIBException(CodeEnum.USER_ERROR, "邮箱验证码错误!");
+        }
+    }
+
+    public void checkEmail(String email) throws COIPIBException{
+        User user = userDAO.selectByEmail(email);
+        if(user == null){
+            throw new COIPIBException(CodeEnum.USER_ERROR, "该邮箱尚未注册！");
+        }
+    }
 }

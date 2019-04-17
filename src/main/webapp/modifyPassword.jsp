@@ -7,7 +7,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>COIPIB - 登陆页面</title>
+    <title>COIPIB - 修改密码页面</title>
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4,
@@ -25,13 +25,13 @@
 
 <body class="login-bg">
 <div class="login layui-anim layui-anim-up">
-    <div class="message">COIPIB - 登录</div>
+    <div class="message">COIPIB - 修改密码</div>
     <div id="darkbannerwrap"></div>
     <form class="layui-form" action="" method="post">
-        <input type="text" name="nameEmail" id="nameEmail" placeholder="请输入用户名/邮箱"
+        <input type="password" name="newPassword" id="newPassword" placeholder="请输入新密码"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
-        <input type="password" name="password" id="password" placeholder="请输入密码"
+        <input type="password" name="confirmPassword" id="confirmPassword" placeholder="请确认密码"
                autocomplete="off" class="layui-input">
         <hr class="hr15">
         <div class="layui-form-item">
@@ -45,15 +45,7 @@
             </label>
             <span id="code_span" style="color: green"></span>
         </div>
-        <div class="layui-form-item">
-            <div class="layui-input-inline">
-                <p style="text-align: left"><a href="/register">没有账号？前往注册</a></p>
-            </div>
-            <label class="field-wrap" style="cursor:pointer;">
-                <p style="text-align: right"><a href="/findPassword">忘记密码？</a></p>
-            </label>
-        </div>
-        <button style="width: 100%;" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">登录</button>
+        <button style="width: 100%;" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">修改</button>
     </form>
 </div>
 <!-- layui.js -->
@@ -74,29 +66,33 @@
         var layer = layui.layer;
         var $ = layui.jquery;
 
-        function checkLoginInfo(nameEmail, password, codeCaptcha) {
-            if (nameEmail.trim() == "" || nameEmail.trim() == null) return "请输入用户名/邮箱！";
-            if (password == "" || password == null) return "请输入密码！";
-            if (codeCaptcha == "" || codeCaptcha == null) return "请输入验证码！";
+        function checkModifyInfo(newPassword, confirmPassword, codeCaptcha) {
+            if (newPassword.trim() === "" || newPassword.trim() == null) return "请输入新密码";
+            if (confirmPassword === "" || confirmPassword == null) return "请输入确认密码！";
+            if (codeCaptcha === "" || codeCaptcha == null) return "请输入验证码！";
             return "";
         }
 
         //监听提交
         form.on('submit(submit)', function(){
-            var nameEmail = $("#nameEmail").val();
-            var password = $("#password").val();
+            var newPassword = $("#newPassword").val();
+            var confirmPassword = $("#confirmPassword").val();
             var codeCaptcha = $("#codeCaptcha").val();
-
-            var hint = checkLoginInfo(nameEmail, password, codeCaptcha);
-            if (hint != "") {
+            var hint = checkModifyInfo(newPassword, confirmPassword, codeCaptcha);
+            if (hint !== "") {
                 layer.msg(hint, {icon:2});
+                return false;
+            }
+
+            if(newPassword !== confirmPassword){
+                layer.msg("输入的密码不一致", {icon: 2});
                 return false;
             }
 
             $.ajax({
                 type: 'post',
-                url: '/reglogin/login',
-                data: {"nameEmail": nameEmail, "password": password, "codeCaptcha": codeCaptcha},
+                url: '/reglogin/modifyPassword',
+                data: {"newPassword": newPassword, "confirmPassword": confirmPassword, "codeCaptcha": codeCaptcha},
                 dataType: 'json',
                 success: function (data) {
                     if (data.code !== 200) {
@@ -104,54 +100,13 @@
                         changeCaptcha();
                         return false;
                     } else {
-                        location = "${ctx}/";
+                        layer.msg("密码修改成功，即将跳转登陆页面！",{icon: 6});
+                        setTimeout('window.location.href = "${ctx}/login"', 3000);
                     }
                 }
             });
             return false;
         });
-
-    //     // 自定义验证规则
-    //     var verifyCode = true;
-    //     form.verify({
-    //
-    //         nameEmail: function (value) {
-    //             $.ajax({
-    //                 type: 'post',
-    //                 url: '/login',
-    //                 data: {"name": value},
-    //                 dataType: 'json',
-    //                 async: false,
-    //                 success: function (data) {
-    //                     var value = data['value'];
-    //                     var msg = data['msg'];
-    //                     if(value !== 200){
-    //                         layer.msg(msg, {icon: 5});
-    //                     }
-    //                 }
-    //             });
-    //         },
-    //
-    //         value: function (value) {
-    //             $.ajax({
-    //                 type: 'post',
-    //                 url: '/checkCode',
-    //                 data: {"value": value},
-    //                 dataType: 'json',
-    //                 async: false,
-    //                 success: function (data) {
-    //                     var value = data['value'];
-    //                     var msg = data['msg'];
-    //                     if(value !== 200){
-    //                         layer.msg(msg, {icon: 5});
-    //                     }
-    //                 }
-    //             });
-    //         },
-    //
-    //
-    //
-    //     });
 
     });
 
