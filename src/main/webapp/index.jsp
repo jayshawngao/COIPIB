@@ -181,17 +181,11 @@
                 }
             }
         });
-        return html;
-        /*$("#body-content-left").text(id + "左边");
-        $("#body-content-right").text(id + " 右边");*/
+        $("#body-content-left").html(html);
+        // $("#body-content-right").text(id + " 右边");
         <%--location = "${ctx}/index?name=" + name;--%>
     }
 
-    //JavaScript代码区域
-    layui.use('element', function () {
-        var element = layui.element;
-
-    });
 </script>
 </body>
 </html>

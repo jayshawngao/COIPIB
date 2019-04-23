@@ -35,6 +35,9 @@ public interface DocumentDAO {
     @Select({"select * from", TABLE_NAME, "where deleted=0"})
     List<Document> showChildDocument();
 
+    @Select({"select * from", TABLE_NAME, "where affiliation_id = #{affiliationId}"})
+    public List<Document> selectByAffiliationId(Integer affiliationId);
+
     /**
      * @TODO 特殊查询
      * */

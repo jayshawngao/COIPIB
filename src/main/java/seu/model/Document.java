@@ -19,7 +19,7 @@ public class Document {
 
     private Integer affiliationId;
 
-    private List<String> affiliationList;
+    private List<Affiliation> affiliationList;
 
     private Integer year;
 
@@ -93,14 +93,6 @@ public class Document {
 
     public void setAffiliationId(Integer affiliationId) {
         this.affiliationId = affiliationId;
-    }
-
-    public List<String> getAffiliationList() {
-        return affiliationList;
-    }
-
-    public void setAffiliationList(List<String> affiliationList) {
-        this.affiliationList = affiliationList;
     }
 
     public Integer getYear() {
@@ -184,6 +176,14 @@ public class Document {
     }
 
     public Document() {
+    }
+
+    public List<Affiliation> getAffiliationList() {
+        return affiliationList;
+    }
+
+    public void setAffiliationList(List<Affiliation> affiliationList) {
+        this.affiliationList = affiliationList;
     }
 
     @Override

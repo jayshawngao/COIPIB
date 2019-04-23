@@ -116,4 +116,19 @@ public class DocumentController {
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
+
+    @RequestMapping("/showAllDocument")
+    @ResponseBody
+    public String showAllDocument(Integer affiliationId) {
+        try {
+            HashMap<String, Object> data = new HashMap<>();
+            List<Document> documentList = documentService.queryAllDocument(affiliationId);
+            data.put("documentList", documentList);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "归属所属文档查询成功", data).toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/document/showAllDocument parameter:affiliationId={}", affiliationId, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
 }
