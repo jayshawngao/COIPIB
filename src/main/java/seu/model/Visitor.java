@@ -9,6 +9,7 @@ import seu.base.LevelEnum;
 @Component
 public class Visitor extends User{
     public Visitor() {
+        setId(-1);
         setLevel(LevelEnum.VISITOR.getValue());
     }
 }

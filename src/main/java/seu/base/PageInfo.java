@@ -2,7 +2,7 @@ package seu.base;
 
 public class PageInfo {
     private int totalRow;// 总记录数
-    private int pageSize = 30;// 每页记录数
+    private int pageSize = 20;// 每页记录数
     private int page;// 当前页码，从1开始
     private int totalPage;// 总页数
     private int beginIndex;//起始记录下标
@@ -26,7 +26,7 @@ public class PageInfo {
     private void calculate() {
         totalPage = totalRow / pageSize + ((totalRow % pageSize) > 0 ? 1 : 0);
 
-        if (page > totalPage) {
+        if (page > totalPage && totalPage != 0) {
             page = totalPage;
         } else if (page < 1) {
             page = 1;

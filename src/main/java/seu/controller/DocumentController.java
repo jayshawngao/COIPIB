@@ -120,9 +120,6 @@ public class DocumentController {
             HashMap<String, Object> data = new HashMap<>();
             data.put("pagination", pagination);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档查询成功", data).toJSONString();
-        } catch (COIPIBException e) {
-            LOGGER.info(e.getMessage() + " parameter:affiliationId={}, page={}", affiliationId, page, e);
-            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/document/showAllDocument parameter:affiliationId={}, page={}", affiliationId, page, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();

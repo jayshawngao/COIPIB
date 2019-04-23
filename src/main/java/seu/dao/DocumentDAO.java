@@ -18,7 +18,7 @@ public interface DocumentDAO {
     @Delete({"delete from", TABLE_NAME, "where id=#{id}"})
     public Integer deleteDocument(@Param("id") Integer id);
 
-    public List<Document> selectByAffiliationId(Integer affiliationId, User user);
+    public List<Document> selectByAffiliationId(@Param("affiliationId") Integer affiliationId, @Param("user")User user);
 
     @Select({"select * from", TABLE_NAME, "where id = #{id}"})
     public Document selectById(Integer id);

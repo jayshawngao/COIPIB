@@ -72,7 +72,7 @@ public class DocumentService {
 
     }
 
-    public Pagination<Document> queryAllDocument(Integer affiliationId, Integer page) throws COIPIBException {
+    public Pagination<Document> queryAllDocument(Integer affiliationId, Integer page){
         if (affiliationId == null) {
             affiliationId = 100; // 未分类
         }
@@ -96,9 +96,9 @@ public class DocumentService {
 
     }
 
-    private Pagination<Document> buildPagination(List<Document> documentList, Integer page) throws COIPIBException{
+    private Pagination<Document> buildPagination(List<Document> documentList, Integer page){
         PageInfo pageInfo = new PageInfo(documentList.size(), page);
-        documentList = documentList.subList(pageInfo.getBeginIndex(), pageInfo.getEndIndex();
+        documentList = documentList.subList(pageInfo.getBeginIndex(), pageInfo.getEndIndex());
         for (Document document: documentList) {
             fillDoucment(document);
         }

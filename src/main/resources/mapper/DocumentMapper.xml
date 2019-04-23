@@ -53,15 +53,14 @@
 		where id = #{id};
 	</update>
 
-	<select id="selectByAffiliationId">
-		select * from document where affiliation_id = #{affiliationId} and
-		<trim suffixOverrides=",">
-			<if test="auth!=3"> <!-- 非管理员 -->
-				auth &lt;= #{auth},
+
+	<select id="selectByAffiliationId" resultType="seu.model.Document">
+		select * from document where affiliation_id = #{affiliationId}
+		<if test="user.level!=3">
+			and auth &lt;= #{user.level}
+			<if test="affiliationId==200"> <!-- 非管理用户，只显示自己移到回收站的文献 -->
+				and editor_id = #{user.id}
 			</if>
-			<if test="auth!=3 and affiliationId==200"> <!-- 非管理员只能看到自己的回收站 -->
-				editor_id = #{id},
-			</if>
-		</trim>
+		</if>
 	</select>
 </mapper>
