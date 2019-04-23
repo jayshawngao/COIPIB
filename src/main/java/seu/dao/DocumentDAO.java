@@ -32,6 +32,9 @@ public interface DocumentDAO {
     @Update({"update",TABLE_NAME, "set active = 0 where id = #{id}"})
     public Integer activeDocument(@Param("id") Integer id);
 
+    @Select({"select * from", TABLE_NAME, "where affiliation_id = #{affiliationId}"})
+    public List<Document> selectByAffiliationId(Integer affiliationId);
+
     /**
      * @TODO 特殊查询
      * */

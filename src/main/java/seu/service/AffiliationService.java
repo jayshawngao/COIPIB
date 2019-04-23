@@ -8,6 +8,7 @@ import seu.dao.AffiliationDAO;
 import seu.exceptions.COIPIBException;
 import seu.model.Affiliation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,5 +46,23 @@ public class AffiliationService {
 
     public Affiliation getById(Integer id){
         return affiliationDAO.selectById(id);
+    }
+
+    /**
+     * 从一级菜单到末级菜单，例：[发达国家, 美国]
+     */
+    public List<Affiliation> queryAffiliationList(Integer id) {
+        List<Affiliation> ret = new ArrayList<>();
+        Affiliation affiliation = affiliationDAO.selectById(id);
+        if (affiliation == null) {
+            return ret;
+        }
+        ret.add(affiliation);
+
+        if (affiliation.getParentId() != 0) {
+            Affiliation parent = affiliationDAO.selectById(affiliation.getParentId());
+            ret.add(0, parent);
+        }
+        return ret;
     }
  }
