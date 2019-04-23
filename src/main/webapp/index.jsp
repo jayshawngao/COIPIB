@@ -147,7 +147,7 @@
                         var id = element.id;
                         if (element.deleted == 1) {
                             var name = element.name;
-                            html = html + '<dd><a href="javascript:void(0);" onclick="doClickName(\'' + id + '\')">'
+                            html = html + '<dd><a href="" onclick="doClickName(\'' + id + '\')">'
                                 + name
                                 + '</a></dd>\n';
                         }
@@ -167,21 +167,22 @@
             data: {"affiliationId": id},
             dataType: "json",
             success:function (data) {
-                if (data.code != 200) {
+                if (data.code !== 200) {
                     layer.msg(data.msg,{icon: 2});
                     return '';
                 } else {
                     var documentList = data.data.documentList;
-                    if (documentList.length > 0) html = '<tr>';
+                    if (documentList.length > 0) html = '<tbody>';
                     documentList.forEach(function (element) {
                         var name = element.name;
-                        html = html + '<td>' + name + '</td>';
+                        html = html + '<tr><td>' + name + '</td></tr>';
                     });
-                    if (documentList.length > 0)  html =  html + '</tr>';
+                    if (documentList.length > 0)  html =  html + '</tbody>';
+                    $("#body-content-left").html(html);
                 }
             }
         });
-        $("#body-content-left").html(html);
+
         // $("#body-content-right").text(id + " 右边");
         <%--location = "${ctx}/index?name=" + name;--%>
     }
