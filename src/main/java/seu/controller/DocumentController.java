@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import seu.base.CodeEnum;
 import seu.base.CommonResponse;
+import seu.base.Pagination;
 import seu.exceptions.COIPIBException;
 import seu.model.Document;
 import seu.service.DocumentService;
@@ -119,14 +120,17 @@ public class DocumentController {
 
     @RequestMapping("/showAllDocument")
     @ResponseBody
-    public String showAllDocument(Integer affiliationId) {
+    public String showAllDocument(Integer affiliationId, Integer page) {
         try {
             HashMap<String, Object> data = new HashMap<>();
-            List<Document> documentList = documentService.queryAllDocument(affiliationId);
-            data.put("documentList", documentList);
+            Pagination<Document> pagination = documentService.queryAllDocument(affiliationId, page);
+            data.put("pagination", pagination);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "归属所属文档查询成功", data).toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:affiliationId={}, page={}", affiliationId, page, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/document/showAllDocument parameter:affiliationId={}", affiliationId, e);
+            LOGGER.error("/document/showAllDocument parameter:affiliationId={}, page={}", affiliationId, page, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }

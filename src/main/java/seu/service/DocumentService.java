@@ -3,6 +3,9 @@ package seu.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import seu.base.CodeEnum;
+import seu.base.PageInfo;
+import seu.base.Pagination;
 import seu.dao.AffiliationDAO;
 import seu.dao.DocumentDAO;
 import seu.dao.UserDAO;
@@ -77,35 +80,34 @@ public class DocumentService {
     }
 
     /**
-<<<<<<< HEAD
      * 显示每个子目录下的所有文档
      * @return
      */
     public List<Document> showChildDocument() {
         return documentDAO.showChildDocument();
     }
-    /*
-     * @param affiliationId
-     * @return
-     */
-    public List<Document> queryAllDocument(Integer affiliationId) {
+
+    public Pagination<Document> queryAllDocument(Integer affiliationId, Integer page) throws COIPIBException {
+        if (affiliationId == null || page == null) {
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "参数不能为空！");
+        }
         List<Document> documentList = new ArrayList<>();
-        if (affiliationId == null) {
-            return documentList;
-        }
+
         Affiliation affiliation = affiliationService.getById(affiliationId);
-        if (affiliation == null) {
-            return documentList;
-        }
-        documentList.addAll(documentDAO.selectByAffiliationId(affiliation.getId()));
-        if (affiliation.getParentId() == 0) {
-            // 查询所有子归属包含的文档
-            List<Affiliation> childList = affiliationService.showAllChildren(affiliation.getId());
-            for (Affiliation child: childList) {
-                documentList.addAll(documentDAO.selectByAffiliationId(child.getId()));
+        if (affiliation != null) {
+            documentList.addAll(documentDAO.selectByAffiliationId(affiliation.getId()));
+            if (affiliation.getParentId() == 0) {
+                // 查询所有子归属包含的文档
+                List<Affiliation> childList = affiliationService.showAllChildren(affiliation.getId());
+                for (Affiliation child: childList) {
+                    documentList.addAll(documentDAO.selectByAffiliationId(child.getId()));
+                }
             }
         }
-        return documentList;
+        PageInfo pageInfo = new PageInfo(documentList.size(), page);
+        Pagination<Document> pagination = new Pagination<Document>(documentList.subList(pageInfo.getBeginIndex(),
+                pageInfo.getEndIndex()), pageInfo);
+        return pagination;
 
     }
 }

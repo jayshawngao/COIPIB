@@ -28,6 +28,11 @@ public enum CodeEnum {
     USER_ERROR(500),
 
     /**
+     * 文档相关错误
+     */
+    DOCUMENT_ERROR(600),
+
+    /**
      * 未知错误
      */
     UNKNOWN_ERROR(1000);
