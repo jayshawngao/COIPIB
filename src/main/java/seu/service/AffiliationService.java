@@ -28,19 +28,19 @@ public class AffiliationService {
 
     public void deleteAffiliationById(Integer id) throws COIPIBException{
         if (affiliationDAO.delete(id) != 1){
-            throw new COIPIBException(CodeEnum.DATABASE_ERROR, "数据库删除失败");
+            throw new COIPIBException(CodeEnum.AFFILIATION_ERROR, "归属删除失败");
         }
     }
 
     public void insertNewAffiliation(Affiliation affiliation)throws COIPIBException{
         if (affiliationDAO.insert(affiliation) != 1){
-            throw new COIPIBException(CodeEnum.DATABASE_ERROR, "数据库插入失败");
+            throw new COIPIBException(CodeEnum.AFFILIATION_ERROR, "归属插入失败");
         }
     }
 
     public void EditAffiliation(Affiliation affiliation)throws COIPIBException{
         if (affiliationDAO.update(affiliation) != 1){
-            throw new COIPIBException(CodeEnum.DATABASE_ERROR, "数据库更新失败");
+            throw new COIPIBException(CodeEnum.AFFILIATION_ERROR, "归属更新失败");
         }
     }
 

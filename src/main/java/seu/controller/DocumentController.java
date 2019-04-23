@@ -38,7 +38,7 @@ public class DocumentController {
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "插入文档成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: document={}", document);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getValue(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.DOCUMENT_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/insert" + " parameter: document={}", document, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -82,7 +82,7 @@ public class DocumentController {
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档移入回收站").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getValue(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.DOCUMENT_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/remove" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -97,38 +97,32 @@ public class DocumentController {
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "删除文档成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getValue(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.DOCUMENT_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/delete" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 
-    @RequestMapping("/showBin")
-    @ResponseBody
-    public String showAllDocumentInBin(){
-        try{
-            HashMap<String, Object> data = new HashMap<>();
-            List<Document> documents = documentService.showAllDocumentInBin();
-            data.put("documentList", documents);
-            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "显示回收站所有文档", data).toJSONString();
-        }catch (Exception e){
-            LOGGER.error("/document/showBin", e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
-        }
-    }
 
+    /**
+     * affiliationId == null || 100: 未分类
+     * affiliationId == 200：回收站
+     * @param affiliationId
+     * @param page
+     * @return
+     */
     @RequestMapping("/showAllDocument")
     @ResponseBody
     public String showAllDocument(Integer affiliationId, Integer page) {
         try {
-            HashMap<String, Object> data = new HashMap<>();
             Pagination<Document> pagination = documentService.queryAllDocument(affiliationId, page);
+            HashMap<String, Object> data = new HashMap<>();
             data.put("pagination", pagination);
-            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "归属所属文档查询成功", data).toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档查询成功", data).toJSONString();
         } catch (COIPIBException e) {
             LOGGER.info(e.getMessage() + " parameter:affiliationId={}, page={}", affiliationId, page, e);
-            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/document/showAllDocument parameter:affiliationId={}, page={}", affiliationId, page, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();

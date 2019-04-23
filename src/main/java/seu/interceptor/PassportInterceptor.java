@@ -10,6 +10,7 @@ import seu.dao.UserDAO;
 import seu.model.HostHolder;
 import seu.model.LoginTicket;
 import seu.model.User;
+import seu.model.Visitor;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,9 @@ public class PassportInterceptor implements HandlerInterceptor {
 
     @Autowired
     private HostHolder hostHolder;
+
+    @Autowired
+    private Visitor visitor;
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
@@ -52,6 +56,8 @@ public class PassportInterceptor implements HandlerInterceptor {
             User user = userDAO.selectById(loginTicket.getUserId());
             // 放入HostHolder
             hostHolder.setUser(user);
+        } else {
+            hostHolder.setUser(visitor);
         }
         return true;
     }

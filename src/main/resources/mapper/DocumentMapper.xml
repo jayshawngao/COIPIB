@@ -3,9 +3,9 @@
 <mapper namespace="seu.dao.DocumentDAO">
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
-		insert into document(name,keywords,digest,topic,affiliation_id, year,
+		insert into document(name,author,keywords,digest,topic,affiliation_id, year,
 				note, attachment, editor_id, auth)
-	    values(#{name}, #{keywords}, #{digest}, #{topic}, #{affiliation_id}, #{year},
+	    values(#{name}, #{author}, #{keywords}, #{digest}, #{topic}, #{affiliation_id}, #{year},
 	    	#{note}, #{attachment}, #{editor_id}, #{auth});
 	</insert>
 
@@ -14,6 +14,9 @@
 		<trim suffixOverrides=",">
 			<if test="name!=null">
 				name = #{name},
+			</if>
+			<if test="author!=null">
+				name = #{author},
 			</if>
 			<if test="keywords!=null">
 				keywords = #{keywords},
@@ -42,8 +45,23 @@
 			<if test="auth!=null">
 				auth = #{auth},
 			</if>
+			<if test="active!=null">
+				active = #{active},
+			</if>
 			update_time = now(),
 		</trim>
 		where id = #{id};
 	</update>
+
+	<select id="selectByAffiliationId">
+		select * from document where affiliation_id = #{affiliationId} and
+		<trim suffixOverrides=",">
+			<if test="auth!=3"> <!-- 非管理员 -->
+				auth &lt;= #{auth},
+			</if>
+			<if test="auth!=3 and affiliationId==200"> <!-- 非管理员只能看到自己的回收站 -->
+				editor_id = #{id},
+			</if>
+		</trim>
+	</select>
 </mapper>

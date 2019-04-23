@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 
 public class Affiliation {
 
+    /**
+     * 100：未分类 200：回收站
+     */
     private Integer id;
 
     private String name;

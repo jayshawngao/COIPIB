@@ -63,7 +63,7 @@ public class AffiliationController {
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "插入归属地成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: affiliation={}", affiliation);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getValue(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.AFFILIATION_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/affiliation/insert" + " parameter: affiliation={}", affiliation, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -79,7 +79,7 @@ public class AffiliationController {
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "删除归属地成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getValue(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.AFFILIATION_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/affiliation/delete" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -97,7 +97,7 @@ public class AffiliationController {
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "修改归属地成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: affiliation={}", affiliation);
-            return new CommonResponse(CodeEnum.DATABASE_ERROR.getValue(), e.getMessage()).toJSONString();
+            return new CommonResponse(CodeEnum.AFFILIATION_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/affiliation/update" + " parameter: affiliation={}", affiliation, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();

@@ -2,6 +2,7 @@ package seu.dao;
 
 import org.apache.ibatis.annotations.*;
 import seu.model.Document;
+import seu.model.User;
 
 import java.util.List;
 
@@ -14,29 +15,13 @@ public interface DocumentDAO {
 
     public Integer updateDocument(Document document);
 
-    @Update({"update", TABLE_NAME, "set deleted=0 where id = #{id}"})
-    public Integer moveDocumentIntoBin(@Param("id") Integer id);
-
-    @Select({"select * from", TABLE_NAME, "where deleted=0"})
-    public List<Document> showAllDocumentInBin();
-
     @Delete({"delete from", TABLE_NAME, "where id=#{id}"})
     public Integer deleteDocument(@Param("id") Integer id);
 
-    @Delete({"delete from", TABLE_NAME, "where deleted=0"})
-    public Integer clearBin();
+    public List<Document> selectByAffiliationId(Integer affiliationId, User user);
 
-    @Select({"select * from", TABLE_NAME, "where deleted=1"})
-    public List<Document> showAllDocumentNotDeleted();
-
-    @Update({"update",TABLE_NAME, "set active = 0 where id = #{id}"})
-    public Integer activeDocument(@Param("id") Integer id);
-
-    @Select({"select * from", TABLE_NAME, "where deleted=0"})
-    List<Document> showChildDocument();
-
-    @Select({"select * from", TABLE_NAME, "where affiliation_id = #{affiliationId}"})
-    public List<Document> selectByAffiliationId(Integer affiliationId);
+    @Select({"select * from", TABLE_NAME, "where id = #{id}"})
+    public Document selectById(Integer id);
 
     /**
      * @TODO 特殊查询

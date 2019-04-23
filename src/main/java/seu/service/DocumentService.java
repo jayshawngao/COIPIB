@@ -12,6 +12,7 @@ import seu.dao.UserDAO;
 import seu.exceptions.COIPIBException;
 import seu.model.Affiliation;
 import seu.model.Document;
+import seu.model.HostHolder;
 import seu.model.User;
 
 import java.util.ArrayList;
@@ -22,48 +23,88 @@ import java.util.List;
 public class DocumentService {
 
     @Autowired
-    DocumentDAO documentDAO;
+    private DocumentDAO documentDAO;
 
     @Autowired
-    UserDAO userDAO;
+    private UserDAO userDAO;
 
     @Autowired
-    AffiliationService affiliationService;
+    private UserService userService;
+
+    @Autowired
+    private AffiliationService affiliationService;
+
+    @Autowired
+    private HostHolder hostHolder;
 
     public void insertNewDocument(Document document) throws COIPIBException{
         if (documentDAO.insert(document) != 1){
-            throw new COIPIBException("文档插入数据库失败");
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文档插入数据库失败");
         }
-    }
-
-    public void moveDocumentToBin(Integer id) throws COIPIBException{
-        if (documentDAO.moveDocumentIntoBin(id) != 1){
-            throw new COIPIBException("文档从数据库删除失败/不存在对应文档");
-        }
-    }
-
-    public void deleteDocument(Integer id) throws COIPIBException{
-        if (documentDAO.deleteDocument(id) != 1){
-            throw new COIPIBException("文档从数据库删除失败/不存在对应文档");
-        }
-    }
-
-    public void editDocument(Document document){
-
-    }
-
-    public List<Document> showAllDocumentInBin(){
-        List<Document> documentList = documentDAO.showAllDocumentInBin();
-        for (Document document: documentList) {
-            fillDoucment(document);
-        }
-        return documentList;
     }
 
     /**
-     * 所有查询语句都需要调用该方法
-     * @param document
+     * 管理员通过
      */
+    public void activeDocument(Integer id) throws COIPIBException {
+        checkDocumentId(id);
+        if (!userService.adminAuth()) {
+            throw new COIPIBException("权限不足！");
+        }
+
+        Document document = documentDAO.selectById(id);
+        document.setActive(0);
+        documentDAO.updateDocument(document);
+    }
+
+    public void moveDocumentToBin(Integer id) throws COIPIBException{
+        checkDocumentId(id);
+
+        Document document = documentDAO.selectById(id);
+        document.setAffiliationId(200); // 回收站
+        documentDAO.updateDocument(document);
+    }
+
+    public void deleteDocument(Integer id) throws COIPIBException {
+        checkDocumentId(id);
+
+        documentDAO.deleteDocument(id);
+
+    }
+
+    public Pagination<Document> queryAllDocument(Integer affiliationId, Integer page) throws COIPIBException {
+        if (affiliationId == null) {
+            affiliationId = 100; // 未分类
+        }
+        if (page == null) {
+            page = 1;
+        }
+        List<Document> documentList = new ArrayList<>();
+
+        Affiliation affiliation = affiliationService.getById(affiliationId);
+        if (affiliation != null) {
+            documentList.addAll(documentDAO.selectByAffiliationId(affiliation.getId(), hostHolder.getUser()));
+            if (affiliation.getParentId() == 0) {
+                // 查询所有子归属包含的文档
+                List<Affiliation> childList = affiliationService.showAllChildren(affiliation.getId());
+                for (Affiliation child: childList) {
+                    documentList.addAll(documentDAO.selectByAffiliationId(child.getId(), hostHolder.getUser()));
+                }
+            }
+        }
+        return buildPagination(documentList, page);
+
+    }
+
+    private Pagination<Document> buildPagination(List<Document> documentList, Integer page) throws COIPIBException{
+        PageInfo pageInfo = new PageInfo(documentList.size(), page);
+        documentList = documentList.subList(pageInfo.getBeginIndex(), pageInfo.getEndIndex();
+        for (Document document: documentList) {
+            fillDoucment(document);
+        }
+        return new Pagination<Document>(documentList, pageInfo);
+    }
+
     private void fillDoucment(Document document) {
         if (document == null) {
             return;
@@ -79,35 +120,14 @@ public class DocumentService {
 
     }
 
-    /**
-     * 显示每个子目录下的所有文档
-     * @return
-     */
-    public List<Document> showChildDocument() {
-        return documentDAO.showChildDocument();
-    }
-
-    public Pagination<Document> queryAllDocument(Integer affiliationId, Integer page) throws COIPIBException {
-        if (affiliationId == null || page == null) {
+    private void checkDocumentId(Integer id) throws COIPIBException {
+        if (id == null) {
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "参数不能为空！");
         }
-        List<Document> documentList = new ArrayList<>();
-
-        Affiliation affiliation = affiliationService.getById(affiliationId);
-        if (affiliation != null) {
-            documentList.addAll(documentDAO.selectByAffiliationId(affiliation.getId()));
-            if (affiliation.getParentId() == 0) {
-                // 查询所有子归属包含的文档
-                List<Affiliation> childList = affiliationService.showAllChildren(affiliation.getId());
-                for (Affiliation child: childList) {
-                    documentList.addAll(documentDAO.selectByAffiliationId(child.getId()));
-                }
-            }
+        Document document = documentDAO.selectById(id);
+        if (document == null) {
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文献不存在！");
         }
-        PageInfo pageInfo = new PageInfo(documentList.size(), page);
-        Pagination<Document> pagination = new Pagination<Document>(documentList.subList(pageInfo.getBeginIndex(),
-                pageInfo.getEndIndex()), pageInfo);
-        return pagination;
-
     }
+
 }

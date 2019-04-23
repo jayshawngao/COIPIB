@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import seu.model.HostHolder;
+import seu.model.Visitor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,13 +19,19 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
     @Autowired
     private HostHolder hostHolder;
 
+    @Autowired
+    Visitor visitor;
+
+    /**
+     * 需要登录才能访问的页面
+     */
     private static List<String> NEED_LOGIN_URIS = Arrays.asList(
             "~~~~"
     );
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
-        if (hostHolder.getUser() == null) {
+        if (hostHolder.getUser() == visitor) {
             for (String uri: NEED_LOGIN_URIS) {
                 if (httpServletRequest.getRequestURI().contains(uri)) {
                     httpServletResponse.sendRedirect(httpServletRequest.getContextPath()+"/login");

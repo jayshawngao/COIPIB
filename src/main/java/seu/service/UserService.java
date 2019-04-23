@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seu.base.CodeEnum;
 
+import seu.base.LevelEnum;
 import seu.dao.LoginTicketDAO;
 import seu.dao.UserDAO;
 import seu.exceptions.COIPIBException;
+import seu.model.HostHolder;
 import seu.model.LoginTicket;
 import seu.model.User;
 
@@ -28,6 +30,9 @@ public class UserService {
 
     @Autowired
     private LoginTicketDAO loginTicketDAO;
+
+    @Autowired
+    private HostHolder hostHolder;
 
     public String register(User user, String oldEmail, String codeCaptcha, String emailCaptcha,
                            String oldCodeCaptcha,  String oldEmailCaptcha) throws COIPIBException {
@@ -169,5 +174,16 @@ public class UserService {
         if(user == null){
             throw new COIPIBException(CodeEnum.USER_ERROR, "该邮箱尚未注册！");
         }
+    }
+
+    /**
+     * 是否管理员登录
+     */
+    public boolean adminAuth() {
+        User user = hostHolder.getUser();
+        if (user != null && user.getLevel() == LevelEnum.ADMIN.getValue()) {
+            return true;
+        }
+        return false;
     }
 }

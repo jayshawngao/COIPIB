@@ -8,16 +8,6 @@ public enum CodeEnum {
     SUCCESS(200),
 
     /**
-     * 数据库错误
-     */
-    DATABASE_ERROR(300),
-
-    /**
-     * 服务器错误
-     */
-    SERVER_ERROR(400),
-
-    /**
      * 文件上传错误
      * */
     FILE_UPLOAD_ERROR(401),
@@ -31,6 +21,11 @@ public enum CodeEnum {
      * 文档相关错误
      */
     DOCUMENT_ERROR(600),
+
+    /**
+     * 归属相关错误
+     */
+    AFFILIATION_ERROR(700),
 
     /**
      * 未知错误

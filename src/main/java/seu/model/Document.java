@@ -3,11 +3,17 @@ package seu.model;
 import java.sql.Timestamp;
 import java.util.List;
 
+/**
+ * 如果Document被逻辑删除，置affiliationId字段为200即可，不再使用字段deleted
+ * author作者，editor是上传者
+ */
 public class Document {
 
     private Integer id;
 
     private String name;  // 文献标题
+
+    private String author;
 
     // 逗号分隔多个关键词
     private String keywords;
@@ -38,11 +44,6 @@ public class Document {
      */
     private Integer active;
 
-    /**
-     * 0 删除；1 未删除
-     */
-    private Integer deleted;
-
     private Timestamp createTime;
 
     private Timestamp updateTime;
@@ -61,6 +62,14 @@ public class Document {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getKeywords() {
@@ -151,14 +160,6 @@ public class Document {
         this.active = active;
     }
 
-    public Integer getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Integer deleted) {
-        this.deleted = deleted;
-    }
-
     public Timestamp getCreateTime() {
         return createTime;
     }
@@ -191,6 +192,7 @@ public class Document {
         return "Document{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", author='" + author + '\'' +
                 ", keywords='" + keywords + '\'' +
                 ", digest='" + digest + '\'' +
                 ", topic='" + topic + '\'' +
@@ -203,7 +205,6 @@ public class Document {
                 ", editor='" + editor + '\'' +
                 ", auth=" + auth +
                 ", active=" + active +
-                ", deleted=" + deleted +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 '}';
