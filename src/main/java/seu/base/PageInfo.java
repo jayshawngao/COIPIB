@@ -24,9 +24,12 @@ public class PageInfo {
     }
 
     private void calculate() {
+        if (totalRow == 0) {
+            return;
+        }
         totalPage = totalRow / pageSize + ((totalRow % pageSize) > 0 ? 1 : 0);
 
-        if (page > totalPage && totalPage != 0) {
+        if (page > totalPage) {
             page = totalPage;
         } else if (page < 1) {
             page = 1;
