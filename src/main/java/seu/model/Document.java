@@ -7,7 +7,7 @@ public class Document {
 
     private Integer id;
 
-    private String name;
+    private String name;  // 文献标题
 
     // 逗号分隔多个关键词
     private String keywords;
@@ -15,7 +15,7 @@ public class Document {
     // 摘要 abstract是保留关键字
     private String digest;
 
-    private String topic;
+    private String topic;  // 文献主题
 
     private Integer affiliationId;
 

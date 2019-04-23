@@ -41,4 +41,12 @@ public class DocumentService {
     public List<Document> showAllDocumentInBin(){
         return documentDAO.showAllDocumentInBin();
     }
+
+    /**
+     * 显示每个子目录下的所有文档
+     * @return
+     */
+    public List<Document> showChildDocument() {
+        return documentDAO.showChildDocument();
+    }
 }

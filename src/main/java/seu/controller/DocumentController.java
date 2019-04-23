@@ -116,5 +116,4 @@ public class DocumentController {
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
-
 }

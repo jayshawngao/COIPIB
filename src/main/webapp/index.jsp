@@ -113,10 +113,11 @@
                     var html = "";
                     affiliationList.forEach(function (element) {
                         if (element.deleted == 1) {
+                            var id = element.id;
                             var name = element.name;
                             var allChildren = getAllChildren(element.id);
                             html = html + '<li class="layui-nav-item layui-nav-itemed layui-this">\n'
-                                + '<a class="" href="javascript:void(0);" onclick="doClickName(\'' + name + '\')">' + name + '</a>\n'
+                                + '<a class="" href="javascript:void(0);" onclick="doClickName(\'' + id + '\')">' + name + '</a>\n'
                                 + allChildren;
                                 + '</li>\n';
                         }
@@ -126,7 +127,6 @@
             }
         });
     };
-
     // 根据parentId获取二级菜单并返回html
     function getAllChildren(parentId) {
         var html = '';
@@ -144,9 +144,10 @@
                     var affiliationList = data.data.childrenList;
                     if (affiliationList.length > 0) html = '<dl class="layui-nav-child">';
                     affiliationList.forEach(function (element) {
+                        var id = element.id;
                         if (element.deleted == 1) {
                             var name = element.name;
-                            html = html + '<dd><a href="javascript:;">'
+                            html = html + '<dd><a href="javascript:void(0);" onclick="doClickName(\'' + id + '\')">'
                                 + name
                                 + '</a></dd>\n';
                         }
@@ -158,29 +159,39 @@
         return html;
     }
 
+    function doClickName(id) {
+        var html = '';
+        $.ajax({
+            type: 'post',
+            url: "/document/showAllDocument",
+            data: {"affiliationId": id},
+            dataType: "json",
+            success:function (data) {
+                if (data.code != 200) {
+                    layer.msg(data.msg,{icon: 2});
+                    return '';
+                } else {
+                    var documentList = data.data.documentList;
+                    if (documentList.length > 0) html = '<tr>';
+                    documentList.forEach(function (element) {
+                        var name = element.name;
+                        html = html + '<td>' + name + '</td>';
+                    });
+                    if (documentList.length > 0)  html =  html + '</tr>';
+                }
+            }
+        });
+        return html;
+        /*$("#body-content-left").text(id + "左边");
+        $("#body-content-right").text(id + " 右边");*/
+        <%--location = "${ctx}/index?name=" + name;--%>
+    }
+
     //JavaScript代码区域
     layui.use('element', function () {
         var element = layui.element;
 
     });
-
-    function doClickName(name) {
-        // name = encodeURI(name);
-        // $.ajax({
-        //     type: 'post',
-        //     url: "/index",
-        //     data: {"name": name},
-        //     dataType: "json",
-        //     success:function (data) {
-        //         var message = data['message'];
-        //         console.log(message);
-        //         $("#body-content-left").text(message + "左边");
-        //     }
-        // });
-        $("#body-content-left").text(name + " 左边");
-        $("#body-content-right").text(name + " 右边");
-        <%--location = "${ctx}/index?name=" + name;--%>
-    }
 </script>
 </body>
 </html>
