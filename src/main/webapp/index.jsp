@@ -116,6 +116,7 @@
         var affiliationId = String($("#verticalMenu > li:nth-child(1) > a").attr("id"));
         affiliationId = affiliationId.substr(15);
         doClickShowDoc(affiliationId, 1);
+        $("#body-content-right").html("");
     }
 
     // 点击导航栏“文件”
@@ -126,6 +127,7 @@
         var affiliationId = String($("#verticalMenu > li:nth-child(1) > a").attr("id"));
         affiliationId = affiliationId.substr(15);
         doClickShowDoc(affiliationId, 1);
+        $("#body-content-right").html("");
     }
 
     function clearVerticalMenuCSS() {
