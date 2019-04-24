@@ -186,7 +186,7 @@
                         var updateTime = timestampToTime(element.updateTime);
                         htmlName = htmlName + '<tr>' +
                             '<td>' + sequence + '</td>' +
-                            '<td onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</td>' +
+                            '<td style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</td>' +
                             '<td>' + author + '</td>' +
                             '<td>' + editor + '</td>' +
                             '<td>' + updateTime + '</td>' +
@@ -228,7 +228,7 @@
         var editor = obj.editor;
         var digest = obj.digest;
         var author = obj.author;
-        var name = obj.affiliationList.name;
+        var name = obj.affiliationList[0].name;
         var keywords = obj.keywords;
         var html = '摘要：' + digest +
             '<br><br>关键字：' + keywords +
