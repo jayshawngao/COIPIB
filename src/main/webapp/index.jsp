@@ -26,6 +26,7 @@
         <ul class="layui-nav layui-layout-left" >
             <li class="layui-nav-item layui-this"><a href="javascript:;" onclick="showAllDocuments();">文件</a></li>
             <li class="layui-nav-item"><a href="javascript:;" onclick="showEditableDocs();">编辑</a></li>
+            <!--禁止删除-->
             <li class="layui-nav-item" id="adminMenu">
 
             </li>
@@ -132,15 +133,16 @@
 
     // 点击导航栏“文件审核”
     function showNoActiveDocuments() {
-        debugger;
         clearVerticalMenuCSS();
-        $("#userInfoButton").addClass("layui-this");
         $("#isActive").val("true");
         $("#isEdit").val("false");
         var affiliationId = String($("#verticalMenu > li:nth-child(1) > a").attr("id"));
         affiliationId = affiliationId.substr(15);
         doClickShowDoc(affiliationId, 1);
         $("#body-content-right").html("");
+        $("#adminMenu > dl").unbind("mouseout").bind("mouseout", function () {
+            $("#adminMenu").addClass("layui-this");
+        });
     }
 
     // 切换水平导航栏时恢复垂直导航栏状态
@@ -162,7 +164,7 @@
             var html = "";
             html = html + '<a href="javascript:;">' + userInfo.name + '</a>'
                 + '<dl class="layui-nav-child">'
-                + '<dd><a href="javascript:;" onclick="showNoActiveDocuments()">基本资料</a></dd>'
+                + '<dd><a href="javascript:;">基本资料</a></dd>'
                 + '<dd><a href="javascript:;">修改密码</a></dd>'
                 + '<hr>'
                 + '<dd><a href="javascript:;">退出</a></dd>'
@@ -178,7 +180,7 @@
             var html = "";
             html = html + '<a href="javascript:;">管理员</a>\n' +
                 '                <dl class="layui-nav-child">\n' +
-                '                    <dd><a href="javascript:;">文献审核</a></dd>\n' +
+                '                    <dd><a href="javascript:;" onclick="showNoActiveDocuments()">文献审核</a></dd>\n' +
                 '                    <dd><a href="javascript:;">用户管理</a></dd>\n' +
                 '                </dl>'
             $("#adminMenu").html(html);
@@ -310,8 +312,14 @@
                             }
                         }
                         if (isEdit == "false" && isActive == "true") {
-                            htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="(' + element.id + ',' + id + ',' + curPage + ')">审核通过</a>'
-                            + '</td>';
+                            if (id != 200) {
+                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doClickActiveDoc(' + element.id + ',' + id + ',' + curPage + ')">通过审核</a>'
+                                    + '</td>';
+                            }else {
+                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doClickRecoverDoc(' + element.id + ',' + id + ',' + curPage + ')">还原</a>'
+                                    + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickDeleteDoc(' + element.id + ',' + id + ',' + curPage + ')">永久删除</a>'
+                                    + '</td>';
+                            }
                         }
                         htmlName = htmlName + '</tr>';
                         sequence++;
@@ -442,6 +450,26 @@
         $.ajax({
             type: 'get',
             url: "/document/recover",
+            data: {"id": docId},
+            dataType: "json",
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.msg(data.msg,{icon: 2});
+                    return '';
+                } else {
+                    layer.msg(data.msg, {icon: 1});
+                    doClickShowDoc(affiliationId, curPage);
+                    return;
+                }
+            }
+        });
+    }
+
+    // 文献审核
+    function doClickActiveDoc(docId, affiliationId, curPage) {
+        $.ajax({
+            type: 'get',
+            url: "/document/active",
             data: {"id": docId},
             dataType: "json",
             success: function (data) {
