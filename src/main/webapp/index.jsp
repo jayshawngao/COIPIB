@@ -94,8 +94,10 @@
     userInfo.active = "${user.active}";
 
     // layui框架导航模块初始化，禁止删除
-    layui.use('element', function () {
+    var layer;
+    layui.use(['element', 'layer'], function () {
         var element = layui.element;
+        layer = layui.layer
     });
 
     $(function () {
@@ -127,6 +129,7 @@
         var ele = $("#verticalMenu");
         ele.children("li").each(function (i, childEle) {
             $(childEle).removeClass("layui-nav-itemed");
+            $(childEle).removeClass("layui-this");
         });
         ele.children("dd").each(function (i, childEle) {
             $(childEle).removeClass("layui-this");
@@ -237,13 +240,13 @@
                 } else {
                     var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
                         '<th style="width: 8%;text-align: center">序号</th>' +
-                        '<th style="width: 44%;text-align: center"">文献名</th>' +
+                        '<th style="width: 40%;text-align: center"">文献名</th>' +
                         '<th style="width: 8%;text-align: center"">预览</th>' +
-                        '<th style="width: 14%;text-align: center"">作者</th>' +
-                        '<th style="width: 14%;text-align: center"">编辑人</th>' +
+                        '<th style="width: 10%;text-align: center"">作者</th>' +
+                        '<th style="width: 10%;text-align: center"">编辑人</th>' +
                         '<th style="width: 14%;text-align: center"">更新日期</th>';
                     if (isEdit == "true" && isActive == "false") {
-                        htmlName = htmlName + '<th style="width: 6%;text-align: center"">操作</th>';
+                        htmlName = htmlName + '<th style="width: 14%;text-align: center"">操作</th>';
                     }
                     htmlName = htmlName + '</tr></thead>';
                     var pagination = data.data.pagination;
@@ -267,7 +270,15 @@
                             '<td>' + editor + '</td>' +
                             '<td>' + updateTime + '</td>';
                         if (isEdit == "true" && isActive == "false") {
-                            htmlName = htmlName + '<td><a class="" style="display: block; cursor: pointer; color: blue;">编辑</a></td>';
+                            if (id != 200) {
+                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;">编辑</a>'
+                                    + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickRemoveDocToBin(' + element.id + ',' + id + ',' + curPage + ')">放入回收站</a>'
+                                    + '</td>';
+                            }else {
+                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;">还原</a>'
+                                    + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickDeleteDoc(' + element.id + ',' + id + ',' + curPage + ')">永久删除</a>'
+                                    + '</td>';
+                            }
                         }
                         htmlName = htmlName + '</tr>';
                         sequence++;
@@ -351,6 +362,46 @@
         var m = date.getMinutes() + ':';
         var s = date.getSeconds();
         return Y + M + D;
+    }
+
+    // 文件放入回收站
+    function doClickRemoveDocToBin(docId, affiliationId, curPage) {
+        $.ajax({
+            type: 'get',
+            url: "/document/remove",
+            data: {"id": docId},
+            dataType: "json",
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.msg(data.msg,{icon: 2});
+                    return '';
+                } else {
+                    layer.msg(data.msg, {icon: 1});
+                    doClickShowDoc(affiliationId, curPage);
+                    return;
+                }
+            }
+        });
+    }
+
+    // 回收站文件永久删除
+    function doClickDeleteDoc(docId, affiliationId, curPage) {
+        $.ajax({
+            type: 'get',
+            url: "/document/delete",
+            data: {"id": docId},
+            dataType: "json",
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.msg(data.msg,{icon: 2});
+                    return '';
+                } else {
+                    layer.msg(data.msg, {icon: 1});
+                    doClickShowDoc(affiliationId, curPage);
+                    return;
+                }
+            }
+        });
     }
 
 </script>
