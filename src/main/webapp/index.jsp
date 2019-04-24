@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<c:set var="ctx" value="${pageContext.request.contextPath }"/>
+<c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -23,13 +23,13 @@
     <div class="layui-header">
         <div class="layui-logo" style="font-weight: bold">COIPIB</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
-        <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item"><a href="">文件</a></li>
-            <li class="layui-nav-item"><a href="">编辑</a></li>
-            <li class="layui-nav-item"><a href="">文献</a></li>
-            <li class="layui-nav-item"><a href="">窗口</a></li>
-            <li class="layui-nav-item"><a href="">帮助</a></li>
-            <li class="layui-nav-item"><a href="">搜索</a></li>
+        <ul class="layui-nav layui-layout-left" >
+            <li class="layui-nav-item"><a href="javascript:;">文件</a></li>
+            <li class="layui-nav-item"><a href="javascript:;">编辑</a></li>
+            <li class="layui-nav-item"><a href="javascript:;">文献</a></li>
+            <li class="layui-nav-item"><a href="javascript:;">窗口</a></li>
+            <li class="layui-nav-item"><a href="javascript:;">帮助</a></li>
+            <li class="layui-nav-item"><a href="javascript:;">搜索</a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item"><a href="/login">登录</a></li>
@@ -73,14 +73,18 @@
         <div class="clear"></div>
     </div>
 
-    <div class="layui-footer" style="background-color: #00FF00">
-        <!-- 底部固定区域 -->
-        底部固定区域
-    </div>
+    <%--<div class="layui-footer" style="background-color: #00FF00">--%>
+        <%--<!-- 底部固定区域 -->--%>
+        <%--底部固定区域--%>
+    <%--</div>--%>
 </div>
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
+    // layui框架导航模块初始化，禁止删除
+    layui.use('element', function () {
+        var element = layui.element;
+    });
 
     $(function () {
         getFirstLayer();
@@ -107,10 +111,10 @@
                         if (element.deleted == 1) {
                             var id = element.id;
                             var name = element.name;
-                            var allChildren = getAllChildren(element.id);
+                            var allChildren = getAllChildren(id);
                             html = html
-                                + '<li class="layui-nav-item layui-nav-itemed">\n'
-                                + '<a href="javascript:void(0);" onclick="doClickShowDoc(' + id + ',' + 1 + ')">'
+                                + '<li class="layui-nav-item">\n'
+                                + '<a class="" href="javascript:;" onclick="doClickShowDoc(' + id + ',' + 1 + ')">'
                                 + name + '</a>\n'
                                 + allChildren
                                 + '</li>\n';
