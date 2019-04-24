@@ -179,11 +179,10 @@ public class UserService {
     /**
      * 是否管理员登录
      */
-    public boolean adminAuth() {
+    public void adminAuth() throws COIPIBException {
         User user = hostHolder.getUser();
-        if (user != null && user.getLevel() == LevelEnum.ADMIN.getValue()) {
-            return true;
+        if (user == null || user.getLevel() != LevelEnum.ADMIN.getValue()) {
+            throw new COIPIBException(CodeEnum.USER_ERROR, "此操作需要管理员权限！");
         }
-        return false;
     }
 }

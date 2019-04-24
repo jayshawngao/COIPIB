@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import seu.base.CodeEnum;
@@ -19,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -42,6 +40,21 @@ public class DocumentController {
             return new CommonResponse(CodeEnum.DOCUMENT_ERROR.getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/insert" + " parameter: document={}", document, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
+    @RequestMapping("/update")
+    @ResponseBody
+    public String updateDocument(Document document){
+        try{
+            documentService.updateDocument(document);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "更新文档成功").toJSONString();
+        }catch (COIPIBException e){
+            LOGGER.info(e.getMessage() + " parameter: document={}", document);
+            return new CommonResponse(CodeEnum.DOCUMENT_ERROR.getValue(), e.getMessage()).toJSONString();
+        }catch (Exception e){
+            LOGGER.error("/document/update" + " parameter: document={}", document, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
@@ -107,22 +120,32 @@ public class DocumentController {
 
 
     /**
-     * affiliationId == null || 100: 未分类
-     * affiliationId == 200：回收站
-     * @param affiliationId
+     * 文献页：isEdit=false，isActive=false （如果传空值，默认情况）
+     * 编辑页：isEdit=true，isActive=false
+     * 审核页：isEdit=false，isActive=true
+     * 非法参数：isEdit=true，isActive=true
+     *
+     * @param affiliationId == null || 100: 未分类; == 200：回收站
      * @param page
+     * @param isEdit
+     * @param isActive
      * @return
      */
     @RequestMapping("/showAllDocument")
     @ResponseBody
-    public String showAllDocument(@RequestParam("affiliationId") Integer affiliationId, @RequestParam("page") Integer page) {
+    public String showAllDocument(Integer affiliationId, Integer page, Boolean isEdit, Boolean isActive) {
         try {
-            Pagination<Document> pagination = documentService.queryAllDocument(affiliationId, page);
+            Pagination<Document> pagination = documentService.queryAllDocument(affiliationId, page, isEdit, isActive);
             HashMap<String, Object> data = new HashMap<>();
             data.put("pagination", pagination);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档查询成功", data).toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:affiliationId={}, page={}, isEdit={}, isActive={}",
+                    affiliationId, page, isEdit, isActive, e);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/document/showAllDocument parameter:affiliationId={}, page={}", affiliationId, page, e);
+            LOGGER.error("/document/showAllDocument parameter:affiliationId={}, page={}, isEdit={}, isActive={}",
+                    affiliationId, page, isEdit, isActive, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
