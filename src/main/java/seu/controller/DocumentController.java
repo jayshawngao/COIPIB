@@ -45,6 +45,21 @@ public class DocumentController {
         }
     }
 
+    @RequestMapping("/update")
+    @ResponseBody
+    public String updateDocument(Document document){
+        try{
+            documentService.updateDocument(document);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "更新文档成功").toJSONString();
+        }catch (COIPIBException e){
+            LOGGER.info(e.getMessage() + " parameter: document={}", document);
+            return new CommonResponse(CodeEnum.DOCUMENT_ERROR.getValue(), e.getMessage()).toJSONString();
+        }catch (Exception e){
+            LOGGER.error("/document/update" + " parameter: document={}", document, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
     @RequestMapping("/upload")
     @ResponseBody
     public String uploadFile(MultipartFile file, HttpServletRequest request, HttpServletResponse response){
@@ -106,22 +121,32 @@ public class DocumentController {
 
 
     /**
-     * affiliationId == null || 100: 未分类
-     * affiliationId == 200：回收站
-     * @param affiliationId
+     * 文献页：isEdit=false，isActive=false （如果传空值，默认情况）
+     * 编辑页：isEdit=true，isActive=false
+     * 审核页：isEdit=false，isActive=true
+     * 非法参数：isEdit=true，isActive=true
+     *
+     * @param affiliationId == null || 100: 未分类; == 200：回收站
      * @param page
+     * @param isEdit
+     * @param isActive
      * @return
      */
     @RequestMapping("/showAllDocument")
     @ResponseBody
-    public String showAllDocument(Integer affiliationId, Integer page) {
+    public String showAllDocument(Integer affiliationId, Integer page, Boolean isEdit, Boolean isActive) {
         try {
-            Pagination<Document> pagination = documentService.queryAllDocument(affiliationId, page);
+            Pagination<Document> pagination = documentService.queryAllDocument(affiliationId, page, isEdit, isActive);
             HashMap<String, Object> data = new HashMap<>();
             data.put("pagination", pagination);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档查询成功", data).toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:affiliationId={}, page={}, isEdit={}, isActive={}",
+                    affiliationId, page, isEdit, isActive, e);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/document/showAllDocument parameter:affiliationId={}, page={}", affiliationId, page, e);
+            LOGGER.error("/document/showAllDocument parameter:affiliationId={}, page={}, isEdit={}, isActive={}",
+                    affiliationId, page, isEdit, isActive, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }

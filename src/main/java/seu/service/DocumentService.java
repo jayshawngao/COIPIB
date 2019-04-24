@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import seu.base.CodeEnum;
 import seu.base.PageInfo;
 import seu.base.Pagination;
-import seu.dao.AffiliationDAO;
 import seu.dao.DocumentDAO;
 import seu.dao.UserDAO;
 import seu.exceptions.COIPIBException;
@@ -38,8 +37,23 @@ public class DocumentService {
     private HostHolder hostHolder;
 
     public void insertNewDocument(Document document) throws COIPIBException{
+        checkDocument(document);
         if (documentDAO.insert(document) != 1){
-            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文档插入数据库失败");
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文档插入失败");
+        }
+    }
+
+    public void updateDocument(Document document) throws COIPIBException {
+        checkDocument(document);
+        if (documentDAO.update(document) != 1){
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文档更新失败");
+        }
+    }
+
+    private void checkDocument(Document document) throws COIPIBException {
+        User user = hostHolder.getUser();
+        if (document.getAuth() > user.getLevel()) {
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文献密级不能高于当前用户等级！");
         }
     }
 
@@ -48,13 +62,11 @@ public class DocumentService {
      */
     public void activeDocument(Integer id) throws COIPIBException {
         checkDocumentId(id);
-        if (!userService.adminAuth()) {
-            throw new COIPIBException("权限不足！");
-        }
+        userService.adminAuth();
 
         Document document = documentDAO.selectById(id);
         document.setActive(0);
-        documentDAO.updateDocument(document);
+        documentDAO.update(document);
     }
 
     public void moveDocumentToBin(Integer id) throws COIPIBException{
@@ -62,33 +74,46 @@ public class DocumentService {
 
         Document document = documentDAO.selectById(id);
         document.setAffiliationId(200); // 回收站
-        documentDAO.updateDocument(document);
+        documentDAO.update(document);
     }
 
     public void deleteDocument(Integer id) throws COIPIBException {
         checkDocumentId(id);
 
-        documentDAO.deleteDocument(id);
+        documentDAO.delete(id);
 
     }
 
-    public Pagination<Document> queryAllDocument(Integer affiliationId, Integer page){
+    public Pagination<Document> queryAllDocument(Integer affiliationId, Integer page, Boolean isEdit, Boolean isActive)
+                                                                                            throws COIPIBException{
         if (affiliationId == null) {
             affiliationId = 100; // 未分类
         }
         if (page == null) {
             page = 1;
         }
+        if (isEdit == null) {
+            isEdit = false;
+        }
+        if (isActive == null) {
+            isActive = false;
+        }
+        if (isEdit == true && isActive == true) {
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "isEdit isActive 不能同时为true");
+        }
+        if (isActive == true) {
+            userService.adminAuth();
+        }
         List<Document> documentList = new ArrayList<>();
 
         Affiliation affiliation = affiliationService.getById(affiliationId);
         if (affiliation != null) {
-            documentList.addAll(documentDAO.selectByAffiliationId(affiliation.getId(), hostHolder.getUser()));
+            documentList.addAll(documentDAO.selectByAffiliationId(affiliation.getId(), hostHolder.getUser(), isEdit, isActive));
             if (affiliation.getParentId() == 0) {
                 // 查询所有子归属包含的文档
                 List<Affiliation> childList = affiliationService.showAllChildren(affiliation.getId());
                 for (Affiliation child: childList) {
-                    documentList.addAll(documentDAO.selectByAffiliationId(child.getId(), hostHolder.getUser()));
+                    documentList.addAll(documentDAO.selectByAffiliationId(child.getId(), hostHolder.getUser(), isEdit, isActive));
                 }
             }
         }
