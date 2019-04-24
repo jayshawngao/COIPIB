@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import seu.base.CodeEnum;
@@ -114,7 +115,7 @@ public class DocumentController {
      */
     @RequestMapping("/showAllDocument")
     @ResponseBody
-    public String showAllDocument(Integer affiliationId, Integer page) {
+    public String showAllDocument(@RequestParam("affiliationId") Integer affiliationId, @RequestParam("page") Integer page) {
         try {
             Pagination<Document> pagination = documentService.queryAllDocument(affiliationId, page);
             HashMap<String, Object> data = new HashMap<>();

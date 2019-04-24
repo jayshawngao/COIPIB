@@ -15,6 +15,8 @@
     <link href="./static/plug/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
     <!--全局样式表-->
     <link href="./static/css/global.css" rel="stylesheet"/>
+    <%--分页样式表--%>
+    <link href="./static/css/pageInfo/page.css" rel="stylesheet">
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -44,27 +46,7 @@
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree" lay-filter="test" id="verticalMenu">
-                <%--<li class="layui-nav-item layui-nav-itemed layui-this">--%>
-                    <%--<a class="" href="javascript:void(0);" onclick="doClickName('一带一路')">一带一路</a>--%>
-                <%--</li>--%>
-                <%--<li class="layui-nav-item layui-nav-itemed">--%>
-                    <%--<a href="javascript:void(0);" onclick="doClickName('东南亚与南亚')">东南亚与南亚</a>--%>
-                <%--</li>--%>
-                <%--<li class="layui-nav-item layui-nav-itemed">--%>
-                    <%--<a href="javascript:void(0);" onclick="doClickName('非洲')">非洲</a>--%>
-                <%--</li>--%>
-                <%--<li class="layui-nav-item layui-nav-itemed">--%>
-                    <%--<a href="javascript:void(0);" onclick="doClickName('中东与西亚')">中东与西亚</a>--%>
-                <%--</li>--%>
-                <%--<li class="layui-nav-item layui-nav-itemed">--%>
-                    <%--<a href="javascript:void(0);" onclick="doClickName('其他')">其他</a>--%>
-                <%--</li>--%>
-                <%--<li class="layui-nav-item layui-nav-itemed">--%>
-                    <%--<a href="javascript:void(0);" onclick="doClickName('未分类')">未分类</a>--%>
-                <%--</li>--%>
-                <%--<li class="layui-nav-item layui-nav-itemed">--%>
-                    <%--<a href="javascript:void(0);" onclick="doClickName('回收站')">回收站</a>--%>
-                <%--</li>--%>
+
             </ul>
         </div>
     </div>
@@ -74,12 +56,18 @@
 
         <!--左边文章列表-->
         <div class="blog-main">
-            <div class="blog-main-left" style="background-color: #00acd8">
-                <div style="padding: 15px;" id="body-content-left"> 一带一路 左边</div>
+            <div class="blog-main-left">
+
+                <div style="padding: 15px;" id="body-content-left">
+
+                </div>
+                <ul class="pager pager-loose">
+                    <div id="page"></div>
+                </ul>
             </div>
             <!--右边小栏目-->
-            <div class="blog-main-right" style="background-color: orange">
-                <div style="padding: 15px;" id="body-content-right">一带一路 右边</div>
+            <div class="blog-main-right">
+                <div style="padding: 15px;" id="body-content-right"></div>
             </div>
         </div>
         <div class="clear"></div>
@@ -93,6 +81,7 @@
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
+
     $(function () {
         getFirstLayer();
     });
@@ -104,21 +93,26 @@
             type: "get",
             url: "/affiliation/showFirstLayer",
             dataType: "json",
-            success:function (data) {
+            success: function (data) {
+
                 if (data.code != 200) {
-                    layer.msg(data.msg,{icon: 2});
+                    layer.msg(data.msg, {icon: 2});
                     return false;
                 } else {
                     var affiliationList = data.data.affiliationList;
                     var html = "";
+                    var affiliationId = affiliationList[0].id;
+                    doClickShowDoc(affiliationId, 1);
                     affiliationList.forEach(function (element) {
                         if (element.deleted == 1) {
                             var id = element.id;
                             var name = element.name;
                             var allChildren = getAllChildren(element.id);
-                            html = html + '<li class="layui-nav-item layui-nav-itemed layui-this">\n'
-                                + '<a class="" href="javascript:void(0);" onclick="doClickName(\'' + id + '\')">' + name + '</a>\n'
-                                + allChildren;
+                            html = html
+                                + '<li class="layui-nav-item layui-nav-itemed">\n'
+                                + '<a href="javascript:void(0);" onclick="doClickShowDoc(' + id + ',' + 1 + ')">'
+                                + name + '</a>\n'
+                                + allChildren
                                 + '</li>\n';
                         }
                     });
@@ -127,6 +121,7 @@
             }
         });
     };
+
     // 根据parentId获取二级菜单并返回html
     function getAllChildren(parentId) {
         var html = '';
@@ -134,11 +129,11 @@
             async: false,
             type: "post",
             url: "/affiliation/showNextLayer",
-            data: {parentId : parentId},
+            data: {parentId: parentId},
             dataType: "json",
-            success:function (data) {
+            success: function (data) {
                 if (data.code != 200) {
-                    layer.msg(data.msg,{icon: 2});
+                    layer.msg(data.msg, {icon: 2});
                     return '';
                 } else {
                     var affiliationList = data.data.childrenList;
@@ -147,7 +142,7 @@
                         var id = element.id;
                         if (element.deleted == 1) {
                             var name = element.name;
-                            html = html + '<dd><a href="" onclick="doClickName(\'' + id + '\')">'
+                            html = html + '<dd><a href="javascript:;" onclick="doClickShowDoc(' + id + ',' + 1 + ')">'
                                 + name
                                 + '</a></dd>\n';
                         }
@@ -159,32 +154,101 @@
         return html;
     }
 
-    function doClickName(id) {
-        var html = '';
+    function doClickShowDoc(id, curPage) {
         $.ajax({
-            type: 'post',
+            type: 'get',
             url: "/document/showAllDocument",
-            data: {"affiliationId": id},
+            data: {"affiliationId": id, "page": curPage},
             dataType: "json",
-            success:function (data) {
+            success: function (data) {
                 if (data.code !== 200) {
-                    layer.msg(data.msg,{icon: 2});
+                    layer.msg(data.msg, {icon: 2});
                     return '';
                 } else {
-                    var documentList = data.data.documentList;
-                    if (documentList.length > 0) html = '<tbody>';
+                    var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
+                        '<th style="width: 8%;text-align: center">序号</th>' +
+                        '<th style="width: 50%;text-align: center"">文献名</th>' +
+                        '<th style="width: 14%;text-align: center"">作者</th>' +
+                        '<th style="width: 14%;text-align: center"">编辑人</th>' +
+                        '<th style="width: 14%;text-align: center"">更新日期</th>' +
+                        '</tr></thead>';
+                    var pagination = data.data.pagination;
+                    var documentList = pagination.data;
+                    var pageInfo = pagination.pageInfo;
+                    var totalPage = pageInfo.totalPage;
+
+                    if (documentList.length > 0) htmlName = htmlName + '<tbody>';
+                    var sequence = 1;
                     documentList.forEach(function (element) {
                         var name = element.name;
-                        html = html + '<tr><td>' + name + '</td></tr>';
+                        var editor = element.editor;
+                        var author = element.author;
+                        var updateTime = timestampToTime(element.updateTime);
+                        htmlName = htmlName + '<tr>' +
+                            '<td>' + sequence + '</td>' +
+                            '<td onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</td>' +
+                            '<td>' + author + '</td>' +
+                            '<td>' + editor + '</td>' +
+                            '<td>' + updateTime + '</td>' +
+                            '</tr>';
+                        sequence++;
                     });
-                    if (documentList.length > 0)  html =  html + '</tbody>';
-                    $("#body-content-left").html(html);
+                    if (documentList.length > 0) htmlName = htmlName + '</tbody></table></div>';
+                    $("#body-content-left").html(htmlName);
+
+                    var htmlPage = '<li class="total-page"><a href="javascript:void(0);">共&nbsp;' + totalPage + '&nbsp;页</a></li>';
+                    if (curPage <= 1) {
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);">上一页</a></li>';
+                    } else {
+                        curPage = curPage - 1;
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
+                            + id + ','
+                            + curPage
+                            + ')">上一页</a></li>';
+                    }
+                    htmlPage = htmlPage + '<li><a href="javascript:void(0);">当前页' + pageInfo.page + '</a></li>';
+                    if (curPage >= pageInfo.totalPage) {
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);">下一页</a></li>';
+                    } else {
+                        curPage = curPage + 1;
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
+                            + id + ','
+                            + curPage
+                            + ')">下一页</a></li>';
+                    }
+                    $("#page").html(htmlPage);
                 }
             }
         });
+    }
 
-        // $("#body-content-right").text(id + " 右边");
-        <%--location = "${ctx}/index?name=" + name;--%>
+    function doClickShowInfo(obj) {
+        var topic = obj.topic;
+        var year = obj.year;
+        var editor = obj.editor;
+        var digest = obj.digest;
+        var author = obj.author;
+        var name = obj.affiliationList.name;
+        var keywords = obj.keywords;
+        var html = '摘要：' + digest +
+            '<br><br>关键字：' + keywords +
+            '<br><br>作者：' + author +
+            '<br><br>编辑人：' + editor +
+            '<br><br>归属：' + name +
+            '<br><br>主题：' + topic +
+            '<br><br>年份：' + year;
+        $("#body-content-right").html(html);
+    }
+
+    function timestampToTime(timestamp) {
+        var date = new Date(timestamp);
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+        var D = date.getDate() + ' ';
+        var h = date.getHours() + ':';
+        var m = date.getMinutes() + ':';
+        var s = date.getSeconds();
+        return Y + M + D;
     }
 
 </script>
