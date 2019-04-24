@@ -111,7 +111,7 @@ public class DocumentController {
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "删除文档成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
-            return new CommonResponse(CodeEnum.DOCUMENT_ERROR.getValue(), e.getMessage()).toJSONString();
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/delete" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -125,7 +125,7 @@ public class DocumentController {
      * 审核页：isEdit=false，isActive=true
      * 非法参数：isEdit=true，isActive=true
      *
-     * @param affiliationId == null || 100: 未分类; == 200：回收站
+     * @param affiliationId == null || 100: 未分类; 200：回收站
      * @param page
      * @param isEdit
      * @param isActive
@@ -141,11 +141,26 @@ public class DocumentController {
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档查询成功", data).toJSONString();
         } catch (COIPIBException e) {
             LOGGER.info(e.getMessage() + " parameter:affiliationId={}, page={}, isEdit={}, isActive={}",
-                    affiliationId, page, isEdit, isActive, e);
+                    affiliationId, page, isEdit, isActive);
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/document/showAllDocument parameter:affiliationId={}, page={}, isEdit={}, isActive={}",
                     affiliationId, page, isEdit, isActive, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
+    @RequestMapping("/recover")
+    @ResponseBody
+    public String recoverDocument(Integer id) {
+        try{
+            documentService.recoverDocument(id);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档还原成功").toJSONString();
+        }catch (COIPIBException e){
+            LOGGER.info(e.getMessage() + " parameter: id={}", id);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        }catch (Exception e){
+            LOGGER.error("/document/remove" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }

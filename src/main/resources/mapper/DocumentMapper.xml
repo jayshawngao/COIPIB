@@ -9,14 +9,14 @@
 	    	#{note}, #{attachment}, #{editor_id}, #{auth});
 	</insert>
 
-	<update id="updateDocument">
+	<update id="update">
 		update document set
 		<trim suffixOverrides=",">
 			<if test="name!=null">
 				name = #{name},
 			</if>
 			<if test="author!=null">
-				name = #{author},
+				author = #{author},
 			</if>
 			<if test="keywords!=null">
 				keywords = #{keywords},
@@ -55,18 +55,28 @@
 
 
 	<select id="selectByAffiliationId" resultType="seu.model.Document">
-		select * from document where affiliation_id = #{affiliationId}
-		<if test="user.level!=3"> <!-- 非管理员用户 -->
-			and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
-			<if test="affiliationId==200 or (isEdit and !isActive)"> <!-- 如果请求回收站或者编辑页 -->
-				and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
-			</if>
-		</if>
-		<if test="!isEdit and !isActive"> <!-- 文献页，只展示审核通过的文献 -->
-			and active = 0
-		</if>
-		<if test="!isEdit and isActive"> <!-- 审核页，只展示未审核的文献 -->
-			and active = 1
-		</if>
+		select * from document where
+        <trim prefixOverrides="and">
+            <choose>
+                <when test="affiliationId==200"> <!-- 请求回收站 -->
+                    and affiliation_id &lt; 0
+                </when>
+                <otherwise>
+                    and affiliation_id = #{affiliationId}
+                </otherwise>
+            </choose>
+            <if test="user.level!=3"> <!-- 非管理员用户 -->
+                and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
+                <if test="affiliationId==200 or (isEdit and !isActive)"> <!-- 如果请求回收站或者编辑页 -->
+                    and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
+                </if>
+            </if>
+            <if test="!isEdit and !isActive"> <!-- 文献页，只展示审核通过的文献 -->
+                and active = 0
+            </if>
+            <if test="!isEdit and isActive"> <!-- 审核页，只展示未审核的文献 -->
+                and active = 1
+            </if>
+        </trim>
 	</select>
 </mapper>

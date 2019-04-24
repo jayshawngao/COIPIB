@@ -73,7 +73,7 @@ public class DocumentService {
         checkDocumentId(id);
 
         Document document = documentDAO.selectById(id);
-        document.setAffiliationId(200); // 回收站
+        document.setAffiliationId(-Math.abs(document.getAffiliationId()));
         documentDAO.update(document);
     }
 
@@ -82,6 +82,14 @@ public class DocumentService {
 
         documentDAO.delete(id);
 
+    }
+
+    public void recoverDocument(Integer id) throws COIPIBException {
+        checkDocumentId(id);
+
+        Document document = documentDAO.selectById(id);
+        document.setAffiliationId(Math.abs(document.getAffiliationId()));
+        documentDAO.update(document);
     }
 
     public Pagination<Document> queryAllDocument(Integer affiliationId, Integer page, Boolean isEdit, Boolean isActive)
