@@ -26,6 +26,9 @@
         <ul class="layui-nav layui-layout-left" >
             <li class="layui-nav-item layui-this"><a href="javascript:;" onclick="showAllDocuments();">文件</a></li>
             <li class="layui-nav-item"><a href="javascript:;" onclick="showEditableDocs();">编辑</a></li>
+            <li class="layui-nav-item" id="adminMenu">
+
+            </li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="/login">登录</a></li>
@@ -154,6 +157,16 @@
             $("#loginButton").show();
             $("#userInfoButton").hide();
         }
+
+        if (userInfo != null && userInfo.level == 3) {
+            var html = "";
+            html = html + '<a href="javascript:;">管理员</a>\n' +
+                '                <dl class="layui-nav-child">\n' +
+                '                    <dd><a href="javascript:;">文献审核</a></dd>\n' +
+                '                    <dd><a href="javascript:;">用户管理</a></dd>\n' +
+                '                </dl>'
+            $("#adminMenu").html(html);
+        }
     }
 
     // 获取一级菜单并显示
@@ -239,8 +252,8 @@
                     return '';
                 } else {
                     var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
-                        '<th style="width: 8%;text-align: center">序号</th>' +
-                        '<th style="width: 40%;text-align: center"">文献名</th>' +
+                        '<th style="width: 6%;text-align: center">序号</th>' +
+                        '<th style="width: 42%;text-align: center"">文献名</th>' +
                         '<th style="width: 8%;text-align: center"">预览</th>' +
                         '<th style="width: 10%;text-align: center"">作者</th>' +
                         '<th style="width: 10%;text-align: center"">编辑人</th>' +
@@ -263,19 +276,19 @@
                         var attachment = element.attachment;
                         var updateTime = timestampToTime(element.updateTime);
                         htmlName = htmlName + '<tr>' +
-                            '<td>' + sequence + '</td>' +
+                            '<td style="text-align: center;">' + sequence + '</td>' +
                             '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
-                            '<td onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
-                            '<td>' + author + '</td>' +
-                            '<td>' + editor + '</td>' +
-                            '<td>' + updateTime + '</td>';
+                            '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
+                            '<td style="text-align: center;">' + author + '</td>' +
+                            '<td style="text-align: center;">' + editor + '</td>' +
+                            '<td style="text-align: center;">' + updateTime + '</td>';
                         if (isEdit == "true" && isActive == "false") {
                             if (id != 200) {
                                 htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;">编辑</a>'
                                     + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickRemoveDocToBin(' + element.id + ',' + id + ',' + curPage + ')">放入回收站</a>'
                                     + '</td>';
                             }else {
-                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;">还原</a>'
+                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doClickRecoverDoc(' + element.id + ',' + id + ',' + curPage + ')">还原</a>'
                                     + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickDeleteDoc(' + element.id + ',' + id + ',' + curPage + ')">永久删除</a>'
                                     + '</td>';
                             }
@@ -389,6 +402,26 @@
         $.ajax({
             type: 'get',
             url: "/document/delete",
+            data: {"id": docId},
+            dataType: "json",
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.msg(data.msg,{icon: 2});
+                    return '';
+                } else {
+                    layer.msg(data.msg, {icon: 1});
+                    doClickShowDoc(affiliationId, curPage);
+                    return;
+                }
+            }
+        });
+    }
+
+    // 回收站文件还原
+    function doClickRecoverDoc(docId, affiliationId, curPage) {
+        $.ajax({
+            type: 'get',
+            url: "/document/recover",
             data: {"id": docId},
             dataType: "json",
             success: function (data) {
