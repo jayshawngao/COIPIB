@@ -32,7 +32,8 @@
             <li class="layui-nav-item"><a href="javascript:;">搜索</a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item"><a href="/login">登录</a></li>
+            <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="/login">登录</a></li>
+            <li class="layui-nav-item" id="userInfoButton" style="display: none; margin-right: 20px;"></li>
             <li class="layui-nav-item">
                 <input type="text" name="" class="layui-input" id="" placeholder="请输入：关键字">
             </li>
@@ -81,6 +82,15 @@
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
+
+    // js全局变量
+    var userInfo = {};
+    userInfo.id = "${user.id}";
+    userInfo.name = "${user.name}";
+    userInfo.email = "${user.email}";
+    userInfo.level = "${user.level}";
+    userInfo.active = "${user.active}";
+
     // layui框架导航模块初始化，禁止删除
     layui.use('element', function () {
         var element = layui.element;
@@ -88,7 +98,28 @@
 
     $(function () {
         getFirstLayer();
+        checkUserLogin();
     });
+
+    // 显示用户信息
+    function checkUserLogin() {
+        if (userInfo.id != null && userInfo.id != -1) {
+            $("#loginButton").hide();
+            var html = "";
+            html = html + '<a href="javascript:;">' + userInfo.name + '</a>'
+                + '<dl class="layui-nav-child">'
+                + '<dd><a href="javascript:;">基本资料</a></dd>'
+                + '<dd><a href="javascript:;">修改密码</a></dd>'
+                + '<hr>'
+                + '<dd><a href="javascript:;">退出</a></dd>'
+                + '</dl>';
+            $("#userInfoButton").html(html);
+            $("#userInfoButton").show();
+        } else {
+            $("#loginButton").show();
+            $("#userInfoButton").hide();
+        }
+    }
 
     // 获取一级菜单并显示
     function getFirstLayer() {
