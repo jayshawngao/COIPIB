@@ -116,6 +116,7 @@
         var affiliationId = String($("#verticalMenu > li:nth-child(1) > a").attr("id"));
         affiliationId = affiliationId.substr(15);
         doClickShowDoc(affiliationId, 1);
+        $("#body-content-right").html("");
     }
 
     // 点击导航栏“文件”
@@ -126,8 +127,23 @@
         var affiliationId = String($("#verticalMenu > li:nth-child(1) > a").attr("id"));
         affiliationId = affiliationId.substr(15);
         doClickShowDoc(affiliationId, 1);
+        $("#body-content-right").html("");
     }
 
+    // 点击导航栏“文件审核”
+    function showNoActiveDocuments() {
+        debugger;
+        clearVerticalMenuCSS();
+        $("#userInfoButton").addClass("layui-this");
+        $("#isActive").val("true");
+        $("#isEdit").val("false");
+        var affiliationId = String($("#verticalMenu > li:nth-child(1) > a").attr("id"));
+        affiliationId = affiliationId.substr(15);
+        doClickShowDoc(affiliationId, 1);
+        $("#body-content-right").html("");
+    }
+
+    // 切换水平导航栏时恢复垂直导航栏状态
     function clearVerticalMenuCSS() {
         var ele = $("#verticalMenu");
         ele.children("li").each(function (i, childEle) {
@@ -146,7 +162,7 @@
             var html = "";
             html = html + '<a href="javascript:;">' + userInfo.name + '</a>'
                 + '<dl class="layui-nav-child">'
-                + '<dd><a href="javascript:;">基本资料</a></dd>'
+                + '<dd><a href="javascript:;" onclick="showNoActiveDocuments()">基本资料</a></dd>'
                 + '<dd><a href="javascript:;">修改密码</a></dd>'
                 + '<hr>'
                 + '<dd><a href="javascript:;">退出</a></dd>'
@@ -258,7 +274,7 @@
                         '<th style="width: 10%;text-align: center"">作者</th>' +
                         '<th style="width: 10%;text-align: center"">编辑人</th>' +
                         '<th style="width: 14%;text-align: center"">更新日期</th>';
-                    if (isEdit == "true" && isActive == "false") {
+                    if ((isEdit == "true" && isActive == "false") || (isEdit == "false" && isActive == "true")) {
                         htmlName = htmlName + '<th style="width: 14%;text-align: center"">操作</th>';
                     }
                     htmlName = htmlName + '</tr></thead>';
@@ -292,6 +308,10 @@
                                     + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickDeleteDoc(' + element.id + ',' + id + ',' + curPage + ')">永久删除</a>'
                                     + '</td>';
                             }
+                        }
+                        if (isEdit == "false" && isActive == "true") {
+                            htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="(' + element.id + ',' + id + ',' + curPage + ')">审核通过</a>'
+                            + '</td>';
                         }
                         htmlName = htmlName + '</tr>';
                         sequence++;
