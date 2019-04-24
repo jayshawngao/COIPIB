@@ -9,14 +9,14 @@
 	    	#{note}, #{attachment}, #{editor_id}, #{auth});
 	</insert>
 
-	<update id="updateDocument">
+	<update id="update">
 		update document set
 		<trim suffixOverrides=",">
 			<if test="name!=null">
 				name = #{name},
 			</if>
 			<if test="author!=null">
-				name = #{author},
+				author = #{author},
 			</if>
 			<if test="keywords!=null">
 				keywords = #{keywords},
