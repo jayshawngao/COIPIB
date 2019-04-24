@@ -24,12 +24,8 @@
         <div class="layui-logo" style="font-weight: bold">COIPIB</div>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left" >
-            <li class="layui-nav-item"><a href="javascript:;">文件</a></li>
-            <li class="layui-nav-item"><a href="javascript:;">编辑</a></li>
-            <li class="layui-nav-item"><a href="javascript:;">文献</a></li>
-            <li class="layui-nav-item"><a href="javascript:;">窗口</a></li>
-            <li class="layui-nav-item"><a href="javascript:;">帮助</a></li>
-            <li class="layui-nav-item"><a href="javascript:;">搜索</a></li>
+            <li class="layui-nav-item layui-this"><a href="javascript:;" onclick="showAllDocuments();">文件</a></li>
+            <li class="layui-nav-item"><a href="javascript:;" onclick="showEditableDocs();">编辑</a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="/login">登录</a></li>
@@ -57,7 +53,7 @@
 
         <!--左边文章列表-->
         <div class="blog-main">
-            <div class="blog-main-left">
+            <div class="blog-main-left" id="body-main-left">
 
                 <div style="padding: 15px;" id="body-content-left">
 
@@ -78,6 +74,8 @@
         <%--<!-- 底部固定区域 -->--%>
         <%--底部固定区域--%>
     <%--</div>--%>
+    <input type="hidden" id="isEdit" value="false">
+    <input type="hidden" id="isActive" value="false">
 </div>
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
@@ -100,6 +98,36 @@
         getFirstLayer();
         checkUserLogin();
     });
+
+    // 点击导航栏“编辑”
+    function showEditableDocs() {
+        clearVerticalMenuCSS();
+        $("#isActive").val("false");
+        $("#isEdit").val("true");
+        var affiliationId = String($("#verticalMenu > li:nth-child(1) > a").attr("id"));
+        affiliationId = affiliationId.substr(15);
+        doClickShowDoc(affiliationId, 1);
+    }
+
+    // 点击导航栏“文件”
+    function showAllDocuments() {
+        clearVerticalMenuCSS();
+        $("#isActive").val("false");
+        $("#isEdit").val("false");
+        var affiliationId = String($("#verticalMenu > li:nth-child(1) > a").attr("id"));
+        affiliationId = affiliationId.substr(15);
+        doClickShowDoc(affiliationId, 1);
+    }
+
+    function clearVerticalMenuCSS() {
+        var ele = $("#verticalMenu");
+        ele.children("li").each(function (i, childEle) {
+            $(childEle).removeClass("layui-nav-itemed");
+        });
+        ele.children("dd").each(function (i, childEle) {
+            $(childEle).removeClass("layui-this");
+        });
+    }
 
     // 显示用户信息
     function checkUserLogin() {
@@ -145,7 +173,8 @@
                             var allChildren = getAllChildren(id);
                             html = html
                                 + '<li class="layui-nav-item">\n'
-                                + '<a class="" href="javascript:;" onclick="doClickShowDoc(' + id + ',' + 1 + ')">'
+                                + '<a class="" href="javascript:;" id="affiliationList' + id
+                                + '" onclick="doClickShowDoc(' + id + ',' + 1 + ')">'
                                 + name + '</a>\n'
                                 + allChildren
                                 + '</li>\n';
@@ -190,10 +219,12 @@
     }
 
     function doClickShowDoc(id, curPage) {
+        var isEdit = $("#isEdit").val();
+        var isActive = $("#isActive").val();
         $.ajax({
             type: 'get',
             url: "/document/showAllDocument",
-            data: {"affiliationId": id, "page": curPage},
+            data: {"affiliationId": id, "page": curPage, "isEdit": isEdit, "isActive": isActive},
             dataType: "json",
             success: function (data) {
                 if (data.code !== 200) {
@@ -202,11 +233,14 @@
                 } else {
                     var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
                         '<th style="width: 8%;text-align: center">序号</th>' +
-                        '<th style="width: 50%;text-align: center"">文献名</th>' +
+                        '<th style="width: 44%;text-align: center"">文献名</th>' +
                         '<th style="width: 14%;text-align: center"">作者</th>' +
                         '<th style="width: 14%;text-align: center"">编辑人</th>' +
-                        '<th style="width: 14%;text-align: center"">更新日期</th>' +
-                        '</tr></thead>';
+                        '<th style="width: 14%;text-align: center"">更新日期</th>';
+                    if (isEdit == "true" && isActive == "false") {
+                        htmlName = htmlName + '<th style="width: 6%;text-align: center"">操作</th>';
+                    }
+                    htmlName = htmlName + '</tr></thead>';
                     var pagination = data.data.pagination;
                     var documentList = pagination.data;
                     var pageInfo = pagination.pageInfo;
@@ -221,11 +255,14 @@
                         var updateTime = timestampToTime(element.updateTime);
                         htmlName = htmlName + '<tr>' +
                             '<td>' + sequence + '</td>' +
-                            '<td style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</td>' +
+                            '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
                             '<td>' + author + '</td>' +
                             '<td>' + editor + '</td>' +
-                            '<td>' + updateTime + '</td>' +
-                            '</tr>';
+                            '<td>' + updateTime + '</td>';
+                        if (isEdit == "true" && isActive == "false") {
+                            htmlName = htmlName + '<td><a class="" style="display: block; cursor: pointer; color: blue;">编辑</a></td>';
+                        }
+                        htmlName = htmlName + '</tr>';
                         sequence++;
                     });
                     if (documentList.length > 0) htmlName = htmlName + '</tbody></table></div>';
