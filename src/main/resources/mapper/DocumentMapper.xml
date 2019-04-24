@@ -5,8 +5,8 @@
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
 		insert into document(name,author,keywords,digest,topic,affiliation_id, year,
 				note, attachment, editor_id, auth)
-	    values(#{name}, #{author}, #{keywords}, #{digest}, #{topic}, #{affiliation_id}, #{year},
-	    	#{note}, #{attachment}, #{editor_id}, #{auth});
+	    values(#{name}, #{author}, #{keywords}, #{digest}, #{topic}, #{affiliationId}, #{year},
+	    	#{note}, #{attachment}, #{editorId}, #{auth});
 	</insert>
 
 	<update id="update">

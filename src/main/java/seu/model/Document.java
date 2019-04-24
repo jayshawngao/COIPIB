@@ -187,6 +187,8 @@ public class Document {
         this.affiliationList = affiliationList;
     }
 
+
+
     @Override
     public String toString() {
         return "Document{" +
