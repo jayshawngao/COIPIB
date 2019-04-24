@@ -191,4 +191,23 @@ public class LoginController {
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
+
+    @RequestMapping("/updatePassword")
+    @ResponseBody
+    public String updatePassword(String newPassword, String oldPassword, String codeCaptcha, HttpServletRequest request) {
+        try {
+            String oldCodeCaptcha = (String) request.getSession().getAttribute("codeCaptcha");
+            userService.updatePassword(oldPassword, newPassword, codeCaptcha, oldCodeCaptcha);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "修改密码成功").toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:oldPassword={}, newPassword={}, codeCaptcha={}, oldCodeCaptcha={}",
+                    oldPassword, newPassword, codeCaptcha, request.getSession().getAttribute("codeCaptcha"));
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/modifyPassword parameter:oldPassword={}, newPassword={}, codeCaptcha={}, oldCodeCaptcha={}",
+                    oldPassword, newPassword, codeCaptcha, request.getSession().getAttribute("codeCaptcha"), e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+
+    }
 }

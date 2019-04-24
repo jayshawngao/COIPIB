@@ -53,8 +53,8 @@
 
         <!--左边文章列表-->
         <div class="blog-main">
-            <div class="blog-main-left" id="body-main-left">
-
+            <!--左边栏目-->
+            <div class="blog-main-left" id="blog-main-left">
                 <div style="padding: 15px;" id="body-content-left">
 
                 </div>
@@ -62,23 +62,27 @@
                     <div id="page"></div>
                 </ul>
             </div>
-            <!--右边小栏目-->
-            <div class="blog-main-right">
+            <!--右边栏目-->
+            <div class="blog-main-right" id="blog-main-right">
                 <div style="padding: 15px;" id="body-content-right"></div>
             </div>
+            <div id="showPdf" style="width: 100%;"></div>
         </div>
         <div class="clear"></div>
     </div>
 
-    <%--<div class="layui-footer" style="background-color: #00FF00">--%>
-        <%--<!-- 底部固定区域 -->--%>
-        <%--底部固定区域--%>
-    <%--</div>--%>
-    <input type="hidden" id="isEdit" value="false">
-    <input type="hidden" id="isActive" value="false">
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        <button class="layui-btn layui-btn-primary layui-btn-sm" id="back" style="display: none" onclick="clickBackBtn();">
+            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+        </button>
+    </div>
 </div>
+<input type="hidden" id="isEdit" value="false">
+<input type="hidden" id="isActive" value="false">
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
+<script src='./static/js/pdfobject.js'></script>
 <script>
 
     // js全局变量
@@ -234,6 +238,7 @@
                     var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
                         '<th style="width: 8%;text-align: center">序号</th>' +
                         '<th style="width: 44%;text-align: center"">文献名</th>' +
+                        '<th style="width: 8%;text-align: center"">预览</th>' +
                         '<th style="width: 14%;text-align: center"">作者</th>' +
                         '<th style="width: 14%;text-align: center"">编辑人</th>' +
                         '<th style="width: 14%;text-align: center"">更新日期</th>';
@@ -252,10 +257,12 @@
                         var name = element.name;
                         var editor = element.editor;
                         var author = element.author;
+                        var attachment = element.attachment;
                         var updateTime = timestampToTime(element.updateTime);
                         htmlName = htmlName + '<tr>' +
                             '<td>' + sequence + '</td>' +
                             '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
+                            '<td onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
                             '<td>' + author + '</td>' +
                             '<td>' + editor + '</td>' +
                             '<td>' + updateTime + '</td>';
@@ -278,7 +285,7 @@
                             + curPage
                             + ')">上一页</a></li>';
                     }
-                    htmlPage = htmlPage + '<li><a href="javascript:void(0);">当前页' + pageInfo.page + '</a></li>';
+                    htmlPage = htmlPage + '<li><a href="javascript:void(0);">当前页&nbsp;' + pageInfo.page + '</a></li>';
                     if (curPage >= pageInfo.totalPage) {
                         htmlPage = htmlPage + '<li><a href="javascript:void(0);">下一页</a></li>';
                     } else {
@@ -294,7 +301,25 @@
         });
     }
 
+    function doclickShowPdf(attachment){
+        document.getElementById("blog-main-left").style.display = "none";
+        document.getElementById("blog-main-right").style.display = "none";
+        var height = window.innerHeight - 67;
+        document.getElementById("showPdf").style.height = height + "px";
+        PDFObject.embed(attachment, "#showPdf");
+        $("#showPdf").show();
+        $("#back").show();
+    }
+
+    function clickBackBtn() {
+        $("#blog-main-left").show();
+        $("#blog-main-right").show();
+        $("#showPdf").hide();
+        $("#back").hide();
+    }
+
     function doClickShowInfo(obj) {
+        var documentName = obj.name;
         var topic = obj.topic;
         var year = obj.year;
         var editor = obj.editor;
@@ -302,13 +327,18 @@
         var author = obj.author;
         var name = obj.affiliationList[0].name;
         var keywords = obj.keywords;
-        var html = '摘要：' + digest +
+        var createTime = timestampToTime(obj.createTime);
+        var updateTime = timestampToTime(obj.updateTime);
+        var html = '标题：' + documentName +
+            '<br><br>摘要：' + digest +
             '<br><br>关键字：' + keywords +
-            '<br><br>作者：' + author +
+            '<br><br>文献作者：' + author +
             '<br><br>编辑人：' + editor +
-            '<br><br>归属：' + name +
-            '<br><br>主题：' + topic +
-            '<br><br>年份：' + year;
+            '<br><br>文献归属：' + name +
+            '<br><br>文献主题：' + topic +
+            '<br><br>文献年份：' + year +
+            '<br><br>创建时间：' + createTime +
+            '<br><br>修改时间：' + updateTime;
         $("#body-content-right").html(html);
     }
 

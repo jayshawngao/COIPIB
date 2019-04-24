@@ -185,4 +185,15 @@ public class UserService {
             throw new COIPIBException(CodeEnum.USER_ERROR, "此操作需要管理员权限！");
         }
     }
+
+    public void updatePassword(String oldPassword, String newPassword, String codeCaptcha, String oldCodeCaptcha) throws COIPIBException{
+        User user = hostHolder.getUser();
+        if(!StringUtils.equals(user.getPassword(), oldPassword)){
+            throw new COIPIBException(CodeEnum.USER_ERROR, "旧密码输入有误");
+        }
+        if(!StringUtils.equals(codeCaptcha, oldCodeCaptcha)){
+            throw new COIPIBException(CodeEnum.USER_ERROR, "验证码错误!");
+        }
+        userDAO.updatePassword(user.getEmail(), newPassword);
+    }
 }
