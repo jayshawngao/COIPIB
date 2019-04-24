@@ -30,4 +30,9 @@ public class PageController {
     public String modifyPassword(){
         return "modifyPassword";
     }
+
+    @RequestMapping("/updatePassword")
+    public String updatePassword(){
+        return "updatePassword";
+    }
 }
