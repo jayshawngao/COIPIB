@@ -110,49 +110,6 @@
             });
             return false;
         });
-
-    //     // 自定义验证规则
-    //     var verifyCode = true;
-    //     form.verify({
-    //
-    //         nameEmail: function (value) {
-    //             $.ajax({
-    //                 type: 'post',
-    //                 url: '/login',
-    //                 data: {"name": value},
-    //                 dataType: 'json',
-    //                 async: false,
-    //                 success: function (data) {
-    //                     var value = data['value'];
-    //                     var msg = data['msg'];
-    //                     if(value !== 200){
-    //                         layer.msg(msg, {icon: 5});
-    //                     }
-    //                 }
-    //             });
-    //         },
-    //
-    //         value: function (value) {
-    //             $.ajax({
-    //                 type: 'post',
-    //                 url: '/checkCode',
-    //                 data: {"value": value},
-    //                 dataType: 'json',
-    //                 async: false,
-    //                 success: function (data) {
-    //                     var value = data['value'];
-    //                     var msg = data['msg'];
-    //                     if(value !== 200){
-    //                         layer.msg(msg, {icon: 5});
-    //                     }
-    //                 }
-    //             });
-    //         },
-    //
-    //
-    //
-    //     });
-
     });
 
 </script>
