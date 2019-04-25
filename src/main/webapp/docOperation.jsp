@@ -160,7 +160,7 @@
            $("#op-document").text("修改文献");
            $.ajax({
                type: 'post',
-               url: "/document/findDocById",
+               url: "${ctx}/document/findDocById",
                data: {"id": docId},
                dataType: "json",
                success: function (data) {
@@ -231,7 +231,7 @@
     function getAffiliationParent() {
         $.ajax({
             type: 'POST',
-            url: '/affiliation/showFirstLayer',
+            url: '${ctx}/affiliation/showFirstLayer',
             dataType: 'json',
             success: function (data) {
                 if (data.code !== 200) {
@@ -262,7 +262,7 @@
         //选完文件后不自动上传
         upload.render({
             elem: '#test8',
-            url: '/document/upload',
+            url: '${ctx}/document/upload',
             auto: false,
             method: 'POST',
             accept: 'file',
@@ -292,7 +292,7 @@
         form.on('select(affiliation-parent)', function (data) {
             $.ajax({
                 type: 'POST',
-                url: '/affiliation/showNextLayer',
+                url: '${ctx}/affiliation/showNextLayer',
                 data: {"parentId": data.value},
                 dataType: 'json',
                 success: function (result) {
@@ -349,7 +349,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/document/insert',
+                url: '${ctx}/document/insert',
                 data: {
                     "name": name,
                     "keywords": keywords,

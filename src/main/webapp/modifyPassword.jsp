@@ -91,7 +91,7 @@
 
             $.ajax({
                 type: 'post',
-                url: '/reglogin/modifyPassword',
+                url: '${ctx}/reglogin/modifyPassword',
                 data: {"newPassword": newPassword, "confirmPassword": confirmPassword, "codeCaptcha": codeCaptcha},
                 dataType: 'json',
                 success: function (data) {
