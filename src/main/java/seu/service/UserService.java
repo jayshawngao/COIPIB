@@ -199,4 +199,18 @@ public class UserService {
         logout(ticket);
 
     }
+
+    public void grantVIP(Integer id) throws COIPIBException {
+        adminAuth();
+
+        if (id == null) {
+            throw new COIPIBException(CodeEnum.USER_ERROR, "参数不能为空！");
+        }
+        User user = userDAO.selectById(id);
+        if (user == null) {
+            throw new COIPIBException(CodeEnum.USER_ERROR, "用户不存在！");
+        }
+        user.setLevel(LevelEnum.VIP.getValue());
+        userDAO.update(user);
+    }
 }

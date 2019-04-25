@@ -211,4 +211,11 @@ public class LoginController {
         }
 
     }
+
+//    @RequestMapping("grantVIP")
+//    @ResponseBody
+//    public String grantVIP(Integer id) {
+//        try {
+//
+//    }
 }
