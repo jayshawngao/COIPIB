@@ -109,7 +109,7 @@
                         if (next != null && next.trim() != "") {
                             location = next;
                         } else {
-                            location = "/";
+                            location = "${ctx}/";
                         }
                     }
                 }
