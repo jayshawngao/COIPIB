@@ -78,7 +78,7 @@
     });
     // 更换验证码
     function changeCaptcha() {
-        $.get('/reglogin/codeCaptcha', function (data) {
+        $.get('${ctx}/reglogin/codeCaptcha', function (data) {
             $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
         });
     }
