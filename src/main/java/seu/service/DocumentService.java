@@ -134,12 +134,12 @@ public class DocumentService {
         PageInfo pageInfo = new PageInfo(documentList.size(), page);
         documentList = documentList.subList(pageInfo.getBeginIndex(), pageInfo.getEndIndex());
         for (Document document: documentList) {
-            fillDoucment(document);
+            fillDocument(document);
         }
         return new Pagination<Document>(documentList, pageInfo);
     }
 
-    private void fillDoucment(Document document) {
+    private void fillDocument(Document document) {
         if (document == null) {
             return;
         }
@@ -187,6 +187,9 @@ public class DocumentService {
         PageInfo pageInfo = new PageInfo(totalRow, page);
         List<Document> documentList = documentDAO.simpleSearch(name, hostHolder.getUser(), isEdit, isActive,
                 pageInfo.getBeginIndex(), pageInfo.getEndIndex());
+        for (Document document: documentList) {
+            fillDocument(document);
+        }
         return new Pagination<Document>(documentList, pageInfo);
     }
 
