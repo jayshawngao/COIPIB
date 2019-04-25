@@ -1,5 +1,6 @@
 package seu.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -161,6 +162,19 @@ public class DocumentService {
         if (document == null) {
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文献不存在！");
         }
+    }
+
+    public Pagination<Document> simpleSearch(String name, Integer page) throws COIPIBException{
+        if (StringUtils.isBlank(name)) {
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "搜索内容不能为空！");
+        }
+        if (page == null) {
+            page = 1;
+        }
+        Integer totalRow = documentDAO.countSimpleSearch(name);
+        PageInfo pageInfo = new PageInfo(totalRow, page);
+        List<Document> documentList = documentDAO.simpleSearch(name, pageInfo.getBeginIndex(), pageInfo.getEndIndex());
+        return new Pagination<Document>(documentList, pageInfo);
     }
 
 }

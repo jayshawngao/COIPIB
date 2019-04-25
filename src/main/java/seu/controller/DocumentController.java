@@ -180,4 +180,29 @@ public class DocumentController {
         }
     }
 
+    /**
+     *
+     * @param name
+     * @param page 空值默认为1
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/simpleSearch")
+    public String simpleSearch(String name, Integer page) {
+        try {
+            Pagination<Document> pagination = documentService.simpleSearch(name, page);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("pagination", pagination);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "搜索成功", data).toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:name={}, page={}",
+                    name, page);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/document/simpleSearch parameter:name={}, page={}",
+                    name, page, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
 }
