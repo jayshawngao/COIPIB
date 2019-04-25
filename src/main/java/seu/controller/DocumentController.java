@@ -63,6 +63,10 @@ public class DocumentController {
     @ResponseBody
     public String uploadFile(MultipartFile file, HttpServletRequest request, HttpServletResponse response){
         String fileDirectory = request.getServletContext().getRealPath("/") + "/static/file/";
+        File directory = new File(fileDirectory);
+        if (!directory.isDirectory()) {
+            directory.mkdirs();
+        }
         String fileName = file.getOriginalFilename();
         fileName = UUID.randomUUID().toString() + fileName.substring(fileName.lastIndexOf("."));
         String filePath= fileDirectory + fileName;
