@@ -12,6 +12,7 @@ import seu.async.EventModel;
 import seu.async.EventType;
 import seu.base.CodeEnum;
 import seu.base.CommonResponse;
+import seu.base.Pagination;
 import seu.exceptions.COIPIBException;
 import seu.model.User;
 import seu.service.CaptchaService;
@@ -224,6 +225,28 @@ public class LoginController {
         } catch (Exception e) {
             LOGGER.error("/reglogin/grantVIP parameter:id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
+    /**
+     *
+     * @param page 默认为1
+     * @return
+     */
+    @RequestMapping("/showAllUser")
+    @ResponseBody
+    public String showAllUser(Integer page) {
+        try {
+            Pagination<User> pagination = userService.queryAllUser(page);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("pagination", pagination);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "显示所有用户", data).toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:page={}", page);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        }  catch (Exception e) {
+            LOGGER.error("/reglogin/showAllUser" + " parameter:page={}", page, e);
+            return new CommonResponse(CodeEnum.USER_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 }

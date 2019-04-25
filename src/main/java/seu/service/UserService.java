@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import seu.base.CodeEnum;
 
 import seu.base.LevelEnum;
+import seu.base.PageInfo;
+import seu.base.Pagination;
 import seu.dao.LoginTicketDAO;
 import seu.dao.UserDAO;
 import seu.exceptions.COIPIBException;
@@ -17,10 +19,7 @@ import seu.model.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -212,5 +211,19 @@ public class UserService {
         }
         user.setLevel(LevelEnum.VIP.getValue());
         userDAO.update(user);
+    }
+
+    public Pagination<User> queryAllUser(Integer page) throws COIPIBException{
+        adminAuth();
+
+        if (page == null) {
+            page = 1;
+        }
+        Integer totalRow = userDAO.countAllUser();
+        PageInfo pageInfo = new PageInfo(totalRow, page);
+        List<User> userList = userDAO.selectAll(pageInfo.getBeginIndex(), pageInfo.getEndIndex());
+        return new Pagination<User>(userList, pageInfo);
+
+
     }
 }
