@@ -225,35 +225,6 @@
         $("#auth_3").attr("disabled", "disabled");
     }
 
-    $(function () {
-        getAffiliationParent();
-    });
-
-    function getAffiliationParent() {
-        $.ajax({
-            type: 'POST',
-            url: '${ctx}/affiliation/showFirstLayer',
-            dataType: 'json',
-            success: function (data) {
-                if (data.code != 200) {
-                    layer.msg(data.msg, {icon: 2});
-                    return false;
-                } else {
-                    var affiliationList = data.data.affiliationList;
-                    var html = '<option value="">请选择</option>';
-                    affiliationList.forEach(function (element) {
-                        var name = element.name;
-                        var id = element.id;
-                        if (element.deleted == 1 && element.parentId == 0) {
-                            html = html + '<option value="' + id + '">' + name + '</option>';
-                        }
-                    });
-                    $("#affiliation_1").html(html);
-                }
-            }
-        });
-    }
-
     layui.use(['form', 'layedit', 'upload'], function () {
         var form = layui.form;
         var $ = layui.jquery;
@@ -296,7 +267,7 @@
         function getAffiliationParent() {
             $.ajax({
                 type: 'POST',
-                url: '/affiliation/showFirstLayer',
+                url: '${ctx}/affiliation/showFirstLayer',
                 dataType: 'json',
                 success: function (data) {
                     if (data.code != 200) {
