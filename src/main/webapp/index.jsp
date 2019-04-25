@@ -352,8 +352,8 @@
     function doClickShowUserManagement(curPage) {
         $.ajax({
             type: 'get',
-            url: "/document/showAllDocument",
-            data: {"page": curPage,},
+            url: "/reglogin/showAllUser",
+            data: {"page": curPage},
             dataType: "json",
             success: function (data) {
                 if (data.code !== 200) {
@@ -362,6 +362,7 @@
                     return false;
                 } else {
                     var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
+                        '<th style="width: 6%;text-align: center">序号</th>' +
                         '<th style="width: 6%;text-align: center">名称</th>' +
                         '<th style="width: 42%;text-align: center"">邮箱</th>' +
                         '<th style="width: 8%;text-align: center"">级别</th>' +
@@ -377,21 +378,25 @@
                     var sequence = 1;
                     userList.forEach(function (element) {
                         var name = element.name;
-                        var editor = element.editor;
-                        var author = element.author;
-                        var attachment = element.attachment;
-                        var updateTime = timestampToTime(element.updateTime);
+                        var email = element.email;
+                        var level = element.level;
+                        var attachment = level > 1 ? "是" : "否";
                         htmlName = htmlName + '<tr>' +
                             '<td style="text-align: center;">' + sequence + '</td>' +
-                            '<td style="text-align: center;">' +  + '</td>' +
-                            '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
-                            '<td style="text-align: center;">' + author + '</td>' +
-                            '<td style="text-align: center;">' + editor + '</td>' +
-                            '<td style="text-align: center;">' + updateTime + '</td>';
-                        htmlName = htmlName + '</tr>';
+                            '<td style="text-align: center;">' + name + '</td>' +
+                            '<td style="text-align: center;">' + email + '</td>' +
+                            '<td style="text-align: center;">' + level + '</td>' +
+                            '<td style="text-align: center;">' + attachment + '</td>' +
+                            '<td style="text-align: center;">';
+                        if (level <= 1) {
+                            htmlName = htmlName + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickGrantVIP(' + element.id + ',' + curPage + ');">升级用户</a>';
+                        } else {
+                            htmlName = htmlName + '升级用户';
+                        }
+                        htmlName = htmlName + '</td></tr>';
                         sequence++;
                     });
-                    if (documentList.length > 0) htmlName = htmlName + '</tbody></table></div>';
+                    if (userList.length > 0) htmlName = htmlName + '</tbody></table></div>';
                     $("#body-content-left").html(htmlName);
 
                     var htmlPage = '<li class="total-page"><a href="javascript:void(0);">共&nbsp;' + totalPage + '&nbsp;页</a></li>';
@@ -399,8 +404,7 @@
                         htmlPage = htmlPage + '<li><a href="javascript:void(0);">上一页</a></li>';
                     } else {
                         curPage = curPage - 1;
-                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
-                            + id + ','
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowUserManagement('
                             + curPage
                             + ')">上一页</a></li>';
                     }
@@ -409,8 +413,7 @@
                         htmlPage = htmlPage + '<li><a href="javascript:void(0);">下一页</a></li>';
                     } else {
                         curPage = curPage + 1;
-                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
-                            + id + ','
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowUserManagement('
                             + curPage
                             + ')">下一页</a></li>';
                     }
@@ -487,6 +490,28 @@
                 } else {
                     layer.msg(data.msg, {icon: 1});
                     doClickShowDoc(affiliationId, curPage);
+                    return;
+                }
+            }
+        });
+    }
+
+    // 升级VIP用户操作
+    function doClickGrantVIP(userId, curPage) {
+        var e = e || window.event;
+        var obj = e.target || e.srcElement;
+        $.ajax({
+            type: 'get',
+            url: '/reglogin/grantVIP',
+            data: {"id": userId},
+            dataType: "json",
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.msg(data.msg,{icon: 2});
+                    return false;
+                } else {
+                    layer.msg(data.msg, {icon: 1});
+                    doClickShowUserManagement(curPage);
                     return;
                 }
             }
