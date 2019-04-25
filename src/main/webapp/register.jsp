@@ -203,33 +203,6 @@
             });
             return false;
         });
-
-        // // 自定义验证规则
-        // var verifyCode = true;
-        // form.verify({
-        //
-        //     value: function (value) {
-        //         $.ajax({
-        //             url: '/checkCode',
-        //             data: {"value": value},
-        //             dataType: 'json',
-        //             async: false,
-        //             success: function (data) {
-        //                 var message = data['message'];
-        //                 if(message === 'isNull'){
-        //                     verifyCode = false;
-        //                     layer.msg("缓存验证码为空，请刷新页面", {icon: 5});
-        //                 }else if(message === 'codeError'){
-        //                     verifyCode = false;
-        //                     layer.msg("验证码错误", {icon: 5});
-        //                 }else {
-        //                     verifyCode = true;
-        //                 }
-        //             }
-        //         });
-        //     },
-        //
-        // });
     });
 
 </script>
