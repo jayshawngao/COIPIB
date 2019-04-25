@@ -106,10 +106,9 @@
                         return false;
                     } else {
                         if (next != null && next.trim() != "") {
-                            alert(next);
-                            location = "${ctx}" + next;
+                            location = next;
                         } else {
-                            location = "${ctx}/";
+                            location = "/";
                         }
                     }
                 }
