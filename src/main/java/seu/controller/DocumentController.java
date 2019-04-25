@@ -160,7 +160,7 @@ public class DocumentController {
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
-            LOGGER.error("/document/remove" + " parameter: id={}", id, e);
+            LOGGER.error("/document/recover" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
@@ -175,7 +175,7 @@ public class DocumentController {
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
-            LOGGER.error("/document/remove" + " parameter: id={}", id, e);
+            LOGGER.error("/document/active" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
