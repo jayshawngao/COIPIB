@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import seu.base.CodeEnum;
 
 import seu.base.LevelEnum;
+import seu.base.PageInfo;
+import seu.base.Pagination;
 import seu.dao.LoginTicketDAO;
 import seu.dao.UserDAO;
 import seu.exceptions.COIPIBException;
@@ -17,10 +19,7 @@ import seu.model.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -186,7 +185,8 @@ public class UserService {
         }
     }
 
-    public void updatePassword(String oldPassword, String newPassword, String codeCaptcha, String oldCodeCaptcha) throws COIPIBException{
+    public void updatePassword(String oldPassword, String newPassword, String codeCaptcha,
+                               String oldCodeCaptcha, String ticket) throws COIPIBException{
         User user = hostHolder.getUser();
         if(!StringUtils.equals(user.getPassword(), oldPassword)){
             throw new COIPIBException(CodeEnum.USER_ERROR, "旧密码输入有误");
@@ -195,5 +195,35 @@ public class UserService {
             throw new COIPIBException(CodeEnum.USER_ERROR, "验证码错误!");
         }
         userDAO.updatePassword(user.getEmail(), newPassword);
+        logout(ticket);
+
+    }
+
+    public void grantVIP(Integer id) throws COIPIBException {
+        adminAuth();
+
+        if (id == null) {
+            throw new COIPIBException(CodeEnum.USER_ERROR, "参数不能为空！");
+        }
+        User user = userDAO.selectById(id);
+        if (user == null) {
+            throw new COIPIBException(CodeEnum.USER_ERROR, "用户不存在！");
+        }
+        user.setLevel(LevelEnum.VIP.getValue());
+        userDAO.update(user);
+    }
+
+    public Pagination<User> queryAllUser(Integer page) throws COIPIBException{
+        adminAuth();
+
+        if (page == null) {
+            page = 1;
+        }
+        Integer totalRow = userDAO.countAllUser();
+        PageInfo pageInfo = new PageInfo(totalRow, page);
+        List<User> userList = userDAO.selectAll(pageInfo.getBeginIndex(), pageInfo.getEndIndex());
+        return new Pagination<User>(userList, pageInfo);
+
+
     }
 }

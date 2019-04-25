@@ -1,5 +1,6 @@
 package seu.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,12 +134,12 @@ public class DocumentService {
         PageInfo pageInfo = new PageInfo(documentList.size(), page);
         documentList = documentList.subList(pageInfo.getBeginIndex(), pageInfo.getEndIndex());
         for (Document document: documentList) {
-            fillDoucment(document);
+            fillDocument(document);
         }
         return new Pagination<Document>(documentList, pageInfo);
     }
 
-    private void fillDoucment(Document document) {
+    private void fillDocument(Document document) {
         if (document == null) {
             return;
         }
@@ -161,6 +162,35 @@ public class DocumentService {
         if (document == null) {
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文献不存在！");
         }
+    }
+
+    public Pagination<Document> simpleSearch(String name, Integer page, Boolean isEdit, Boolean isActive) throws COIPIBException{
+        if (StringUtils.isBlank(name)) {
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "搜索内容不能为空！");
+        }
+        if (page == null) {
+            page = 1;
+        }
+        if (isEdit == null) {
+            isEdit = false;
+        }
+        if (isActive == null) {
+            isActive = false;
+        }
+        if (isEdit == true && isActive == true) {
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "isEdit isActive 不能同时为true");
+        }
+        if (isActive == true) {
+            userService.adminAuth();
+        }
+        Integer totalRow = documentDAO.countSimpleSearch(name, hostHolder.getUser(), isEdit, isActive);
+        PageInfo pageInfo = new PageInfo(totalRow, page);
+        List<Document> documentList = documentDAO.simpleSearch(name, hostHolder.getUser(), isEdit, isActive,
+                pageInfo.getBeginIndex(), pageInfo.getEndIndex());
+        for (Document document: documentList) {
+            fillDocument(document);
+        }
+        return new Pagination<Document>(documentList, pageInfo);
     }
 
 }

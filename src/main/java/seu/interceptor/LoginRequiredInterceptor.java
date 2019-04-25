@@ -23,10 +23,10 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
     Visitor visitor;
 
     /**
-     * 需要登录才能访问的页面
+     * 需要登录才能访问的接口
      */
     private static List<String> NEED_LOGIN_URIS = Arrays.asList(
-            "~~~~"
+        "/updatePassword", "/docOperation"
     );
 
     @Override
@@ -34,7 +34,8 @@ public class LoginRequiredInterceptor implements HandlerInterceptor {
         if (hostHolder.getUser() == visitor) {
             for (String uri: NEED_LOGIN_URIS) {
                 if (httpServletRequest.getRequestURI().contains(uri)) {
-                    httpServletResponse.sendRedirect(httpServletRequest.getContextPath()+"/login");
+                    httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/login?next="
+                            + httpServletRequest.getRequestURI());
                     return false;
                 }
             }

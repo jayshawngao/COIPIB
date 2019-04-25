@@ -26,6 +26,18 @@ public interface DocumentDAO {
     @Select({"select * from", TABLE_NAME, "where id = #{id}"})
     public Document selectById(Integer id);
 
+    public List<Document> simpleSearch(@Param("content") String name,
+                                       @Param("user")User user,
+                                       @Param("isEdit")Boolean isEdit,
+                                       @Param("isActive") Boolean isActive,
+                                       @Param("begin")Integer begin,
+                                       @Param("end")Integer end);
+
+    public Integer countSimpleSearch(@Param("content") String name,
+                                     @Param("user")User user,
+                                     @Param("isEdit")Boolean isEdit,
+                                     @Param("isActive") Boolean isActive);
+
     /**
      * @TODO 特殊查询
      * */

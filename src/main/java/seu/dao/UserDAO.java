@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import seu.model.User;
 
+import java.util.List;
+
 
 @Mapper
 public interface UserDAO {
@@ -28,4 +30,10 @@ public interface UserDAO {
 
     @Update({"update ", TABLE_NAME, " set password=#{newPassword} where email=#{email}"})
     Integer updatePassword(@Param("email") String email, @Param("newPassword") String newPassword);
+
+    @Select({"select ", SELECT_FIELDS, " from ", TABLE_NAME, " limit #{begin}, #{end}"})
+    List<User> selectAll(@Param("begin")Integer begin, @Param("end") Integer end);
+
+    @Select({"select count(id) from ", TABLE_NAME})
+    Integer countAllUser();
 }

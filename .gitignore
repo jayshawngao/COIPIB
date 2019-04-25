@@ -3,4 +3,5 @@
 *.iml
 .idea/
 logs/
-/pdf
+src/main/webapp/pdf
+/static/file/

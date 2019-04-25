@@ -65,6 +65,10 @@ public class DocumentController {
     public String uploadFile(@RequestParam(value="file") MultipartFile file, HttpServletRequest request, HttpServletResponse response){
         System.out.println("file = " + file);
         String fileDirectory = request.getServletContext().getRealPath("/") + "/static/file/";
+        File directory = new File(fileDirectory);
+        if (!directory.isDirectory()) {
+            directory.mkdirs();
+        }
         String fileName = file.getOriginalFilename();
         System.out.println(fileName);
         fileName = UUID.randomUUID().toString() + fileName.substring(fileName.lastIndexOf("."));
@@ -163,7 +167,47 @@ public class DocumentController {
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
-            LOGGER.error("/document/remove" + " parameter: id={}", id, e);
+            LOGGER.error("/document/recover" + " parameter: id={}", id, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
+    @RequestMapping("/active")
+    @ResponseBody
+    public String activeDocument(Integer id) {
+        try{
+            documentService.activeDocument(id);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档审核成功").toJSONString();
+        }catch (COIPIBException e){
+            LOGGER.info(e.getMessage() + " parameter: id={}", id);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        }catch (Exception e){
+            LOGGER.error("/document/active" + " parameter: id={}", id, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
+    /**
+     *
+     * @param name
+     * @param page 空值默认为1
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/simpleSearch")
+    public String simpleSearch(String name, Integer page, Boolean isEdit, Boolean isActive) {
+        try {
+            Pagination<Document> pagination = documentService.simpleSearch(name, page, isEdit, isActive);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("pagination", pagination);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "搜索成功", data).toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:name={}, page={}",
+                    name, page);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/document/simpleSearch parameter:name={}, page={}",
+                    name, page, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }

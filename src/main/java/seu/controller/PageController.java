@@ -1,6 +1,7 @@
 package seu.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -12,7 +13,8 @@ public class PageController {
     }
 
     @RequestMapping("/login")
-    public String login() {
+    public String login(String next, Model model) {
+        model.addAttribute("next", next);
         return "login";
     }
 
@@ -36,8 +38,8 @@ public class PageController {
         return "updatePassword";
     }
 
-    @RequestMapping("/addDoc")
-    public String addDoc(){
-        return "addDoc";
+    @RequestMapping("/docOperation")
+    public String docOperation(){
+        return "docOperation";
     }
 }
