@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import seu.base.CodeEnum;
@@ -59,11 +60,13 @@ public class DocumentController {
         }
     }
 
-    @RequestMapping("/upload")
+    @RequestMapping(value = "/upload")
     @ResponseBody
-    public String uploadFile(MultipartFile file, HttpServletRequest request, HttpServletResponse response){
+    public String uploadFile(@RequestParam(value="file") MultipartFile file, HttpServletRequest request, HttpServletResponse response){
+        System.out.println("file = " + file);
         String fileDirectory = request.getServletContext().getRealPath("/") + "/static/file/";
         String fileName = file.getOriginalFilename();
+        System.out.println(fileName);
         fileName = UUID.randomUUID().toString() + fileName.substring(fileName.lastIndexOf("."));
         String filePath= fileDirectory + fileName;
         try{

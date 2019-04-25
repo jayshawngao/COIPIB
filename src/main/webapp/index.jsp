@@ -26,12 +26,13 @@
         <ul class="layui-nav layui-layout-left" >
             <li class="layui-nav-item layui-this"><a href="javascript:;" onclick="showAllDocuments();">文件</a></li>
             <li class="layui-nav-item"><a href="javascript:;" onclick="showEditableDocs();">编辑</a></li>
+            <li class="layui-nav-item"><a href="${ctx}/addDoc">新增文献</a></li>
             <li class="layui-nav-item" id="adminMenu">
 
             </li>
         </ul>
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="/login">登录</a></li>
+            <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="${ctx}/login">登录</a></li>
             <li class="layui-nav-item" id="userInfoButton" style="display: none; margin-right: 20px;"></li>
             <li class="layui-nav-item">
                 <input type="text" name="" class="layui-input" id="" placeholder="请输入：关键字">
@@ -163,7 +164,7 @@
             html = html + '<a href="javascript:;">' + userInfo.name + '</a>'
                 + '<dl class="layui-nav-child">'
                 + '<dd><a href="javascript:;" onclick="showNoActiveDocuments()">基本资料</a></dd>'
-                + '<dd><a href="javascript:;">修改密码</a></dd>'
+                + '<dd><a href="${ctx}/updatePassword">修改密码</a></dd>'
                 + '<hr>'
                 + '<dd><a href="javascript:;">退出</a></dd>'
                 + '</dl>';
@@ -290,7 +291,7 @@
                         var editor = element.editor;
                         var author = element.author;
                         var attachment = element.attachment;
-                        var updateTime = timestampToTime(element.updateTime);
+                        var updateTime = timestampToDate(element.updateTime);
                         htmlName = htmlName + '<tr>' +
                             '<td style="text-align: center;">' + sequence + '</td>' +
                             '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
@@ -369,8 +370,22 @@
         var editor = obj.editor;
         var digest = obj.digest;
         var author = obj.author;
+        var note = obj.note;
+        if(note == null)
+            note = '';
         var name = obj.affiliationList[0].name;
         var keywords = obj.keywords;
+        var authority = obj.auth;
+        var authName = "其他";
+        if(authority === 0) {
+            authName = "游客可见";
+        } else if(authority === 1){
+            authName = "注册用户可见";
+        } else if(authority === 2){
+            authName = "VIP可见";
+        } else if(authority === 3){
+            authName = "管理员可见";
+        }
         var createTime = timestampToTime(obj.createTime);
         var updateTime = timestampToTime(obj.updateTime);
         var html = '标题：' + documentName +
@@ -379,14 +394,16 @@
             '<br><br>文献作者：' + author +
             '<br><br>编辑人：' + editor +
             '<br><br>文献归属：' + name +
+            '<br><br>文献密级：' + authName +
             '<br><br>文献主题：' + topic +
             '<br><br>文献年份：' + year +
+            '<br><br>文献备注：' + note +
             '<br><br>创建时间：' + createTime +
             '<br><br>修改时间：' + updateTime;
         $("#body-content-right").html(html);
     }
 
-    function timestampToTime(timestamp) {
+    function timestampToDate(timestamp) {
         var date = new Date(timestamp);
         var Y = date.getFullYear() + '-';
         var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
@@ -395,6 +412,17 @@
         var m = date.getMinutes() + ':';
         var s = date.getSeconds();
         return Y + M + D;
+    }
+
+    function timestampToTime(timestamp) {
+        var date = new Date(timestamp);
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+        var D = date.getDate() + ' ';
+        var h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+        var m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+        var s = date.getSeconds() < 10 ? date.getSeconds() : date.getSeconds();
+        return Y + M + D + h + ":" + m + ":" + s;
     }
 
     // 文件放入回收站

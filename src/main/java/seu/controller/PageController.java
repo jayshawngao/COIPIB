@@ -35,4 +35,9 @@ public class PageController {
     public String updatePassword(){
         return "updatePassword";
     }
+
+    @RequestMapping("/addDoc")
+    public String addDoc(){
+        return "addDoc";
+    }
 }
