@@ -268,7 +268,7 @@
             data: {"affiliationId": id, "page": curPage, "isEdit": isEdit, "isActive": isActive},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg, {icon: 2});
                     console.log(data.msg);
                     return '';
@@ -370,7 +370,7 @@
             data: {"page": curPage},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg, {icon: 2});
                     console.log(data.msg);
                     return false;
@@ -458,16 +458,18 @@
         var editor = obj.editor;
         var digest = obj.digest;
         var author = obj.author;
+        var note = obj.note;
         var name = obj.affiliationList[0].name;
         var keywords = obj.keywords;
-        var createTime = timestampToTime(obj.createTime);
-        var updateTime = timestampToTime(obj.updateTime);
+        var createTime = timestampToDate(obj.createTime);
+        var updateTime = timestampToDate(obj.updateTime);
         var html = '标题：' + documentName +
             '<br><br>摘要：' + digest +
             '<br><br>关键字：' + keywords +
             '<br><br>文献作者：' + author +
             '<br><br>编辑人：' + editor +
             '<br><br>文献归属：' + name +
+            '<br><br>文献备注：' + note +
             '<br><br>文献主题：' + topic +
             '<br><br>文献年份：' + year +
             '<br><br>创建时间：' + createTime +
@@ -480,10 +482,17 @@
         var Y = date.getFullYear() + '-';
         var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
         var D = date.getDate() + ' ';
-        var h = date.getHours() + ':';
-        var m = date.getMinutes() + ':';
-        var s = date.getSeconds();
         return Y + M + D;
+    }
+    function timestampToDate(timestamp) {
+        var date = new Date(timestamp);
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+        var D = date.getDate() + ' ';
+        var h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+        var m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+        var s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+        return Y + M + D + h + ':' + m + ":" + s;
     }
 
     // 实现文件操作：放入回收站、回收站文件永久删除、回收站文件还原、文件审核
@@ -495,7 +504,7 @@
             data: {"id": docId},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg,{icon: 2});
                     return '';
                 } else {
@@ -517,7 +526,7 @@
             data: {"id": userId},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg,{icon: 2});
                     return false;
                 } else {
@@ -542,7 +551,7 @@
             data: {"name": key, "page": curPage, "isEdit": isEdit, "isActive": isActive},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg,{icon: 2});
                     return false;
                 } else {

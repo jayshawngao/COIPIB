@@ -164,7 +164,7 @@
                data: {"id": docId},
                dataType: "json",
                success: function (data) {
-                   if (data.code !== 200) {
+                   if (data.code != 200) {
                        layer.msg(data.msg,{icon: 2});
                        return '';
                    } else {
@@ -234,7 +234,7 @@
             url: '${ctx}/affiliation/showFirstLayer',
             dataType: 'json',
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg, {icon: 2});
                     return false;
                 } else {
@@ -243,7 +243,7 @@
                     affiliationList.forEach(function (element) {
                         var name = element.name;
                         var id = element.id;
-                        if (element.deleted === 1 && element.parentId === 0) {
+                        if (element.deleted == 1 && element.parentId == 0) {
                             html = html + '<option value="' + id + '">' + name + '</option>';
                         }
                     });
@@ -273,7 +273,7 @@
             },
             done: function (res) {
                 layer.closeAll('loading');
-                if (res.code !== 200) {
+                if (res.code != 200) {
                     layer.msg(res.msg, {icon: 2});
                     return false;
                 } else {
@@ -296,7 +296,7 @@
                 data: {"parentId": data.value},
                 dataType: 'json',
                 success: function (result) {
-                    if (result.code !== 200) {
+                    if (result.code != 200) {
                         layer.msg(result.msg, {icon: 2});
                         return false;
                     } else {
@@ -305,7 +305,7 @@
                         childrenList.forEach(function (element) {
                             var name = element.name;
                             var id = element.id;
-                            if (element.deleted === 1) {
+                            if (element.deleted == 1) {
                                 html = html + '<option value="' + id + '">' + name + '</option>';
                             }
                         });
@@ -321,7 +321,7 @@
         form.on('submit(submit)', function (data) {
 
             console.log("attachment = " + attachment);
-            if (attachment === "") {
+            if (attachment =="") {
                 layer.msg("请选择您要上传的文献", {icon: 2});
                 return false;
             }
@@ -365,7 +365,7 @@
                 },
                 dataType: 'json',
                 success: function (result) {
-                    if (result.code !== 200) {
+                    if (result.code != 200) {
                         layer.msg(result.msg, {icon: 2});
                         return false;
                     } else {
