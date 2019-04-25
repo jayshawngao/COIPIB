@@ -11,6 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
     <title>COIPIB</title>
     <link rel="stylesheet" href="./static/plug/layui/css/layui.css">
+    <%--网页图标--%>
+    <link rel="shortcut icon" href="static/images/COIPIB.png" type="image/x-icon">
     <!--font-awesome-->
     <link href="./static/plug/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
     <!--全局样式表-->

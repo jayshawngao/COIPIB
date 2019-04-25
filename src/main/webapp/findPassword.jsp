@@ -14,6 +14,8 @@
     initial-scale=0.8,target-densitydpi=low-dpi"/>
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
 
+    <%--网页图标--%>
+    <link rel="shortcut icon" href="static/images/COIPIB.png" type="image/x-icon">
     <!--全局样式表-->
     <link href="./static/css/global.css" rel="stylesheet"/>
     <!--Layui-->
