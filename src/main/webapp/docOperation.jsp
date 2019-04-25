@@ -154,9 +154,10 @@
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
     var attachment = "";
+    var updateOrInsert = null;
+    var docId = window.localStorage.getItem('docId');
 
     $(function () {
-       var docId = window.localStorage.getItem('docId');
        console.log("docId = " + docId);
        if(docId > 0){
            $("#op-document").text("修改文献");
@@ -199,7 +200,7 @@
                        }else if(auth == 3){
                            $("#auth_3").attr("selected", "selected");
                        }
-                       docId = 0;
+                       updateOrInsert = docId;
                    }
                }
            });
@@ -332,6 +333,10 @@
                 layer.msg("请您登录", {icon: 2});
                 return false;
             }
+            var id = null;
+            if(updateOrInsert > 0){
+                id = updateOrInsert;
+            }
             var name = $("#name").val();  // 文献名称
             var author = $("#author").val(); // 文献作者
             var digest = $("#digest").val();  // 文献摘要
@@ -350,10 +355,16 @@
             var auth = $("#auth").val();  // 文献密级
             var year = $("#year").val();  // 文献年份
 
+            var url = "${ctx}/document/insert";
+            if(updateOrInsert > 0){
+                url = "${ctx}/document/update"
+            }
+            console.log("docId = " + docId);
             $.ajax({
                 type: 'POST',
-                url: '${ctx}/document/insert',
+                url: url,
                 data: {
+                    "id": id,
                     "name": name,
                     "keywords": keywords,
                     "digest": digest,
@@ -372,7 +383,12 @@
                         layer.msg(result.msg, {icon: 2});
                         return false;
                     } else {
-                        layer.msg("文献新增成功，即将跳转主页！", {icon: 6});
+                        if(updateOrInsert == null){
+                            layer.msg("文献新增成功，即将跳转主页！", {icon: 6});
+                        }else if(updateOrInsert > 0){
+                            layer.msg("文献修改成功，即将跳转主页！", {icon: 6});
+                        }
+
                         setTimeout('window.location.href = "${ctx}/"', 3000);
                     }
                 }
