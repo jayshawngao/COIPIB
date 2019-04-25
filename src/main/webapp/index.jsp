@@ -546,6 +546,7 @@
                 } else {
                     fillDocsTable(data, affiliationId, curPage, isEdit, isActive);
                     $("#simSearchKey").val("");
+                    clearVerticalMenuCSS();
                     return '';
                 }
             }
