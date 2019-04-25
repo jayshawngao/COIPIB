@@ -162,7 +162,7 @@
            $("#op-document").text("修改文献");
            $.ajax({
                type: 'post',
-               url: "/document/findDocById",
+               url: "${ctx}/document/findDocById",
                data: {"id": docId},
                dataType: "json",
                success: function (data) {
@@ -225,6 +225,38 @@
         $("#auth_3").attr("disabled", "disabled");
     }
 
+<<<<<<< HEAD
+=======
+    $(function () {
+        getAffiliationParent();
+    });
+
+    function getAffiliationParent() {
+        $.ajax({
+            type: 'POST',
+            url: '${ctx}/affiliation/showFirstLayer',
+            dataType: 'json',
+            success: function (data) {
+                if (data.code != 200) {
+                    layer.msg(data.msg, {icon: 2});
+                    return false;
+                } else {
+                    var affiliationList = data.data.affiliationList;
+                    var html = '<option value="">请选择</option>';
+                    affiliationList.forEach(function (element) {
+                        var name = element.name;
+                        var id = element.id;
+                        if (element.deleted == 1 && element.parentId == 0) {
+                            html = html + '<option value="' + id + '">' + name + '</option>';
+                        }
+                    });
+                    $("#affiliation_1").html(html);
+                }
+            }
+        });
+    }
+
+>>>>>>> 0dc482552bc4ad99912ab1b2477a03ffb408c83a
     layui.use(['form', 'layedit', 'upload'], function () {
         var form = layui.form;
         var $ = layui.jquery;
@@ -234,7 +266,7 @@
         //选完文件后不自动上传
         upload.render({
             elem: '#test8',
-            url: '/document/upload',
+            url: '${ctx}/document/upload',
             auto: false,
             method: 'POST',
             accept: 'file',
@@ -295,7 +327,7 @@
         form.on('select(affiliation-parent)', function (data) {
             $.ajax({
                 type: 'POST',
-                url: '/affiliation/showNextLayer',
+                url: '${ctx}/affiliation/showNextLayer',
                 data: {"parentId": data.value},
                 dataType: 'json',
                 success: function (result) {
@@ -352,7 +384,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/document/insert',
+                url: '${ctx}/document/insert',
                 data: {
                     "name": name,
                     "keywords": keywords,

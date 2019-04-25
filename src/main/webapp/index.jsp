@@ -155,7 +155,7 @@
             var html = "";
             html = html + '<a href="javascript:;">' + userInfo.name + '</a>'
                 + '<dl class="layui-nav-child">'
-                + '<dd><a href="/updatePassword.jsp">修改密码</a></dd>'
+                + '<dd><a href="${ctx}/updatePassword.jsp">修改密码</a></dd>'
                 + '<dd style="text-align: center;"><a href="javascript:;" onclick="logout();">退出</a></dd>'
                 + '</dl>';
             $("#userInfoButton").html(html);
@@ -180,7 +180,7 @@
     function logout() {
         $.ajax({
             type: "get",
-            url: "/reglogin/logout",
+            url: "${ctx}/reglogin/logout",
             success: function (data) {
                 if (data.code != 200) {
                     layer.msg(data.msg, {icon: 2});
@@ -198,7 +198,7 @@
         $.ajax({
             async: false,
             type: "get",
-            url: "/affiliation/showFirstLayer",
+            url: "${ctx}/affiliation/showFirstLayer",
             dataType: "json",
             success: function (data) {
                 if (data.code != 200) {
@@ -235,7 +235,7 @@
         $.ajax({
             async: false,
             type: "post",
-            url: "/affiliation/showNextLayer",
+            url: "${ctx}/affiliation/showNextLayer",
             data: {parentId: parentId},
             dataType: "json",
             success: function (data) {
@@ -266,7 +266,7 @@
         var isActive = $("#isActive").val();
         $.ajax({
             type: 'get',
-            url: "/document/showAllDocument",
+            url: "${ctx}/document/showAllDocument",
             data: {"affiliationId": id, "page": curPage, "isEdit": isEdit, "isActive": isActive},
             dataType: "json",
             success: function (data) {
@@ -368,7 +368,7 @@
         var levelEnum = ["普通用户", "VIP用户", "管理员"];
         $.ajax({
             type: 'get',
-            url: "/reglogin/showAllUser",
+            url: "${ctx}/reglogin/showAllUser",
             data: {"page": curPage},
             dataType: "json",
             success: function (data) {
@@ -499,7 +499,7 @@
 
     // 实现文件操作：放入回收站、回收站文件永久删除、回收站文件还原、文件审核
     function doClickPerformDocActions(docId, affiliationId, curPage, action) {
-        var interface = "/document/" + action;
+        var interface = "${ctx}/document/" + action;
         $.ajax({
             type: 'get',
             url: interface,
@@ -524,7 +524,7 @@
         var obj = e.target || e.srcElement;
         $.ajax({
             type: 'get',
-            url: '/reglogin/grantVIP',
+            url: '${ctx}/reglogin/grantVIP',
             data: {"id": userId},
             dataType: "json",
             success: function (data) {
@@ -549,7 +549,7 @@
         var affiliationId = $("#curPageIndex").data("affid");
         $.ajax({
             type: 'get',
-            url: '/document/simpleSearch',
+            url: '${ctx}/document/simpleSearch',
             data: {"name": key, "page": curPage, "isEdit": isEdit, "isActive": isActive},
             dataType: "json",
             success: function (data) {

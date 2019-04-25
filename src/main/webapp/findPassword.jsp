@@ -88,7 +88,7 @@
         var codeCaptcha = $("#codeCaptcha").val();
         $.ajax({
             type: 'get',
-            url: '/reglogin/emailCaptcha',
+            url: '${ctx}/reglogin/emailCaptcha',
             data: {"email": email, "codeCaptcha": codeCaptcha},
             dataType: 'json',
             success: function (data) {
@@ -147,7 +147,7 @@
 
             $.ajax({
                 type: 'get',
-                url: '/reglogin/findPassword',
+                url: '${ctx}/reglogin/findPassword',
                 data: {"email": email, "codeCaptcha": codeCaptcha, "emailCaptcha": emailCaptcha},
                 dataType: 'json',
                 success: function (data) {

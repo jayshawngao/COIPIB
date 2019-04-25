@@ -48,10 +48,10 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-input-inline">
-                <p style="text-align: left"><a href="/register">没有账号？前往注册</a></p>
+                <p style="text-align: left"><a href="${ctx}/register">没有账号？前往注册</a></p>
             </div>
             <label class="field-wrap" style="cursor:pointer;">
-                <p style="text-align: right"><a href="/findPassword">忘记密码？</a></p>
+                <p style="text-align: right"><a href="${ctx}/findPassword">忘记密码？</a></p>
             </label>
         </div>
         <button style="width: 100%;" class="layui-btn layui-btn-radius" lay-filter="submit" lay-submit="">登录</button>
@@ -67,7 +67,7 @@
     });
     // 更换验证码
     function changeCaptcha() {
-        $.get('/reglogin/codeCaptcha', function (data) {
+        $.get('${ctx}' + '/reglogin/codeCaptcha', function (data) {
             $("#captchaImg").attr('src', 'data:image/jpeg;base64,' + data.data.image);
         });
     }
@@ -97,7 +97,7 @@
 
             $.ajax({
                 type: 'post',
-                url: '/reglogin/login',
+                url: '${ctx}/reglogin/login',
                 data: {"nameEmail": nameEmail, "password": password, "codeCaptcha": codeCaptcha},
                 dataType: 'json',
                 success: function (data) {
@@ -107,9 +107,9 @@
                         return false;
                     } else {
                         if (next != null && next.trim() != "") {
-                            location = "${ctx}" + next;
+                            location = next;
                         } else {
-                            location = "${ctx}/";
+                            location = "/";
                         }
                     }
                 }
