@@ -243,7 +243,7 @@
                     affiliationList.forEach(function (element) {
                         var name = element.name;
                         var id = element.id;
-                        if (element.deleted === 1 && element.parentId === 0) {
+                        if (element.deleted == 1 && element.parentId == 0) {
                             html = html + '<option value="' + id + '">' + name + '</option>';
                         }
                     });
@@ -305,7 +305,7 @@
                         childrenList.forEach(function (element) {
                             var name = element.name;
                             var id = element.id;
-                            if (element.deleted === 1) {
+                            if (element.deleted == 1) {
                                 html = html + '<option value="' + id + '">' + name + '</option>';
                             }
                         });
@@ -321,7 +321,7 @@
         form.on('submit(submit)', function (data) {
 
             console.log("attachment = " + attachment);
-            if (attachment === "") {
+            if (attachment =="") {
                 layer.msg("请选择您要上传的文献", {icon: 2});
                 return false;
             }
@@ -365,7 +365,7 @@
                 },
                 dataType: 'json',
                 success: function (result) {
-                    if (result.code !== 200) {
+                    if (result.code != 200) {
                         layer.msg(result.msg, {icon: 2});
                         return false;
                     } else {

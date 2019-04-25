@@ -41,7 +41,7 @@
             </li>
         </ul>
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="/login">登录</a></li>
+            <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="${ctx}/login">登录</a></li>
             <li class="layui-nav-item" id="userInfoButton" style="display: none; margin-right: 20px;"></li>
             <li class="layui-nav-item">
                 <input type="text" name="" class="layui-input" id="simSearchKey" placeholder="请输入：关键字">
