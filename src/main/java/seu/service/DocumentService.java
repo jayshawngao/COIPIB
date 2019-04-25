@@ -193,4 +193,14 @@ public class DocumentService {
         return new Pagination<Document>(documentList, pageInfo);
     }
 
+    public Document findDocById(Integer id) throws COIPIBException{
+        if(id == null){
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "参数不能为空！");
+        }
+        Document document = documentDAO.selectById(id);
+        if(document == null){
+            throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "没有该文献！");
+        }
+        return document;
+    }
 }

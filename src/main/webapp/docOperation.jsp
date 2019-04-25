@@ -18,132 +18,130 @@
     <%--当前页样式--%>
     <link href="./static/css/addDoc.css" rel="stylesheet"/>
 </head>
-<body class="layui-layout-body">
+<body>
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo" style="font-weight: bold">COIPIB</div>
+        <a href="${ctx}/index"><div class="layui-logo" style="font-weight: bold">COIPIB</div></a>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item"><a href="${ctx}/index">文件</a></li>
-            <li class="layui-nav-item"><a href="javascript:;">编辑</a></li>
-            <li class="layui-nav-item layui-this"><a href="javascript:;">新增文献</a></li>
+            <li class="layui-nav-item layui-this"><a href="javascript:;">文献操作</a></li>
         </ul>
     </div>
-
-    <div style="padding: 20px; background-color: #DEB887;">
-        <div class="layui-row layui-col-space15">
-            <div class="layui-col-md10">
-                <div class="layui-card">
-                    <div class="layui-card-header">新增文献</div>
-                    <div class="layui-card-body">
-                        <form class="layui-form" action="">
-                            <div class="layui-form-item">
-                                <label class="layui-form-label">文献名称
-                                    <scan>*</scan>
-                                </label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="name" id="name" lay-verify="required" autocomplete="off"
-                                           placeholder="请输入文献名称" class="layui-input">
-                                </div>
+</div>
+<div style="padding: 20px; background-color: #3f3f3f;">
+    <div class="layui-row layui-col-space15 panel-doc ">
+        <div class="layui-col-md8">
+            <div class="layui-card">
+                <div class="layui-card-header" id="op-document">新增文献</div>
+                <div class="layui-card-body">
+                    <form class="layui-form" action="">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文献名称
+                                <scan>*</scan>
+                            </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="name" id="name" lay-verify="required" autocomplete="off"
+                                       placeholder="请输入文献名称" class="layui-input">
                             </div>
+                        </div>
 
-                            <div class="layui-form-item">
-                                <label class="layui-form-label">文献作者
-                                    <scan>*</scan>
-                                </label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="author" id="author" lay-verify="required" autocomplete="off"
-                                           placeholder="请输入文献作者" class="layui-input">
-                                </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文献作者
+                                <scan>*</scan>
+                            </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="author" id="author" lay-verify="required" autocomplete="off"
+                                       placeholder="请输入文献作者" class="layui-input">
                             </div>
+                        </div>
 
-                            <div class="layui-form-item layui-form-text">
-                                <label class="layui-form-label">文献摘要
-                                    <scan>*</scan>
-                                </label>
-                                <div class="layui-input-block">
-                    <textarea name="digest" id="digest" lay-verify="required" placeholder="请输入文献摘要"
-                              class="layui-textarea"></textarea>
-                                </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">文献摘要
+                                <scan>*</scan>
+                            </label>
+                            <div class="layui-input-block">
+                                <textarea name="digest" id="digest" lay-verify="required"
+                                          placeholder="请输入文献摘要" class="layui-textarea"></textarea>
                             </div>
+                        </div>
 
-                            <div class="layui-form-item">
-                                <label class="layui-form-label">文献关键字
-                                    <scan>*</scan>
-                                </label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="keywords" id="keywords" lay-verify="required" autocomplete="off"
-                                           placeholder="请输入文献关键字" class="layui-input">
-                                </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文献关键字
+                                <scan>*</scan>
+                            </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="keywords" id="keywords" lay-verify="required"
+                                       autocomplete="off"
+                                       placeholder="请输入文献关键字" class="layui-input">
                             </div>
+                        </div>
 
-                            <div class="layui-form-item">
-                                <label class="layui-form-label">文献主题
-                                    <scan>*</scan>
-                                </label>
-                                <div class="layui-input-block">
-                                    <input type="text" name="topic" id="topic" lay-verify="required" autocomplete="off"
-                                           placeholder="请输入文献主题" class="layui-input">
-                                </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文献主题
+                                <scan>*</scan>
+                            </label>
+                            <div class="layui-input-block">
+                                <input type="text" name="topic" id="topic" lay-verify="required" autocomplete="off"
+                                       placeholder="请输入文献主题" class="layui-input">
                             </div>
+                        </div>
 
-                            <div class="layui-form-item">
-                                <label class="layui-form-label">文献归属
-                                    <scan>*</scan>
-                                </label>
-                                <div class="layui-input-inline">
-                                    <select name="affiliation_1" id="affiliation_1" lay-filter="affiliation-parent">
-                                    </select>
-                                </div>
-                                <div class="layui-input-inline">
-                                    <select name="affiliation_2" id="affiliation_2">
-                                    </select>
-                                </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文献归属
+                                <scan>*</scan>
+                            </label>
+                            <div class="layui-input-inline">
+                                <select name="affiliation_1" id="affiliation_1" lay-filter="affiliation-parent">
+                                </select>
                             </div>
-
-                            <div class="layui-upload layui-form-item">
-                                <button type="button" class="layui-btn layui-btn-normal" id="test8">选择文件</button>
-                                <button type="button" class="layui-btn" id="test9">开始上传</button>
+                            <div class="layui-input-inline">
+                                <select name="affiliation_2" id="affiliation_2">
+                                </select>
                             </div>
+                        </div>
 
-                            <div class="layui-form-item layui-form-text">
-                                <label class="layui-form-label">文献备注</label>
-                                <div class="layui-input-block">
-                                    <textarea name="note" id="note" placeholder="请输入文献备注" class="layui-textarea"></textarea>
-                                </div>
+                        <div class="layui-upload layui-form-item" style="margin-left: 30px">
+                            <button type="button" class="layui-btn layui-btn-normal" id="test8">选择文件</button>
+                            <button type="button" class="layui-btn" id="test9">开始上传</button>
+                        </div>
+
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">文献备注</label>
+                            <div class="layui-input-block">
+                                <textarea name="note" id="note" placeholder="请输入文献备注" class="layui-textarea"></textarea>
                             </div>
+                        </div>
 
-                            <div class="layui-form-item">
-                                <div class="layui-inline">
-                                    <label class="layui-form-label">用户密级
-                                        <scan>*</scan>
-                                    </label>
-                                    <div class="layui-input-inline">
-                                        <select name="auth" id="auth">
-                                            <option value="">请选择密级</option>
-                                            <option value="0" id="auth_0">0 - 游客可见</option>
-                                            <option value="1" id="auth_1">1 - 注册用户可见</option>
-                                            <option value="2" id="auth_2">2 - VIP可见</option>
-                                            <option value="3" id="auth_3">3 - 管理员可见</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
+                        <div class="layui-form-item">
                             <div class="layui-inline">
-                                <label class="layui-form-label">文献年份
+                                <label class="layui-form-label">用户密级
                                     <scan>*</scan>
                                 </label>
                                 <div class="layui-input-inline">
-                                    <input type="tel" name="year" id="year" lay-verify="required" autocomplete="off"
-                                           class="layui-input" placeholder="请输入文献年份">
-                                </div>
-                                <div class="layui-input-inline" style="margin-left: 100px">
-                                    <button class="layui-btn" lay-submit="" lay-filter="submit">提交</button>
+                                    <select name="auth" id="auth">
+                                        <option value="">请选择密级</option>
+                                        <option value="0" id="auth_0">0 - 游客可见</option>
+                                        <option value="1" id="auth_1">1 - 注册用户可见</option>
+                                        <option value="2" id="auth_2">2 - VIP可见</option>
+                                        <option value="3" id="auth_3">3 - 管理员可见</option>
+                                    </select>
                                 </div>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">文献年份
+                                <scan>*</scan>
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="tel" name="year" id="year" lay-verify="required" autocomplete="off"
+                                       class="layui-input" placeholder="请输入文献年份">
+                            </div>
+                            <div class="layui-input-inline" style="margin-left: 100px">
+                                <button class="layui-btn" lay-submit="" lay-filter="submit">提交</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -153,19 +151,73 @@
 <script src="./static/plug/layui/layui.js" charset="utf-8"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
+    var attachment = "";
+
+    $(function () {
+       var docId = window.localStorage.getItem('docId');
+       console.log("id = " + docId);
+       if(docId > 0){
+           $("#op-document").text("修改文献");
+           $.ajax({
+               type: 'post',
+               url: "/document/findDocById",
+               data: {"id": docId},
+               dataType: "json",
+               success: function (data) {
+                   if (data.code !== 200) {
+                       layer.msg(data.msg,{icon: 2});
+                       return '';
+                   } else {
+                       var doc = data.data.document;
+                       var name = doc.name;
+                       var author = doc.author;
+                       var digest = doc.digest;
+                       var keywords = doc.keywords;
+                       var topic = doc.topic;
+                       var note = doc.note;
+                       var auth = doc.auth;
+                       var year = doc.year;
+                       attachment = doc.attachment;
+
+                       console.log("name = " + name);
+
+                       $("#name").val(name);
+                       $("#author").val(author);
+                       $("#digest").val(digest);
+                       $("#keywords").val(keywords);
+                       $("#topic").val(topic);
+                       $("#note").val(note);
+                       $("#year").val(year);
+                       if(auth == 0){
+                           $("#auth_0").attr("selected", "selected");
+                       }else if(auth == 1){
+                           $("#auth_1").attr("selected", "selected");
+                       }else if(auth == 2){
+                           $("#auth_2").attr("selected", "selected");
+                       }else if(auth == 3){
+                           $("#auth_3").attr("selected", "selected");
+                       }
+                       docId = 0;
+                   }
+               }
+           });
+       }
+        window.localStorage.removeItem('docId');
+    });
+
     var editorId = "${user.id}";
     var level = "${user.level}";
     console.log(level);
-    if(level == 0){
+    if (level == 0) {
         $("#auth_1").attr("disabled", "disabled");
         $("#auth_2").attr("disabled", "disabled");
         $("#auth_3").attr("disabled", "disabled");
-    }else if(level == 1){
+    } else if (level == 1) {
         $("#auth_2").attr("disabled", "disabled");
         $("#auth_3").attr("disabled", "disabled");
-    }else if(level == 2){
+    } else if (level == 2) {
         $("#auth_3").attr("disabled", "disabled");
-    }else if(level == -1){
+    } else if (level == -1) {
         $("#auth_0").attr("disabled", "disabled");
         $("#auth_1").attr("disabled", "disabled");
         $("#auth_2").attr("disabled", "disabled");
@@ -207,7 +259,6 @@
         var layer = layui.layer;
         var upload = layui.upload;
 
-        var attachment = "";
         //选完文件后不自动上传
         upload.render({
             elem: '#test8',
@@ -268,15 +319,30 @@
 
         //监听提交
         form.on('submit(submit)', function (data) {
+
+            console.log("attachment = " + attachment);
             if (attachment === "") {
-                layer.msg("文件没能成功上传", {icon: 2});
+                layer.msg("请选择您要上传的文献", {icon: 2});
+                return false;
+            }
+            if(editorId == null || editorId == ""){
+                layer.msg("请您登录", {icon: 2});
+                return false;
             }
             var name = $("#name").val();  // 文献名称
             var author = $("#author").val(); // 文献作者
             var digest = $("#digest").val();  // 文献摘要
             var keywords = $("#keywords").val();  // 文献关键字
             var topic = $("#topic").val();  // 文献主题
+            var affiliation_1 = $("#affiliation_1").val();  // 文献一级附属id
             var affiliation_2 = $("#affiliation_2").val();  // 文献二级附属id
+            var affiliationId = affiliation_2;
+            if(affiliation_1 == ""){
+                layer.msg("请选择文件归属", {icon: 2});
+                return false;
+            }else if(affiliation_2 == ""){
+                affiliationId = affiliation_1;
+            }
             var note = $("#note").val();  // 文献备注
             var auth = $("#auth").val();  // 文献密级
             var year = $("#year").val();  // 文献年份
@@ -289,7 +355,7 @@
                     "keywords": keywords,
                     "digest": digest,
                     "topic": topic,
-                    "affiliationId": affiliation_2,
+                    "affiliationId": affiliationId,
                     "year": year,
                     "note": note,
                     "attachment": attachment,
@@ -303,7 +369,7 @@
                         layer.msg(result.msg, {icon: 2});
                         return false;
                     } else {
-                        layer.msg("文献新增成功，即将跳转主页！",{icon: 6});
+                        layer.msg("文献新增成功，即将跳转主页！", {icon: 6});
                         setTimeout('window.location.href = "${ctx}/"', 3000);
                     }
                 }

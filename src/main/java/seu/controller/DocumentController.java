@@ -212,4 +212,26 @@ public class DocumentController {
         }
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/findDocById")
+    public String findDocById(Integer id) {
+        try {
+            Document document = documentService.findDocById(id);
+            HashMap<String, Object> data = new HashMap<>();
+            data.put("document", document);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文献查找成功", data).toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:id={}", id);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/document/findDocById parameter:id={}", id, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
 }
