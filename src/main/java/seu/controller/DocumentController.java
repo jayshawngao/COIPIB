@@ -188,9 +188,9 @@ public class DocumentController {
      */
     @ResponseBody
     @RequestMapping("/simpleSearch")
-    public String simpleSearch(String name, Integer page) {
+    public String simpleSearch(String name, Integer page, Boolean isEdit, Boolean isActive) {
         try {
-            Pagination<Document> pagination = documentService.simpleSearch(name, page);
+            Pagination<Document> pagination = documentService.simpleSearch(name, page, isEdit, isActive);
             HashMap<String, Object> data = new HashMap<>();
             data.put("pagination", pagination);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "搜索成功", data).toJSONString();

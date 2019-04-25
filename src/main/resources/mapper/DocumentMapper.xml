@@ -79,4 +79,39 @@
             </if>
         </trim>
 	</select>
+
+	<select id="countSimpleSearch" resultType="java.lang.Integer">
+		select count(id) from document where
+		name like '%${content}%'
+		<if test="user.level!=3"> <!-- 非管理员用户 -->
+			and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
+			<if test="isEdit and !isActive"> <!-- 如果请求编辑页 -->
+				and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
+			</if>
+		</if>
+		<if test="!isEdit and !isActive"> <!-- 文献页，只展示审核通过的文献 -->
+			and active = 0
+		</if>
+		<if test="!isEdit and isActive"> <!-- 审核页，只展示未审核的文献 -->
+			and active = 1
+		</if>
+	</select>
+
+	<select id="simpleSearch" resultType="seu.model.Document">
+		select * from document where
+		name like '%${content}%'
+		<if test="user.level!=3"> <!-- 非管理员用户 -->
+			and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
+			<if test="isEdit and !isActive"> <!-- 如果请求编辑页 -->
+				and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
+			</if>
+		</if>
+		<if test="!isEdit and !isActive"> <!-- 文献页，只展示审核通过的文献 -->
+			and active = 0
+		</if>
+		<if test="!isEdit and isActive"> <!-- 审核页，只展示未审核的文献 -->
+			and active = 1
+		</if>
+		limit #{begin}, #{end}
+	</select>
 </mapper>

@@ -26,11 +26,17 @@ public interface DocumentDAO {
     @Select({"select * from", TABLE_NAME, "where id = #{id}"})
     public Document selectById(Integer id);
 
-    @Select({"select * from", TABLE_NAME, "where name like '%${name}%' limit #{begin}, #{end}"})
-    public List<Document> simpleSearch(@Param("name") String name, @Param("begin")Integer begin, @Param("end")Integer end);
+    public List<Document> simpleSearch(@Param("content") String name,
+                                       @Param("user")User user,
+                                       @Param("isEdit")Boolean isEdit,
+                                       @Param("isActive") Boolean isActive,
+                                       @Param("begin")Integer begin,
+                                       @Param("end")Integer end);
 
-    @Select({"select count(id) from", TABLE_NAME, "where name like '%${name}%'"})
-    public Integer countSimpleSearch(@Param("name") String name);
+    public Integer countSimpleSearch(@Param("content") String name,
+                                     @Param("user")User user,
+                                     @Param("isEdit")Boolean isEdit,
+                                     @Param("isActive") Boolean isActive);
 
     /**
      * @TODO 特殊查询
