@@ -157,7 +157,7 @@
 
     $(function () {
        var docId = window.localStorage.getItem('docId');
-       console.log("id = " + docId);
+       console.log("docId = " + docId);
        if(docId > 0){
            $("#op-document").text("修改文献");
            $.ajax({
@@ -209,7 +209,6 @@
 
     var editorId = "${user.id}";
     var level = "${user.level}";
-    console.log(level);
     if (level == 0) {
         $("#auth_1").attr("disabled", "disabled");
         $("#auth_2").attr("disabled", "disabled");
@@ -224,35 +223,6 @@
         $("#auth_1").attr("disabled", "disabled");
         $("#auth_2").attr("disabled", "disabled");
         $("#auth_3").attr("disabled", "disabled");
-    }
-
-    $(function () {
-        getAffiliationParent();
-    });
-
-    function getAffiliationParent() {
-        $.ajax({
-            type: 'POST',
-            url: '/affiliation/showFirstLayer',
-            dataType: 'json',
-            success: function (data) {
-                if (data.code != 200) {
-                    layer.msg(data.msg, {icon: 2});
-                    return false;
-                } else {
-                    var affiliationList = data.data.affiliationList;
-                    var html = '<option value="">请选择</option>';
-                    affiliationList.forEach(function (element) {
-                        var name = element.name;
-                        var id = element.id;
-                        if (element.deleted == 1 && element.parentId == 0) {
-                            html = html + '<option value="' + id + '">' + name + '</option>';
-                        }
-                    });
-                    $("#affiliation_1").html(html);
-                }
-            }
-        });
     }
 
     layui.use(['form', 'layedit', 'upload'], function () {
@@ -290,6 +260,37 @@
         //自定义验证规则
         form.verify({});
 
+        $(function () {
+            getAffiliationParent();
+        });
+
+        function getAffiliationParent() {
+            $.ajax({
+                type: 'POST',
+                url: '/affiliation/showFirstLayer',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.code != 200) {
+                        layer.msg(data.msg, {icon: 2});
+                        return false;
+                    } else {
+                        var affiliationList = data.data.affiliationList;
+                        var html = '<option value="">请选择</option>';
+                        affiliationList.forEach(function (element) {
+                            var name = element.name;
+                            var id = element.id;
+                            if (element.deleted == 1 && element.parentId == 0) {
+                                html = html + '<option value="' + id + '">' + name + '</option>';
+                            }
+                        });
+                        console.log("html_1 = " + html);
+                        $("#affiliation_1").html(html);
+                        form.render('select');
+                    }
+                }
+            });
+        }
+
         //监听指定开关
         form.on('select(affiliation-parent)', function (data) {
             $.ajax({
@@ -311,7 +312,7 @@
                                 html = html + '<option value="' + id + '">' + name + '</option>';
                             }
                         });
-                        console.log(html);
+                        console.log("html_2 = " + html);
                         $("#affiliation_2").html(html);
                         form.render('select');
                     }
