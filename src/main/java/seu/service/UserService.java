@@ -186,7 +186,8 @@ public class UserService {
         }
     }
 
-    public void updatePassword(String oldPassword, String newPassword, String codeCaptcha, String oldCodeCaptcha) throws COIPIBException{
+    public void updatePassword(String oldPassword, String newPassword, String codeCaptcha,
+                               String oldCodeCaptcha, String ticket) throws COIPIBException{
         User user = hostHolder.getUser();
         if(!StringUtils.equals(user.getPassword(), oldPassword)){
             throw new COIPIBException(CodeEnum.USER_ERROR, "旧密码输入有误");
@@ -195,5 +196,7 @@ public class UserService {
             throw new COIPIBException(CodeEnum.USER_ERROR, "验证码错误!");
         }
         userDAO.updatePassword(user.getEmail(), newPassword);
+        logout(ticket);
+
     }
 }

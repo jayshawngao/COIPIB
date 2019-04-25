@@ -194,10 +194,11 @@ public class LoginController {
 
     @RequestMapping("/updatePassword")
     @ResponseBody
-    public String updatePassword(String newPassword, String oldPassword, String codeCaptcha, HttpServletRequest request) {
+    public String updatePassword(String newPassword, String oldPassword, String codeCaptcha,
+                                 @CookieValue("ticket") String ticket, HttpServletRequest request) {
         try {
             String oldCodeCaptcha = (String) request.getSession().getAttribute("codeCaptcha");
-            userService.updatePassword(oldPassword, newPassword, codeCaptcha, oldCodeCaptcha);
+            userService.updatePassword(oldPassword, newPassword, codeCaptcha, oldCodeCaptcha, ticket);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "修改密码成功").toJSONString();
         } catch (COIPIBException e) {
             LOGGER.info(e.getMessage() + " parameter:oldPassword={}, newPassword={}, codeCaptcha={}, oldCodeCaptcha={}",
