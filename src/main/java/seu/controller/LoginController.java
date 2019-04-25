@@ -60,7 +60,7 @@ public class LoginController {
                     request.getSession().getAttribute("emailCaptcha"));
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/register parameter:user={}, oldEmail={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}", user,
+            LOGGER.error("/reglogin/register parameter:user={}, oldEmail={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}", user,
                     request.getSession().getAttribute("email"),
                     codeCaptcha, emailCaptcha, request.getSession().getAttribute("codeCaptcha"),
                     request.getSession().getAttribute("emailCaptcha"), e);
@@ -82,7 +82,7 @@ public class LoginController {
                     nameEmail, password, codeCaptcha, request.getSession().getAttribute("codeCaptcha"));
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/login parameter:nameEmail={}, password={}, codeCaptcha={}, oldCodeCaptcha={}",
+            LOGGER.error("/reglogin/login parameter:nameEmail={}, password={}, codeCaptcha={}, oldCodeCaptcha={}",
                     nameEmail, password, codeCaptcha, request.getSession().getAttribute("codeCaptcha"), e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
@@ -102,7 +102,7 @@ public class LoginController {
             userService.logout(ticket);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "退出成功").toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/logout parameter:ticket={}", ticket, e);
+            LOGGER.error("/reglogin/logout parameter:ticket={}", ticket, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
@@ -119,7 +119,7 @@ public class LoginController {
             data.put("image", image);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "验证码生成成功", data).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/codeCaptcha", e);
+            LOGGER.error("/reglogin/codeCaptcha", e);
             return new CommonResponse(CodeEnum.USER_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
@@ -137,7 +137,7 @@ public class LoginController {
                     newPassword, confirmPassword, codeCaptcha, request.getSession().getAttribute("codeCaptcha"));
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/modifyPassword parameter:newPassword={}, confirmPassword={}, codeCaptcha={}, oldCodeCaptcha={}",
+            LOGGER.error("/reglogin/modifyPassword parameter:newPassword={}, confirmPassword={}, codeCaptcha={}, oldCodeCaptcha={}",
                     newPassword, confirmPassword, codeCaptcha, request.getSession().getAttribute("codeCaptcha"), e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
@@ -164,7 +164,7 @@ public class LoginController {
                     request.getSession().getAttribute("codeCaptcha"));
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/emailCaptcha parameter:email={},codeCaptcha={}, oldCodeCaptcha={}", email, codeCaptcha,
+            LOGGER.error("/reglogin/emailCaptcha parameter:email={},codeCaptcha={}, oldCodeCaptcha={}", email, codeCaptcha,
                     request.getSession().getAttribute("codeCaptcha"), e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
@@ -185,7 +185,7 @@ public class LoginController {
                     request.getSession().getAttribute("emailCaptcha"));
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/findPassword parameter:email={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}",
+            LOGGER.error("/reglogin/findPassword parameter:email={}, codeCaptcha={}, emailCaptcha={}, oldCodeCaptcha={}, oldEmailCaptcha={}",
                     email, codeCaptcha, emailCaptcha, request.getSession().getAttribute("codeCaptcha"),
                     request.getSession().getAttribute("emailCaptcha"), e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -205,17 +205,25 @@ public class LoginController {
                     oldPassword, newPassword, codeCaptcha, request.getSession().getAttribute("codeCaptcha"));
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
-            LOGGER.error("/modifyPassword parameter:oldPassword={}, newPassword={}, codeCaptcha={}, oldCodeCaptcha={}",
+            LOGGER.error("/reglogin/modifyPassword parameter:oldPassword={}, newPassword={}, codeCaptcha={}, oldCodeCaptcha={}",
                     oldPassword, newPassword, codeCaptcha, request.getSession().getAttribute("codeCaptcha"), e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
 
     }
 
-//    @RequestMapping("grantVIP")
-//    @ResponseBody
-//    public String grantVIP(Integer id) {
-//        try {
-//
-//    }
+    @RequestMapping("grantVIP")
+    @ResponseBody
+    public String grantVIP(Integer id) {
+        try {
+            userService.grantVIP(id);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "授予VIP成功").toJSONString();
+        } catch (COIPIBException e) {
+            LOGGER.info(e.getMessage() + " parameter:id={}", id);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/reglogin/grantVIP parameter:id={}", id, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
 }
