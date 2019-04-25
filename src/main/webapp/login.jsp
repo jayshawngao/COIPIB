@@ -60,6 +60,7 @@
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script>
+    var next = "${next}";
     $(function () {
         changeCaptcha();
     });
@@ -104,7 +105,11 @@
                         changeCaptcha();
                         return false;
                     } else {
-                        location = "${ctx}/";
+                        if (next != null || next.trim() != "") {
+                            location = "${ctx}" + next;
+                        } else {
+                            location = "${ctx}/";
+                        }
                     }
                 }
             });

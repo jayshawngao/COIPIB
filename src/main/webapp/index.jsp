@@ -17,6 +17,14 @@
     <link href="./static/css/global.css" rel="stylesheet"/>
     <%--分页样式表--%>
     <link href="./static/css/pageInfo/page.css" rel="stylesheet">
+
+    <style>
+        .clickAction {
+            display: block;
+            cursor: pointer;
+            color: blue;
+        }
+    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -35,10 +43,10 @@
             <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="/login">登录</a></li>
             <li class="layui-nav-item" id="userInfoButton" style="display: none; margin-right: 20px;"></li>
             <li class="layui-nav-item">
-                <input type="text" name="" class="layui-input" id="" placeholder="请输入：关键字">
+                <input type="text" name="" class="layui-input" id="simSearchKey" placeholder="请输入：关键字">
             </li>
             <li class="layui-nav-item">
-                <button class="layui-btn" lay-submit="" lay-filter="formSearch">搜索</button>
+                <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="doClickSimplySearch();">搜索</button>
             </li>
         </ul>
     </div>
@@ -264,92 +272,96 @@
                     console.log(data.msg);
                     return '';
                 } else {
-                    var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
-                        '<th style="width: 6%;text-align: center">序号</th>' +
-                        '<th style="width: 42%;text-align: center"">文献名</th>' +
-                        '<th style="width: 8%;text-align: center"">预览</th>' +
-                        '<th style="width: 10%;text-align: center"">作者</th>' +
-                        '<th style="width: 10%;text-align: center"">编辑人</th>' +
-                        '<th style="width: 14%;text-align: center"">更新日期</th>';
-                    if ((isEdit == "true" && isActive == "false") || (isEdit == "false" && isActive == "true")) {
-                        htmlName = htmlName + '<th style="width: 14%;text-align: center"">操作</th>';
-                    }
-                    htmlName = htmlName + '</tr></thead>';
-                    var pagination = data.data.pagination;
-                    var documentList = pagination.data;
-                    var pageInfo = pagination.pageInfo;
-                    var totalPage = pageInfo.totalPage;
-
-                    if (documentList.length > 0) htmlName = htmlName + '<tbody>';
-                    var sequence = 1;
-                    documentList.forEach(function (element) {
-                        var name = element.name;
-                        var editor = element.editor;
-                        var author = element.author;
-                        var attachment = element.attachment;
-                        var updateTime = timestampToTime(element.updateTime);
-                        htmlName = htmlName + '<tr>' +
-                            '<td style="text-align: center;">' + sequence + '</td>' +
-                            '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
-                            '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
-                            '<td style="text-align: center;">' + author + '</td>' +
-                            '<td style="text-align: center;">' + editor + '</td>' +
-                            '<td style="text-align: center;">' + updateTime + '</td>';
-                        if (isEdit == "true" && isActive == "false") {
-                            if (id != 200) {
-                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;">编辑</a>'
-                                    + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'remove\'' + ')">放入回收站</a>'
-                                    + '</td>';
-                            }else {
-                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'recover\'' + ')">还原</a>'
-                                    + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'delete\'' + ')">永久删除</a>'
-                                    + '</td>';
-                            }
-                        }
-                        if (isEdit == "false" && isActive == "true") {
-                            if (id != 200) {
-                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'active\'' + ')">通过审核</a>'
-                                    + '</td>';
-                            }else {
-                                htmlName = htmlName + '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'recover\'' + ')">还原</a>'
-                                    + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'delete\'' + ')">永久删除</a>'
-                                    + '</td>';
-                            }
-                        }
-                        htmlName = htmlName + '</tr>';
-                        sequence++;
-                    });
-                    if (documentList.length > 0) htmlName = htmlName + '</tbody></table></div>';
-                    $("#body-content-left").html(htmlName);
-
-                    var htmlPage = '<li class="total-page"><a href="javascript:void(0);">共&nbsp;' + totalPage + '&nbsp;页</a></li>';
-                    if (curPage <= 1) {
-                        htmlPage = htmlPage + '<li><a href="javascript:void(0);">上一页</a></li>';
-                    } else {
-                        curPage = curPage - 1;
-                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
-                            + id + ','
-                            + curPage
-                            + ')">上一页</a></li>';
-                    }
-                    htmlPage = htmlPage + '<li><a href="javascript:void(0);">当前页&nbsp;' + pageInfo.page + '</a></li>';
-                    if (curPage >= pageInfo.totalPage) {
-                        htmlPage = htmlPage + '<li><a href="javascript:void(0);">下一页</a></li>';
-                    } else {
-                        curPage = curPage + 1;
-                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
-                            + id + ','
-                            + curPage
-                            + ')">下一页</a></li>';
-                    }
-                    $("#page").html(htmlPage);
+                    fillDocsTable(data, id, curPage, isEdit, isActive);
+                    return '';
                 }
             }
         });
     }
 
+    // doClickShowDoc子函数，填充不同情况下的表格
+    function fillDocsTable(data, id, curPage, isEdit, isActive) {
+        var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
+            '<th style="width: 6%;text-align: center">序号</th>' +
+            '<th style="width: 42%;text-align: center"">文献名</th>' +
+            '<th style="width: 8%;text-align: center"">预览</th>' +
+            '<th style="width: 10%;text-align: center"">作者</th>' +
+            '<th style="width: 10%;text-align: center"">编辑人</th>' +
+            '<th style="width: 14%;text-align: center"">更新日期</th>';
+        if ((isEdit == "true" && isActive == "false") || (isEdit == "false" && isActive == "true")) {
+            htmlName = htmlName + '<th style="width: 14%;text-align: center"">操作</th>';
+        }
+        htmlName = htmlName + '</tr></thead>';
+
+        var pagination = data.data.pagination;
+        var documentList = pagination.data;
+        var pageInfo = pagination.pageInfo;
+        var totalPage = pageInfo.totalPage;
+
+        if (documentList.length > 0) htmlName = htmlName + '<tbody>';
+        var sequence = 1;
+        documentList.forEach(function (element) {
+            var name = element.name;
+            var editor = element.editor;
+            var author = element.author;
+            var attachment = element.attachment;
+            var updateTime = timestampToTime(element.updateTime);
+            htmlName = htmlName + '<tr>' +
+                '<td style="text-align: center;">' + sequence + '</td>' +
+                '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
+                '<td style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
+                '<td style="text-align: center;">' + author + '</td>' +
+                '<td style="text-align: center;">' + editor + '</td>' +
+                '<td style="text-align: center;">' + updateTime + '</td>';
+            if (isEdit == "true" && isActive == "false") {
+                if (id != 200) {
+                    htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction">编辑</a>'
+                        + '<a class="clickAction" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'remove\'' + ')">放入回收站</a>'
+                        + '</td>';
+                }else {
+                    htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'recover\'' + ')">还原</a>'
+                        + '<a class="clickAction" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'delete\'' + ')">永久删除</a>'
+                        + '</td>';
+                }
+            }
+            if (isEdit == "false" && isActive == "true") {
+                if (id != 200) {
+                    htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'active\'' + ')">通过审核</a>'
+                        + '</td>';
+                }
+            }
+            htmlName = htmlName + '</tr>';
+            sequence++;
+        });
+        if (documentList.length > 0) htmlName = htmlName + '</tbody></table></div>';
+        $("#body-content-left").html(htmlName);
+
+        var htmlPage = '<li class="total-page"><a href="javascript:void(0);">共&nbsp;' + totalPage + '&nbsp;页</a></li>';
+        if (curPage <= 1) {
+            htmlPage = htmlPage + '<li><a href="javascript:void(0);">上一页</a></li>';
+        } else {
+            curPage = curPage - 1;
+            htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
+                + id + ','
+                + curPage
+                + ')">上一页</a></li>';
+        }
+        htmlPage = htmlPage + '<li><a href="javascript:void(0);" id="curPageIndex" data-curpage=' + pageInfo.page + ' data-affid=' + id + '>当前页&nbsp;' + pageInfo.page + '</a></li>';
+        if (curPage >= pageInfo.totalPage) {
+            htmlPage = htmlPage + '<li><a href="javascript:void(0);">下一页</a></li>';
+        } else {
+            curPage = curPage + 1;
+            htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
+                + id + ','
+                + curPage
+                + ')">下一页</a></li>';
+        }
+        $("#page").html(htmlPage);
+    }
+
     // 显示所有用户
     function doClickShowUserManagement(curPage) {
+        var levelEnum = ["普通用户", "VIP用户", "管理员"];
         $.ajax({
             type: 'get',
             url: "/reglogin/showAllUser",
@@ -363,10 +375,9 @@
                 } else {
                     var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
                         '<th style="width: 6%;text-align: center">序号</th>' +
-                        '<th style="width: 6%;text-align: center">名称</th>' +
+                        '<th style="width: 6%;text-align: center">用户名</th>' +
                         '<th style="width: 42%;text-align: center"">邮箱</th>' +
                         '<th style="width: 8%;text-align: center"">级别</th>' +
-                        '<th style="width: 10%;text-align: center"">VIP用户</th>' +
                         '<th style="width: 10%;text-align: center"">操作</th>';
                     htmlName = htmlName + '</tr></thead>';
                     var pagination = data.data.pagination;
@@ -380,13 +391,11 @@
                         var name = element.name;
                         var email = element.email;
                         var level = element.level;
-                        var attachment = level > 1 ? "是" : "否";
                         htmlName = htmlName + '<tr>' +
                             '<td style="text-align: center;">' + sequence + '</td>' +
                             '<td style="text-align: center;">' + name + '</td>' +
                             '<td style="text-align: center;">' + email + '</td>' +
-                            '<td style="text-align: center;">' + level + '</td>' +
-                            '<td style="text-align: center;">' + attachment + '</td>' +
+                            '<td style="text-align: center;">' + levelEnum[level-1] + '</td>' +
                             '<td style="text-align: center;">';
                         if (level <= 1) {
                             htmlName = htmlName + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickGrantVIP(' + element.id + ',' + curPage + ');">升级用户</a>';
@@ -518,6 +527,30 @@
         });
     }
 
+    // 搜索文件
+    function doClickSimplySearch() {
+        var key = $("#simSearchKey").val();
+        var isEdit = $("#isEdit").val();
+        var isActive = $("#isActive").val();
+        var curPage = $("#curPageIndex").data("curpage");
+        var affiliationId = $("#curPageIndex").data("affid");
+        $.ajax({
+            type: 'get',
+            url: '/document/simpleSearch',
+            data: {"name": key, "page": curPage, "isEdit": isEdit, "isActive": isActive},
+            dataType: "json",
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.msg(data.msg,{icon: 2});
+                    return false;
+                } else {
+                    fillDocsTable(data, affiliationId, curPage, isEdit, isActive);
+                    $("#simSearchKey").val("");
+                    return '';
+                }
+            }
+        });
+    }
 </script>
 </body>
 </html>
