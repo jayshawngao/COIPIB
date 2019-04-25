@@ -268,7 +268,7 @@
             data: {"affiliationId": id, "page": curPage, "isEdit": isEdit, "isActive": isActive},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg, {icon: 2});
                     console.log(data.msg);
                     return '';
@@ -370,7 +370,7 @@
             data: {"page": curPage},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg, {icon: 2});
                     console.log(data.msg);
                     return false;
@@ -504,7 +504,7 @@
             data: {"id": docId},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg,{icon: 2});
                     return '';
                 } else {
@@ -526,7 +526,7 @@
             data: {"id": userId},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg,{icon: 2});
                     return false;
                 } else {
@@ -551,7 +551,7 @@
             data: {"name": key, "page": curPage, "isEdit": isEdit, "isActive": isActive},
             dataType: "json",
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg,{icon: 2});
                     return false;
                 } else {

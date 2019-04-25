@@ -164,7 +164,7 @@
                data: {"id": docId},
                dataType: "json",
                success: function (data) {
-                   if (data.code !== 200) {
+                   if (data.code != 200) {
                        layer.msg(data.msg,{icon: 2});
                        return '';
                    } else {
@@ -234,7 +234,7 @@
             url: '/affiliation/showFirstLayer',
             dataType: 'json',
             success: function (data) {
-                if (data.code !== 200) {
+                if (data.code != 200) {
                     layer.msg(data.msg, {icon: 2});
                     return false;
                 } else {
@@ -273,7 +273,7 @@
             },
             done: function (res) {
                 layer.closeAll('loading');
-                if (res.code !== 200) {
+                if (res.code != 200) {
                     layer.msg(res.msg, {icon: 2});
                     return false;
                 } else {
@@ -296,7 +296,7 @@
                 data: {"parentId": data.value},
                 dataType: 'json',
                 success: function (result) {
-                    if (result.code !== 200) {
+                    if (result.code != 200) {
                         layer.msg(result.msg, {icon: 2});
                         return false;
                     } else {
