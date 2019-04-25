@@ -98,10 +98,10 @@
     userInfo.active = "${user.active}";
 
     // layui框架导航模块初始化，禁止删除
-    var layer;
+    var layer, element;
     layui.use(['element', 'layer'], function () {
-        var element = layui.element;
-        layer = layui.layer
+        element = layui.element;
+        layer = layui.layer;
     });
 
     $(function () {
@@ -112,14 +112,14 @@
     // 点击水平导航栏“编辑”、“文件”、“文件审核”显示文件
     function doClickHorizontalMenu(isActive, isEdit) {
         clearVerticalMenuCSS();
-        $("#isActive").val("false");
-        $("#isEdit").val("true");
+        $("#isActive").val(isActive);
+        $("#isEdit").val(isEdit);
         var affiliationId = String($("#verticalMenu > li:nth-child(1) > a").attr("id"));
         affiliationId = affiliationId.substr(15);
         doClickShowDoc(affiliationId, 1);
         $("#body-content-right").html("");
         if (isActive == "true" && isEdit == "false") {
-            $("#adminMenu > dl").unbind("mouseout").bind("mouseout", function () {
+            $("#adminMenu > dl").unbind("click").bind("click", function () {
                 $("#adminMenu").addClass("layui-this");
             });
         }
@@ -139,15 +139,13 @@
 
     // 显示用户信息
     function checkUserLogin() {
-        if (userInfo.id != null && userInfo.id != -1) {
+        if (userInfo != null && userInfo.id != null && userInfo.id != -1) {
             $("#loginButton").hide();
             var html = "";
             html = html + '<a href="javascript:;">' + userInfo.name + '</a>'
                 + '<dl class="layui-nav-child">'
-                + '<dd><a href="javascript:;">基本资料</a></dd>'
-                + '<dd><a href="javascript:;">修改密码</a></dd>'
-                + '<hr>'
-                + '<dd><a href="javascript:;">退出</a></dd>'
+                + '<dd><a href="/updatePassword.jsp">修改密码</a></dd>'
+                + '<dd style="text-align: center;"><a href="javascript:;" onclick="logout();">退出</a></dd>'
                 + '</dl>';
             $("#userInfoButton").html(html);
             $("#userInfoButton").show();
@@ -156,15 +154,32 @@
             $("#userInfoButton").hide();
         }
 
-        if (userInfo != null && userInfo.level == 3) {
+        if (userInfo != null && userInfo.level != null && userInfo.level == 3) {
             var html = "";
             html = html + '<a href="javascript:;">管理员</a>\n' +
                 '                <dl class="layui-nav-child">\n' +
                 '                    <dd><a href="javascript:;" onclick="doClickHorizontalMenu(\'true\', \'false\');">文献审核</a></dd>\n' +
-                '                    <dd><a href="javascript:;">用户管理</a></dd>\n' +
+                '                    <dd><a href="javascript:;" onclick="doClickShowUserManagement(1);">用户管理</a></dd>\n' +
                 '                </dl>'
             $("#adminMenu").html(html);
         }
+    }
+
+    // 用户退出
+    function logout() {
+        $.ajax({
+            type: "get",
+            url: "/reglogin/logout",
+            success: function (data) {
+                if (data.code != 200) {
+                    layer.msg(data.msg, {icon: 2});
+                    return false;
+                } else {
+                    layer.msg(data.msg, {icon: 1});
+                    location = "${ctx}/";
+                }
+            }
+        });
     }
 
     // 获取一级菜单并显示
@@ -175,7 +190,6 @@
             url: "/affiliation/showFirstLayer",
             dataType: "json",
             success: function (data) {
-
                 if (data.code != 200) {
                     layer.msg(data.msg, {icon: 2});
                     return false;
@@ -247,6 +261,7 @@
             success: function (data) {
                 if (data.code !== 200) {
                     layer.msg(data.msg, {icon: 2});
+                    console.log(data.msg);
                     return '';
                 } else {
                     var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
@@ -301,6 +316,78 @@
                                     + '</td>';
                             }
                         }
+                        htmlName = htmlName + '</tr>';
+                        sequence++;
+                    });
+                    if (documentList.length > 0) htmlName = htmlName + '</tbody></table></div>';
+                    $("#body-content-left").html(htmlName);
+
+                    var htmlPage = '<li class="total-page"><a href="javascript:void(0);">共&nbsp;' + totalPage + '&nbsp;页</a></li>';
+                    if (curPage <= 1) {
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);">上一页</a></li>';
+                    } else {
+                        curPage = curPage - 1;
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
+                            + id + ','
+                            + curPage
+                            + ')">上一页</a></li>';
+                    }
+                    htmlPage = htmlPage + '<li><a href="javascript:void(0);">当前页&nbsp;' + pageInfo.page + '</a></li>';
+                    if (curPage >= pageInfo.totalPage) {
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);">下一页</a></li>';
+                    } else {
+                        curPage = curPage + 1;
+                        htmlPage = htmlPage + '<li><a href="javascript:void(0);" onclick="doClickShowDoc('
+                            + id + ','
+                            + curPage
+                            + ')">下一页</a></li>';
+                    }
+                    $("#page").html(htmlPage);
+                }
+            }
+        });
+    }
+
+    // 显示所有用户
+    function doClickShowUserManagement(curPage) {
+        $.ajax({
+            type: 'get',
+            url: "/document/showAllDocument",
+            data: {"page": curPage,},
+            dataType: "json",
+            success: function (data) {
+                if (data.code !== 200) {
+                    layer.msg(data.msg, {icon: 2});
+                    console.log(data.msg);
+                    return false;
+                } else {
+                    var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
+                        '<th style="width: 6%;text-align: center">名称</th>' +
+                        '<th style="width: 42%;text-align: center"">邮箱</th>' +
+                        '<th style="width: 8%;text-align: center"">级别</th>' +
+                        '<th style="width: 10%;text-align: center"">VIP用户</th>' +
+                        '<th style="width: 10%;text-align: center"">操作</th>';
+                    htmlName = htmlName + '</tr></thead>';
+                    var pagination = data.data.pagination;
+                    var userList = pagination.data;
+                    var pageInfo = pagination.pageInfo;
+                    var totalPage = pageInfo.totalPage;
+
+                    if (userList.length > 0) htmlName = htmlName + '<tbody>';
+                    var sequence = 1;
+                    userList.forEach(function (element) {
+                        var name = element.name;
+                        var editor = element.editor;
+                        var author = element.author;
+                        var attachment = element.attachment;
+                        var updateTime = timestampToTime(element.updateTime);
+                        htmlName = htmlName + '<tr>' +
+                            '<td style="text-align: center;">' + sequence + '</td>' +
+                            '<td style="text-align: center;">' +  + '</td>' +
+                            '<td style="text-align: center;"><a style="display: block; cursor: pointer; color: blue;" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
+                            '<td style="text-align: center;">' + author + '</td>' +
+                            '<td style="text-align: center;">' + editor + '</td>' +
+                            '<td style="text-align: center;">' + updateTime + '</td>';
                         htmlName = htmlName + '</tr>';
                         sequence++;
                     });
