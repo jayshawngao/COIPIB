@@ -105,7 +105,7 @@
                         changeCaptcha();
                         return false;
                     } else {
-                        if (next != null || next.trim() != "") {
+                        if (next != null && next.trim() != "") {
                             location = "${ctx}" + next;
                         } else {
                             location = "${ctx}/";
