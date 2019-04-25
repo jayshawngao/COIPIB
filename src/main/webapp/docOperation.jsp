@@ -225,8 +225,6 @@
         $("#auth_3").attr("disabled", "disabled");
     }
 
-<<<<<<< HEAD
-=======
     $(function () {
         getAffiliationParent();
     });
@@ -256,7 +254,6 @@
         });
     }
 
->>>>>>> 0dc482552bc4ad99912ab1b2477a03ffb408c83a
     layui.use(['form', 'layedit', 'upload'], function () {
         var form = layui.form;
         var $ = layui.jquery;
