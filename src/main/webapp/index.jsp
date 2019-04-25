@@ -282,7 +282,6 @@
 
     // doClickShowDoc子函数，填充不同情况下的表格
     function fillDocsTable(data, id, curPage, isEdit, isActive) {
-        debugger
         var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
             '<th style="width: 6%;text-align: center">序号</th>' +
             '<th style="width: 42%;text-align: center"">文献名</th>' +
@@ -318,6 +317,7 @@
             if (isEdit == "true" && isActive == "false") {
                 if (id != 200) {
                     htmlName = htmlName + '<td style="text-align: center;"><a onclick="editeDoc(\'' + element.id + '\');" class="clickAction">编辑</a>'
+
                         + '<a class="clickAction" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'remove\'' + ')">放入回收站</a>'
                         + '</td>';
                 }else {
@@ -531,7 +531,6 @@
 
     // 搜索文件
     function doClickSimplySearch() {
-        debugger;
         var key = $("#simSearchKey").val();
         var isEdit = $("#isEdit").val();
         var isActive = $("#isActive").val();
@@ -549,6 +548,7 @@
                 } else {
                     fillDocsTable(data, affiliationId, curPage, isEdit, isActive);
                     $("#simSearchKey").val("");
+                    clearVerticalMenuCSS();
                     return '';
                 }
             }
