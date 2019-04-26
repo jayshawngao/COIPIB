@@ -402,7 +402,7 @@
                             '<td style="text-align: center;">' + levelEnum[level-1] + '</td>' +
                             '<td style="text-align: center;">';
                         if (level <= 1) {
-                            htmlName = htmlName + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickGrantVIP(' + element.id + ',' + curPage + ');">升级用户</a>';
+                            htmlName = htmlName + '<a class="clickAction" href="javascript:;" onclick="doClickGrantVIP(' + element.id + ',' + curPage + ');">升级用户</a>';
                         } else {
                             htmlName = htmlName + '升级用户';
                         }
