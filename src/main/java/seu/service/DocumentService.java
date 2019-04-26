@@ -15,6 +15,8 @@ import seu.model.Document;
 import seu.model.HostHolder;
 import seu.model.User;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class DocumentService {
     }
 
     public void updateDocument(Document document) throws COIPIBException {
+        document.setActive(1);
         checkDocument(document);
         if (documentDAO.update(document) != 1){
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文档更新失败");
@@ -78,11 +81,19 @@ public class DocumentService {
         documentDAO.update(document);
     }
 
-    public void deleteDocument(Integer id) throws COIPIBException {
+    public void deleteDocument(Integer id, HttpServletRequest request) throws COIPIBException {
         checkDocumentId(id);
+
+        Document document = documentDAO.selectById(id);
 
         documentDAO.delete(id);
 
+        String fileName = document.getAttachment().substring(document.getAttachment().lastIndexOf('/')+1,document.getAttachment().length());
+        String filePath = request.getServletContext().getRealPath("/") + "/static/file/" + fileName;
+        File file = new File(filePath);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     public void recoverDocument(Integer id) throws COIPIBException {

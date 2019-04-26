@@ -83,6 +83,7 @@
 	<select id="countSimpleSearch" resultType="java.lang.Integer">
 		select count(id) from document where
 		name like '%${content}%'
+		and affiliation_id &gt; 0
 		<if test="user.level!=3"> <!-- 非管理员用户 -->
 			and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
 			<if test="isEdit and !isActive"> <!-- 如果请求编辑页 -->
@@ -100,6 +101,7 @@
 	<select id="simpleSearch" resultType="seu.model.Document">
 		select * from document where
 		name like '%${content}%'
+		and affiliation_id &gt; 0
 		<if test="user.level!=3"> <!-- 非管理员用户 -->
 			and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
 			<if test="isEdit and !isActive"> <!-- 如果请求编辑页 -->
