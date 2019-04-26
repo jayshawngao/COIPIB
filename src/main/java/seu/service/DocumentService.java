@@ -158,6 +158,9 @@ public class DocumentService {
         if (user != null) {
             document.setEditor(user.getName());
         }
+        if (document.getAffiliationId() < 0) {
+            document.setAffiliationId(200);
+        }
         Affiliation affiliation = affiliationService.getById(document.getAffiliationId());
         if (affiliation != null) {
             document.setAffiliationList(affiliationService.queryAffiliationList(affiliation.getId()));
