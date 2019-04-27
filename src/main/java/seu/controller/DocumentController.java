@@ -112,9 +112,9 @@ public class DocumentController {
 
     @RequestMapping("/delete")
     @ResponseBody
-    public String deleteDocument(Integer id){
+    public String deleteDocument(Integer id, HttpServletRequest request){
         try{
-            documentService.deleteDocument(id);
+            documentService.deleteDocument(id, request);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "删除文档成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);

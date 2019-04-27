@@ -38,12 +38,12 @@
                 <div class="layui-card-body">
                     <form class="layui-form" action="">
                         <div class="layui-form-item">
-                            <label class="layui-form-label">文献名称
+                            <label class="layui-form-label">文献标题
                                 <scan>*</scan>
                             </label>
                             <div class="layui-input-block">
                                 <input type="text" name="name" id="name" lay-verify="required" autocomplete="off"
-                                       placeholder="请输入文献名称" class="layui-input">
+                                       placeholder="请输入文献标题" class="layui-input">
                             </div>
                         </div>
 
@@ -104,7 +104,7 @@
 
                         <div class="layui-upload layui-form-item" style="margin-left: 30px">
                             <button type="button" class="layui-btn layui-btn-normal" id="test8">选择文件</button>
-                            <button type="button" class="layui-btn" id="test9">开始上传</button>
+                            <button type="button" class="layui-btn" id="test9">上传</button>
                         </div>
 
                         <div class="layui-form-item layui-form-text">
@@ -116,16 +116,16 @@
 
                         <div class="layui-form-item">
                             <div class="layui-inline">
-                                <label class="layui-form-label">用户密级
+                                <label class="layui-form-label">文献密级
                                     <scan>*</scan>
                                 </label>
                                 <div class="layui-input-inline">
                                     <select name="auth" id="auth">
-                                        <option value="">请选择密级</option>
-                                        <option value="0" id="auth_0">0 - 游客可见</option>
-                                        <option value="1" id="auth_1">1 - 注册用户可见</option>
-                                        <option value="2" id="auth_2">2 - VIP可见</option>
-                                        <option value="3" id="auth_3">3 - 管理员可见</option>
+                                        <option value="">请选择文献密级</option>
+                                        <option value="0" id="auth_0">游客可见</option>
+                                        <option value="1" id="auth_1">注册用户可见</option>
+                                        <option value="2" id="auth_2">VIP可见</option>
+                                        <option value="3" id="auth_3">管理员可见</option>
                                     </select>
                                 </div>
                             </div>
