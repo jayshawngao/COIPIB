@@ -1,0 +1,65 @@
+.clickAction {
+    display: block;
+    cursor: pointer;
+    color: blue;
+}
+/* 中小屏幕（<= 991px的屏幕显示） */
+@media (max-width: 991px) {
+
+    .left-nav-index{
+        display: none;
+    }
+
+    .left-nav-body {
+        margin-left: -200px;
+    }
+
+    .doc-login{
+        display: none;
+    }
+
+    .doc-editor{
+        display: none;
+    }
+
+    .doc-updateTime{
+        display: none;
+    }
+
+    .doc-preview{
+        display: none;
+    }
+
+    .head-nav-left{
+        display: none;
+    }
+
+    /*.doc-search{
+        width: 120px;
+    }*/
+    .head-nav-right{
+        display: none;
+    }
+
+    .doc-logo{
+        margin-left: -40px;
+    }
+
+    .head-nav-right{
+        margin-right: 28px;
+    }
+
+    .small-doc-navicon {
+        position: absolute;
+        right: 5px;
+        padding: 10px 12px;
+        color: white;
+        border: 1px solid #009688;
+        margin-top: 13px;
+    }
+
+    .small-doc-navicon:hover {
+        border: 1px solid #5FB878;
+    }
+
+}

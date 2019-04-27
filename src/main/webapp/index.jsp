@@ -19,42 +19,51 @@
     <link href="./static/css/global.css" rel="stylesheet"/>
     <%--分页样式表--%>
     <link href="./static/css/pageInfo/page.css" rel="stylesheet">
+    <%--index页样式--%>
+    <link href="./static/css/index.css" rel="stylesheet">
 
-    <style>
-        .clickAction {
-            display: block;
-            cursor: pointer;
-            color: blue;
-        }
-    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo" style="font-weight: bold">COIPIB</div>
+        <a href="${ctx}/index">
+            <div class="layui-logo doc-logo" style="font-weight: bold">COIPIB</div>
+        </a>
+        <ul class="layui-nav layui-layout-left small-head-nav-left">
+            <li class="layui-nav-item"><a href="javascript:;"></a></li>
+        </ul>
         <!-- 头部区域（可配合layui已有的水平导航） -->
-        <ul class="layui-nav layui-layout-left" >
-            <li class="layui-nav-item layui-this"><a href="javascript:;" onclick="doClickHorizontalMenu('false', 'false');">文件</a></li>
-            <li class="layui-nav-item"><a href="javascript:;" onclick="doClickHorizontalMenu('false', 'true');">编辑</a></li>
+        <ul class="layui-nav layui-layout-left head-nav-left">
+            <li class="layui-nav-item layui-this"><a href="javascript:;"
+                                                     onclick="doClickHorizontalMenu('false', 'false');">文件</a></li>
+            <li class="layui-nav-item"><a href="javascript:;" onclick="doClickHorizontalMenu('false', 'true');">编辑</a>
+            </li>
             <li class="layui-nav-item"><a href="${ctx}/docOperation">文献操作</a></li>
             <!--禁止删除-->
             <li class="layui-nav-item" id="adminMenu">
 
             </li>
         </ul>
-        <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="${ctx}/login">登录</a></li>
+
+        <ul class="layui-nav layui-layout-right head-nav-right">
+            <li class="layui-nav-item doc-login" id="loginButton" style="display: none;"><a href="${ctx}/login">登录</a>
+            </li>
             <li class="layui-nav-item" id="userInfoButton" style="display: none; margin-right: 20px;"></li>
             <li class="layui-nav-item">
-                <input type="text" name="" class="layui-input" id="simSearchKey" placeholder="请输入：关键字">
+                <input type="text" name="" class="layui-input doc-search" id="simSearchKey" placeholder="请输入：关键字">
             </li>
             <li class="layui-nav-item">
-                <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="doClickSimplySearch();">搜索</button>
+                <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="doClickSimplySearch();">搜索
+                </button>
             </li>
         </ul>
+
+        <a class="small-doc-navicon" href="javascript:;" onclick="showLeftNav();">
+            <i class="fa fa-navicon"></i>
+        </a>
     </div>
 
-    <div class="layui-side layui-bg-black">
+    <div class="layui-side layui-bg-black left-nav-index">
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree" lay-filter="test" id="verticalMenu">
@@ -63,7 +72,7 @@
         </div>
     </div>
 
-    <div class="layui-body">
+    <div class="layui-body left-nav-body">
         <!-- 内容主体区域 -->
 
         <!--左边文章列表-->
@@ -88,7 +97,8 @@
 
     <div class="layui-footer">
         <!-- 底部固定区域 -->
-        <button class="layui-btn layui-btn-primary layui-btn-sm" id="back" style="display: none" onclick="clickBackBtn();">
+        <button class="layui-btn layui-btn-primary layui-btn-sm" id="back" style="display: none"
+                onclick="clickBackBtn();">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
         </button>
     </div>
@@ -287,10 +297,10 @@
         var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
             '<th style="width: 6%;text-align: center">序号</th>' +
             '<th style="width: 42%;text-align: center"">文献名</th>' +
-            '<th style="width: 8%;text-align: center"">预览</th>' +
+            '<th class="doc-preview" style="width: 8%;text-align: center"">预览</th>' +
             '<th style="width: 10%;text-align: center"">作者</th>' +
-            '<th style="width: 10%;text-align: center"">编辑人</th>' +
-            '<th style="width: 14%;text-align: center"">更新日期</th>';
+            '<th class="doc-editor" style="width: 10%;text-align: center"">编辑人</th>' +
+            '<th class="doc-updateTime" style="width: 14%;text-align: center"">更新日期</th>';
         if ((isEdit == "true" && isActive == "false") || (isEdit == "false" && isActive == "true")) {
             htmlName = htmlName + '<th style="width: 14%;text-align: center"">操作</th>';
         }
@@ -311,18 +321,18 @@
             var updateTime = timestampToTime(element.updateTime);
             htmlName = htmlName + '<tr>' +
                 '<td style="text-align: center;">' + sequence + '</td>' +
-                '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
-                '<td style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
+                '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g, "'") + ')">' + name + '</a></td>' +
+                '<td class="doc-preview" style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\'' + attachment + '\')">预览</a></td>' +
                 '<td style="text-align: center;">' + author + '</td>' +
-                '<td style="text-align: center;">' + editor + '</td>' +
-                '<td style="text-align: center;">' + updateTime + '</td>';
+                '<td class="doc-editor" style="text-align: center;">' + editor + '</td>' +
+                '<td class="doc-updateTime" style="text-align: center;">' + updateTime + '</td>';
             if (isEdit == "true" && isActive == "false") {
                 if (id != 200) {
                     htmlName = htmlName + '<td style="text-align: center;"><a onclick="editeDoc(\'' + element.id + '\');" class="clickAction">编辑</a>'
 
                         + '<a class="clickAction" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'remove\'' + ')">放入回收站</a>'
                         + '</td>';
-                }else {
+                } else {
                     htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'recover\'' + ')">还原</a>'
                         + '<a class="clickAction" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'delete\'' + ')">永久删除</a>'
                         + '</td>';
@@ -399,7 +409,7 @@
                             '<td style="text-align: center;">' + sequence + '</td>' +
                             '<td style="text-align: center;">' + name + '</td>' +
                             '<td style="text-align: center;">' + email + '</td>' +
-                            '<td style="text-align: center;">' + levelEnum[level-1] + '</td>' +
+                            '<td style="text-align: center;">' + levelEnum[level - 1] + '</td>' +
                             '<td style="text-align: center;">';
                         if (level <= 1) {
                             htmlName = htmlName + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickGrantVIP(' + element.id + ',' + curPage + ');">升级用户</a>';
@@ -436,7 +446,7 @@
         });
     }
 
-    function doclickShowPdf(attachment){
+    function doclickShowPdf(attachment) {
         document.getElementById("blog-main-left").style.display = "none";
         document.getElementById("blog-main-right").style.display = "none";
         var height = window.innerHeight - 67;
@@ -486,6 +496,7 @@
         var D = date.getDate() + ' ';
         return Y + M + D;
     }
+
     function timestampToDate(timestamp) {
         var date = new Date(timestamp);
         var Y = date.getFullYear() + '-';
@@ -507,7 +518,7 @@
             dataType: "json",
             success: function (data) {
                 if (data.code != 200) {
-                    layer.msg(data.msg,{icon: 2});
+                    layer.msg(data.msg, {icon: 2});
                     return '';
                 } else {
                     layer.msg(data.msg, {icon: 1});
@@ -529,7 +540,7 @@
             dataType: "json",
             success: function (data) {
                 if (data.code != 200) {
-                    layer.msg(data.msg,{icon: 2});
+                    layer.msg(data.msg, {icon: 2});
                     return false;
                 } else {
                     layer.msg(data.msg, {icon: 1});
@@ -554,7 +565,7 @@
             dataType: "json",
             success: function (data) {
                 if (data.code != 200) {
-                    layer.msg(data.msg,{icon: 2});
+                    layer.msg(data.msg, {icon: 2});
                     return false;
                 } else {
                     fillDocsTable(data, affiliationId, curPage, isEdit, isActive);
@@ -568,7 +579,19 @@
 
     function editeDoc(docId) {
         location.href = '${ctx}/docOperation';
-        window.localStorage.setItem('docId',docId);
+        window.localStorage.setItem('docId', docId);
+    }
+
+    var leftNavFlag = false;
+    function showLeftNav() {
+        if(leftNavFlag == false){
+            $(".left-nav-index").show();
+            leftNavFlag = true;
+        }else{
+            $(".left-nav-index").hide();
+            leftNavFlag = false;
+        }
+
     }
 </script>
 </body>
