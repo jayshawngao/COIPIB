@@ -31,7 +31,7 @@
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo" style="font-weight: bold">COIPIB</div>
+        <a href="${ctx}/index"><div class="layui-logo" style="font-weight: bold">COIPIB</div></a>
         <!-- 头部区域（可配合layui已有的水平导航） -->
         <ul class="layui-nav layui-layout-left" >
             <li class="layui-nav-item layui-this"><a href="javascript:;" onclick="doClickHorizontalMenu('false', 'false');">文件</a></li>
@@ -107,6 +107,7 @@
     userInfo.email = "${user.email}";
     userInfo.level = "${user.level}";
     userInfo.active = "${user.active}";
+    var authEnum = ["游客可见", "注册用户可见", "VIP用户可见", "管理员可见"];
 
     // layui框架导航模块初始化，禁止删除
     var layer, element;
@@ -155,7 +156,7 @@
             var html = "";
             html = html + '<a href="javascript:;">' + userInfo.name + '</a>'
                 + '<dl class="layui-nav-child">'
-                + '<dd><a href="${ctx}/updatePassword.jsp">修改密码</a></dd>'
+                + '<dd><a href="${ctx}/updatePassword">修改密码</a></dd>'
                 + '<dd style="text-align: center;"><a href="javascript:;" onclick="logout();">退出</a></dd>'
                 + '</dl>';
             $("#userInfoButton").html(html);
@@ -285,12 +286,13 @@
     // doClickShowDoc子函数，填充不同情况下的表格
     function fillDocsTable(data, id, curPage, isEdit, isActive) {
         var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
-            '<th style="width: 6%;text-align: center">序号</th>' +
-            '<th style="width: 42%;text-align: center"">文献名</th>' +
-            '<th style="width: 8%;text-align: center"">预览</th>' +
+            '<th style="width: 5%;text-align: center">序号</th>' +
+            '<th style="width: 35%;text-align: center"">标题</th>' +
+            '<th style="width: 6%;text-align: center"">预览</th>' +
+            '<th style="width: 11%;text-align: center"">密级</th>' +
             '<th style="width: 10%;text-align: center"">作者</th>' +
             '<th style="width: 10%;text-align: center"">编辑人</th>' +
-            '<th style="width: 14%;text-align: center"">更新日期</th>';
+            '<th style="width: 10%;text-align: center"">更新日期</th>';
         if ((isEdit == "true" && isActive == "false") || (isEdit == "false" && isActive == "true")) {
             htmlName = htmlName + '<th style="width: 14%;text-align: center"">操作</th>';
         }
@@ -308,11 +310,13 @@
             var editor = element.editor;
             var author = element.author;
             var attachment = element.attachment;
+            var auth = element.auth;
             var updateTime = timestampToTime(element.updateTime);
             htmlName = htmlName + '<tr>' +
                 '<td style="text-align: center;">' + sequence + '</td>' +
                 '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
                 '<td style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
+                '<td style="text-align: center;">' + authEnum[auth] + '</td>' +
                 '<td style="text-align: center;">' + author + '</td>' +
                 '<td style="text-align: center;">' + editor + '</td>' +
                 '<td style="text-align: center;">' + updateTime + '</td>';
@@ -454,26 +458,31 @@
     }
 
     function doClickShowInfo(obj) {
-        var documentName = obj.name;
+        var name = obj.name;
         var topic = obj.topic;
         var year = obj.year;
         var editor = obj.editor;
         var digest = obj.digest;
         var author = obj.author;
         var note = obj.note;
-        var name = obj.affiliationList[0].name;
+        var auth = obj.auth;
+        var affiliation = obj.affiliationList[0].name;
+        if (obj.affiliationList[1] != null) {
+            affiliation += "->" + obj.affiliationList[1].name;
+        }
         var keywords = obj.keywords;
         var createTime = timestampToDate(obj.createTime);
         var updateTime = timestampToDate(obj.updateTime);
-        var html = '标题：' + documentName +
+        var html = '标题：' + name +
+            '<br><br>作者：' + author +
             '<br><br>摘要：' + digest +
             '<br><br>关键字：' + keywords +
-            '<br><br>文献作者：' + author +
+            '<br><br>主题：' + topic +
+            '<br><br>归属：' + affiliation +
+            '<br><br>备注：' + note +
+            '<br><br>密级：' + authEnum[auth] +
+            '<br><br>年份：' + year +
             '<br><br>编辑人：' + editor +
-            '<br><br>文献归属：' + name +
-            '<br><br>文献备注：' + note +
-            '<br><br>文献主题：' + topic +
-            '<br><br>文献年份：' + year +
             '<br><br>创建时间：' + createTime +
             '<br><br>修改时间：' + updateTime;
         $("#body-content-right").html(html);
