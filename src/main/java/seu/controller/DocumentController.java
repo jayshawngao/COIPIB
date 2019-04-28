@@ -234,4 +234,21 @@ public class DocumentController {
         }
     }
 
+    /**
+     * 删除PDF
+     * @param attachment
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/deleteAttachment")
+    public String deleteAttachment(String attachment, HttpServletRequest request) {
+        try {
+            documentService.deleteAttachment(attachment, request);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文件删除成功").toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/document/deleteDocFile parameter:attachment={}", attachment, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
 }

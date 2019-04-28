@@ -251,6 +251,19 @@
                     return false;
                 } else {
                     layer.msg("文件上传成功", {icon: 6});
+                    <!--删除旧文件-->
+                    $.ajax({
+                        type: 'get',
+                        url: "${ctx}/document/deleteAttachment",
+                        data: {"attachment": attachment},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.code != 200) {
+                                layer.msg(data.msg,{icon: 2});
+                                return '';
+                            }
+                        }
+                    });
                     attachment = res.data.attachment;
                     console.log(attachment);
                     return false;

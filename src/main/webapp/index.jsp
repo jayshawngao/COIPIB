@@ -133,6 +133,9 @@
 
     // 点击水平导航栏“编辑”、“文件”、“文件审核”显示文件
     function doClickHorizontalMenu(isActive, isEdit) {
+        if (isActive == "false" && isEdit == "true" && userInfo.level == 0) {
+            location = '${ctx}/login';
+        }
         clearVerticalMenuCSS();
         $("#isActive").val(isActive);
         $("#isEdit").val(isEdit);

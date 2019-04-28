@@ -88,12 +88,7 @@ public class DocumentService {
 
         documentDAO.delete(id);
 
-        String fileName = document.getAttachment().substring(document.getAttachment().lastIndexOf('/')+1,document.getAttachment().length());
-        String filePath = request.getServletContext().getRealPath("/") + "/static/file/" + fileName;
-        File file = new File(filePath);
-        if (file.exists()) {
-            file.delete();
-        }
+        doDeleteFile(document.getAttachment(), request);
     }
 
     public void recoverDocument(Integer id) throws COIPIBException {
@@ -216,5 +211,22 @@ public class DocumentService {
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "没有该文献！");
         }
         return document;
+    }
+
+    public void deleteAttachment(String attachment, HttpServletRequest request) {
+        if (attachment == null) {
+            return;
+        }
+        doDeleteFile(attachment, request);
+
+    }
+
+    private void doDeleteFile(String attachment, HttpServletRequest request) {
+        String fileName = attachment.substring(attachment.lastIndexOf('/')+1,attachment.length());
+        String filePath = request.getServletContext().getRealPath("/") + "/static/file/" + fileName;
+        File file = new File(filePath);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 }
