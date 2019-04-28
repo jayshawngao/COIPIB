@@ -91,6 +91,8 @@
                 <div style="padding: 15px;" id="body-content-right"></div>
             </div>
             <div id="showPdf" style="width: 100%;"></div>
+
+            <div><span class="share">立即分享</span></div>
         </div>
         <div class="clear"></div>
     </div>
@@ -105,9 +107,14 @@
 </div>
 <input type="hidden" id="isEdit" value="false">
 <input type="hidden" id="isActive" value="false">
+<!--二维码弹层-->
+<div id="popQRCode"><div id="qrcode" style="margin-left: 30px; margin-top: 8px;"></div></div>
+</body>
+
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script src='./static/js/pdfobject.js'></script>
+<script src="./static/plug/qrcodejs/qrcode.js"></script>
 <script>
 
     // js全局变量
@@ -625,6 +632,29 @@
         }
 
     }
+
+    // 二维码分享
+    $(".share").unbind("click").bind('click', function () {
+        var url = document.location;
+        var qrcode = new QRCode('qrcode', {
+            text: String(url),
+            width: 220,
+            height: 220,
+            colorDark : '#000000',
+            colorLight : '#ffffff',
+            correctLevel : QRCode.CorrectLevel.H
+        });
+        layer.open({
+            title: '分享此网页',
+            type: 1,
+            resize: false,
+            area: ['280px', '280px'],
+            content: $('#popQRCode'),
+            cancel: function (index, layer0) {
+                qrcode.clear();
+                $('#qrcode').html('');
+            }
+        });
+    });
 </script>
-</body>
 </html>
