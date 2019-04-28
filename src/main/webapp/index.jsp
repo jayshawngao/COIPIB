@@ -53,7 +53,7 @@
                 <input type="text" name="" class="layui-input doc-search" id="simSearchKey" placeholder="请输入：关键字">
             </li>
             <li class="layui-nav-item">
-                <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="doClickSimplySearch();">搜索
+                <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="doClickSimplySearch();" id="simpleSearch">搜索
                 </button>
             </li>
         </ul>
@@ -130,6 +130,13 @@
         getFirstLayer();
         checkUserLogin();
     });
+
+    $('#simSearchKey').on('keypress',function (event) {
+        if(event.keyCode == 13) {
+            $('#simpleSearch').trigger('click');
+        }
+
+    })
 
     // 点击水平导航栏“编辑”、“文件”、“文件审核”显示文件
     function doClickHorizontalMenu(isActive, isEdit) {
