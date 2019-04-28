@@ -42,7 +42,7 @@ public class Document {
     private Integer auth;
 
     /**
-     * 0 激活；1 未激活
+     * 0 通过审核；1待审核；2未通过审核
      */
     private Integer active;
 

@@ -118,6 +118,7 @@
     userInfo.level = "${user.level}";
     userInfo.active = "${user.active}";
     var authEnum = ["游客可见", "注册用户可见", "VIP用户可见", "管理员可见"];
+    var activeEnum = ["通过", "待审核", "未通过"];
 
     // layui框架导航模块初始化，禁止删除
     var layer, element;
@@ -307,13 +308,14 @@
     function fillDocsTable(data, id, curPage, isEdit, isActive) {
         var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
             '<th style="width: 5%;text-align: center">序号</th>' +
-            '<th style="width: 35%;text-align: center"">标题</th>' +
+            '<th style="width: 30%;text-align: center"">标题</th>' +
             '<th class="doc-preview" style="width: 6%;text-align: center"">预览</th>' +
             '<th style="width: 11%;text-align: center"">密级</th>' +
             '<th style="width: 10%;text-align: center"">作者</th>' +
             '<th class="doc-editor" style="width: 10%;text-align: center"">编辑人</th>' +
             '<th class="doc-updateTime" style="width: 10%;text-align: center"">更新日期</th>';
         if ((isEdit == "true" && isActive == "false") || (isEdit == "false" && isActive == "true")) {
+            htmlName = htmlName + '<th style="width: 8%;text-align: center"">审核状态</th>';
             htmlName = htmlName + '<th style="width: 14%;text-align: center"">操作</th>';
         }
         htmlName = htmlName + '</tr></thead>';
@@ -331,6 +333,7 @@
             var author = element.author;
             var attachment = element.attachment;
             var auth = element.auth;
+            var active = element.active;
             var updateTime = timestampToTime(element.updateTime);
             htmlName = htmlName + '<tr>' +
                 '<td style="text-align: center;">' + sequence + '</td>' +
@@ -341,6 +344,7 @@
                 '<td class="doc-editor" style="text-align: center;">' + editor + '</td>' +
                 '<td class="doc-updateTime" style="text-align: center;">' + updateTime + '</td>';
             if (isEdit == "true" && isActive == "false") {
+                htmlName = htmlName + '<td style="text-align: center;">' + activeEnum[active] + '</td>';
                 if (id != 200) {
                     htmlName = htmlName + '<td style="text-align: center;"><a onclick="editeDoc(\'' + element.id + '\');" class="clickAction">编辑</a>'
 
@@ -353,8 +357,10 @@
                 }
             }
             if (isEdit == "false" && isActive == "true") {
+                htmlName = htmlName + '<td style="text-align: center;">' + activeEnum[active] + '</td>';
                 if (id != 200) {
-                    htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'active\'' + ')">通过审核</a>'
+                    htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'active\'' + ')">通过</a>'
+                        + '<a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'reject\'' + ')">不通过</a>'
                         + '</td>';
                 }
             }

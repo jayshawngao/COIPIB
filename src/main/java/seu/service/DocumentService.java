@@ -73,6 +73,20 @@ public class DocumentService {
         documentDAO.update(document);
     }
 
+    /**
+     * 管理员不通过
+     * @param id
+     * @throws COIPIBException
+     */
+    public void rejectDocument(Integer id) throws COIPIBException {
+        checkDocumentId(id);
+        userService.adminAuth();
+
+        Document document = documentDAO.selectById(id);
+        document.setActive(2);
+        documentDAO.update(document);
+    }
+
     public void moveDocumentToBin(Integer id) throws COIPIBException{
         checkDocumentId(id);
 
