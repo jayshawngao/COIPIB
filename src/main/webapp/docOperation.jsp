@@ -156,6 +156,8 @@
     var attachment = "";
     var updateOrInsert = null;
     var docId = window.localStorage.getItem('docId');
+    var affiliationId = null;
+    var parentId = null;
 
     $(function () {
        console.log("docId = " + docId);
@@ -181,6 +183,25 @@
                        var auth = doc.auth;
                        var year = doc.year;
                        attachment = doc.attachment;
+                       affiliationId = doc.affiliationId;
+                       $.ajax({
+                           type: 'post',
+                           url: '${ctx}/affiliation/getById',
+                           data: {"id": affiliationId},
+                           dataType: 'json',
+                           success: function (data) {
+                               if (data.code != 200) {
+                                   layer.msg(data.msg, {icon: 2});
+                                   return false;
+                               } else {
+                                    parentId = data.data.affiliation.parentId;
+                                    if (parentId == 0) {
+                                        parentId = affiliationId;
+                                        affiliationId = null;
+                                    }
+                               }
+                           }
+                       });
 
                        console.log("name = " + name);
 
@@ -274,6 +295,7 @@
         //自定义验证规则
         form.verify({});
 
+
         $(function () {
             getAffiliationParent();
         });
@@ -294,7 +316,12 @@
                             var name = element.name;
                             var id = element.id;
                             if (element.deleted == 1 && element.parentId == 0) {
-                                html = html + '<option value="' + id + '">' + name + '</option>';
+                                if (element.id == parentId) {
+                                    html = html + '<option value="' + id + '" selected="selected">' + name + '</option>';
+                                    getAffiliationChild(parentId);
+                                } else {
+                                    html = html + '<option value="' + id + '">' + name + '</option>';
+                                }
                             }
                         });
                         console.log("html_1 = " + html);
@@ -305,12 +332,11 @@
             });
         }
 
-        //监听指定开关
-        form.on('select(affiliation-parent)', function (data) {
+        function getAffiliationChild(parentId) {
             $.ajax({
                 type: 'POST',
                 url: '${ctx}/affiliation/showNextLayer',
-                data: {"parentId": data.value},
+                data: {"parentId": parentId},
                 dataType: 'json',
                 success: function (result) {
                     if (result.code != 200) {
@@ -323,7 +349,11 @@
                             var name = element.name;
                             var id = element.id;
                             if (element.deleted == 1) {
-                                html = html + '<option value="' + id + '">' + name + '</option>';
+                                if (element.id == affiliationId) {
+                                    html = html + '<option value="' + id + '" selected="selected">' + name + '</option>';
+                                } else {
+                                    html = html + '<option value="' + id + '">' + name + '</option>';
+                                }
                             }
                         });
                         console.log("html_2 = " + html);
@@ -332,13 +362,18 @@
                     }
                 }
             });
+        }
+
+        //监听指定开关
+        form.on('select(affiliation-parent)', function (data) {
+            getAffiliationChild(data.value);
         });
 
         //监听提交
         form.on('submit(submit)', function (data) {
 
             console.log("attachment = " + attachment);
-            if (attachment =="") {
+            if (attachment == null || attachment.trim() == "") {
                 layer.msg("请选择您要上传的文献", {icon: 2});
                 return false;
             }
