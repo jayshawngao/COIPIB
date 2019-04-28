@@ -15,6 +15,8 @@ public class Document {
 
     private String author;
 
+    private String authorIntro;
+
     // 逗号分隔多个关键词
     private String keywords;
 
@@ -176,6 +178,14 @@ public class Document {
         this.updateTime = updateTime;
     }
 
+    public String getAuthorIntro() {
+        return authorIntro;
+    }
+
+    public void setAuthorIntro(String authorIntro) {
+        this.authorIntro = authorIntro;
+    }
+
     public Document() {
     }
 
@@ -188,13 +198,13 @@ public class Document {
     }
 
 
-
     @Override
     public String toString() {
         return "Document{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", author='" + author + '\'' +
+                ", authorIntro='" + authorIntro + '\'' +
                 ", keywords='" + keywords + '\'' +
                 ", digest='" + digest + '\'' +
                 ", topic='" + topic + '\'' +

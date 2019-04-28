@@ -58,6 +58,13 @@
                         </div>
 
                         <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">作者简介</label>
+                            <div class="layui-input-block">
+                                <textarea name="authorIntro" id="authorIntro" placeholder="请输入作者简介" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item layui-form-text">
                             <label class="layui-form-label">文献摘要
                                 <scan>*</scan>
                             </label>
@@ -176,6 +183,7 @@
                        var doc = data.data.document;
                        var name = doc.name;
                        var author = doc.author;
+                       var authorIntro = doc.authorIntro;
                        var digest = doc.digest;
                        var keywords = doc.keywords;
                        var topic = doc.topic;
@@ -207,6 +215,7 @@
 
                        $("#name").val(name);
                        $("#author").val(author);
+                       $("#authorIntro").val(authorIntro);
                        $("#digest").val(digest);
                        $("#keywords").val(keywords);
                        $("#topic").val(topic);
@@ -387,6 +396,7 @@
             }
             var name = $("#name").val();  // 文献名称
             var author = $("#author").val(); // 文献作者
+            var authorIntro = $("#authorIntro").val(); // 作者简介
             var digest = $("#digest").val();  // 文献摘要
             var keywords = $("#keywords").val();  // 文献关键字
             var topic = $("#topic").val();  // 文献主题
@@ -424,6 +434,7 @@
                     "editorId": editorId,
                     "auth": auth,
                     "author": author,
+                    "authorIntro": authorIntro,
                 },
                 dataType: 'json',
                 success: function (result) {

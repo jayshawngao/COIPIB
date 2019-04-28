@@ -484,7 +484,8 @@
         var editor = obj.editor;
         var digest = obj.digest;
         var author = obj.author;
-        var note = obj.note;
+        var authorIntro = obj.authorIntro==null?"":obj.authorIntro;
+        var note = obj.note==null?"":obj.note;
         var auth = obj.auth;
         var affiliation = obj.affiliationList[0].name;
         if (obj.affiliationList[1] != null) {
@@ -495,6 +496,7 @@
         var updateTime = timestampToDate(obj.updateTime);
         var html = '标题：' + name +
             '<br><br>作者：' + author +
+            '<br><br>作者简介：' + authorIntro +
             '<br><br>摘要：' + digest +
             '<br><br>关键字：' + keywords +
             '<br><br>主题：' + topic +

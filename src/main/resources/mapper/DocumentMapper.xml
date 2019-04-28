@@ -3,9 +3,9 @@
 <mapper namespace="seu.dao.DocumentDAO">
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
-		insert into document(name,author,keywords,digest,topic,affiliation_id, year,
+		insert into document(name,author, author_intro, keywords,digest,topic,affiliation_id, year,
 				note, attachment, editor_id, auth)
-	    values(#{name}, #{author}, #{keywords}, #{digest}, #{topic}, #{affiliationId}, #{year},
+	    values(#{name}, #{author}, #{authorIntro}, #{keywords}, #{digest}, #{topic}, #{affiliationId}, #{year},
 	    	#{note}, #{attachment}, #{editorId}, #{auth});
 	</insert>
 
@@ -17,6 +17,9 @@
 			</if>
 			<if test="author!=null">
 				author = #{author},
+			</if>
+			<if test="authorIntro!=null">
+				author_intro = #{authorIntro},
 			</if>
 			<if test="keywords!=null">
 				keywords = #{keywords},
