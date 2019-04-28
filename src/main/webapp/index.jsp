@@ -337,8 +337,13 @@
             var updateTime = timestampToTime(element.updateTime);
             htmlName = htmlName + '<tr>' +
                 '<td style="text-align: center;">' + sequence + '</td>' +
-                '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
-                '<td class="doc-preview" style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
+                '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>';
+            if (attachment != null) {
+                htmlName = htmlName + '<td class="doc-preview" style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>';
+            } else {
+                htmlName = htmlName + '<td class="doc-preview" style="text-align: center;">预览</td>';
+            }
+            htmlName = htmlName +
                 '<td style="text-align: center;">' + authEnum[auth] + '</td>' +
                 '<td style="text-align: center;">' + author + '</td>' +
                 '<td class="doc-editor" style="text-align: center;">' + editor + '</td>' +

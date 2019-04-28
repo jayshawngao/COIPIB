@@ -69,7 +69,6 @@
                 </otherwise>
             </choose>
             <if test="user.level!=3"> <!-- 非管理员用户 -->
-                and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
                 <if test="affiliationId==200 or (isEdit and !isActive)"> <!-- 如果请求回收站或者编辑页 -->
                     and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
                 </if>
@@ -88,7 +87,6 @@
 		name like '%${content}%'
 		and affiliation_id &gt; 0
 		<if test="user.level!=3"> <!-- 非管理员用户 -->
-			and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
 			<if test="isEdit and !isActive"> <!-- 如果请求编辑页 -->
 				and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
 			</if>
@@ -106,7 +104,6 @@
 		name like '%${content}%'
 		and affiliation_id &gt; 0
 		<if test="user.level!=3"> <!-- 非管理员用户 -->
-			and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
 			<if test="isEdit and !isActive"> <!-- 如果请求编辑页 -->
 				and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
 			</if>
