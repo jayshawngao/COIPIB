@@ -19,42 +19,51 @@
     <link href="./static/css/global.css" rel="stylesheet"/>
     <%--分页样式表--%>
     <link href="./static/css/pageInfo/page.css" rel="stylesheet">
+    <%--index页样式--%>
+    <link href="./static/css/index.css" rel="stylesheet">
 
-    <style>
-        .clickAction {
-            display: block;
-            cursor: pointer;
-            color: blue;
-        }
-    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="layui-logo" style="font-weight: bold">COIPIB</div>
+        <a href="${ctx}/index">
+            <div class="layui-logo doc-logo" style="font-weight: bold">COIPIB</div>
+        </a>
+        <ul class="layui-nav layui-layout-left small-head-nav-left">
+            <li class="layui-nav-item"><a href="javascript:;"></a></li>
+        </ul>
         <!-- 头部区域（可配合layui已有的水平导航） -->
-        <ul class="layui-nav layui-layout-left" >
-            <li class="layui-nav-item layui-this"><a href="javascript:;" onclick="doClickHorizontalMenu('false', 'false');">文件</a></li>
-            <li class="layui-nav-item"><a href="javascript:;" onclick="doClickHorizontalMenu('false', 'true');">编辑</a></li>
+        <ul class="layui-nav layui-layout-left head-nav-left">
+            <li class="layui-nav-item layui-this"><a href="javascript:;"
+                                                     onclick="doClickHorizontalMenu('false', 'false');">文件</a></li>
+            <li class="layui-nav-item"><a href="javascript:;" onclick="doClickHorizontalMenu('false', 'true');">编辑</a>
+            </li>
             <li class="layui-nav-item"><a href="${ctx}/docOperation">文献操作</a></li>
             <!--禁止删除-->
             <li class="layui-nav-item" id="adminMenu">
 
             </li>
         </ul>
-        <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item" id="loginButton" style="display: none;"><a href="${ctx}/login">登录</a></li>
+
+        <ul class="layui-nav layui-layout-right head-nav-right">
+            <li class="layui-nav-item doc-login" id="loginButton" style="display: none;"><a href="${ctx}/login">登录</a>
+            </li>
             <li class="layui-nav-item" id="userInfoButton" style="display: none; margin-right: 20px;"></li>
             <li class="layui-nav-item">
-                <input type="text" name="" class="layui-input" id="simSearchKey" placeholder="请输入：关键字">
+                <input type="text" name="" class="layui-input doc-search" id="simSearchKey" placeholder="请输入：关键字">
             </li>
             <li class="layui-nav-item">
-                <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="doClickSimplySearch();">搜索</button>
+                <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="doClickSimplySearch();" id="simpleSearch">搜索
+                </button>
             </li>
         </ul>
+
+        <a class="small-doc-navicon" href="javascript:;" onclick="showLeftNav();">
+            <i class="fa fa-navicon"></i>
+        </a>
     </div>
 
-    <div class="layui-side layui-bg-black">
+    <div class="layui-side layui-bg-black left-nav-index">
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree" lay-filter="test" id="verticalMenu">
@@ -63,7 +72,7 @@
         </div>
     </div>
 
-    <div class="layui-body">
+    <div class="layui-body left-nav-body">
         <!-- 内容主体区域 -->
 
         <!--左边文章列表-->
@@ -82,22 +91,30 @@
                 <div style="padding: 15px;" id="body-content-right"></div>
             </div>
             <div id="showPdf" style="width: 100%;"></div>
+
+            <div><span class="share">立即分享</span></div>
         </div>
         <div class="clear"></div>
     </div>
 
     <div class="layui-footer">
         <!-- 底部固定区域 -->
-        <button class="layui-btn layui-btn-primary layui-btn-sm" id="back" style="display: none" onclick="clickBackBtn();">
+        <button class="layui-btn layui-btn-primary layui-btn-sm" id="back" style="display: none"
+                onclick="clickBackBtn();">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
         </button>
     </div>
 </div>
 <input type="hidden" id="isEdit" value="false">
 <input type="hidden" id="isActive" value="false">
+<!--二维码弹层-->
+<div id="popQRCode"><div id="qrcode" style="margin-left: 30px; margin-top: 8px;"></div></div>
+</body>
+
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script src='./static/js/pdfobject.js'></script>
+<script src="./static/plug/qrcodejs/qrcode.js"></script>
 <script>
 
     // js全局变量
@@ -107,6 +124,8 @@
     userInfo.email = "${user.email}";
     userInfo.level = "${user.level}";
     userInfo.active = "${user.active}";
+    var authEnum = ["游客可见", "注册用户可见", "VIP用户可见", "管理员可见"];
+    var activeEnum = ["通过", "待审核", "未通过"];
 
     // layui框架导航模块初始化，禁止删除
     var layer, element;
@@ -120,8 +139,18 @@
         checkUserLogin();
     });
 
+    $('#simSearchKey').on('keypress',function (event) {
+        if(event.keyCode == 13) {
+            $('#simpleSearch').trigger('click');
+        }
+
+    })
+
     // 点击水平导航栏“编辑”、“文件”、“文件审核”显示文件
     function doClickHorizontalMenu(isActive, isEdit) {
+        if (isActive == "false" && isEdit == "true" && userInfo.level == 0) {
+            location = '${ctx}/login';
+        }
         clearVerticalMenuCSS();
         $("#isActive").val(isActive);
         $("#isEdit").val(isEdit);
@@ -155,7 +184,7 @@
             var html = "";
             html = html + '<a href="javascript:;">' + userInfo.name + '</a>'
                 + '<dl class="layui-nav-child">'
-                + '<dd><a href="${ctx}/updatePassword.jsp">修改密码</a></dd>'
+                + '<dd><a href="${ctx}/updatePassword">修改密码</a></dd>'
                 + '<dd style="text-align: center;"><a href="javascript:;" onclick="logout();">退出</a></dd>'
                 + '</dl>';
             $("#userInfoButton").html(html);
@@ -285,13 +314,15 @@
     // doClickShowDoc子函数，填充不同情况下的表格
     function fillDocsTable(data, id, curPage, isEdit, isActive) {
         var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
-            '<th style="width: 6%;text-align: center">序号</th>' +
-            '<th style="width: 42%;text-align: center"">文献名</th>' +
-            '<th style="width: 8%;text-align: center"">预览</th>' +
+            '<th style="width: 5%;text-align: center">序号</th>' +
+            '<th style="width: 30%;text-align: center"">标题</th>' +
+            '<th class="doc-preview" style="width: 6%;text-align: center"">预览</th>' +
+            '<th style="width: 11%;text-align: center"">密级</th>' +
             '<th style="width: 10%;text-align: center"">作者</th>' +
-            '<th style="width: 10%;text-align: center"">编辑人</th>' +
-            '<th style="width: 14%;text-align: center"">更新日期</th>';
+            '<th class="doc-editor" style="width: 10%;text-align: center"">编辑人</th>' +
+            '<th class="doc-updateTime" style="width: 10%;text-align: center"">更新日期</th>';
         if ((isEdit == "true" && isActive == "false") || (isEdit == "false" && isActive == "true")) {
+            htmlName = htmlName + '<th style="width: 8%;text-align: center"">审核状态</th>';
             htmlName = htmlName + '<th style="width: 14%;text-align: center"">操作</th>';
         }
         htmlName = htmlName + '</tr></thead>';
@@ -308,29 +339,40 @@
             var editor = element.editor;
             var author = element.author;
             var attachment = element.attachment;
+            var auth = element.auth;
+            var active = element.active;
             var updateTime = timestampToTime(element.updateTime);
             htmlName = htmlName + '<tr>' +
                 '<td style="text-align: center;">' + sequence + '</td>' +
-                '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
-                '<td style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
+                '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>';
+            if (attachment != null) {
+                htmlName = htmlName + '<td class="doc-preview" style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>';
+            } else {
+                htmlName = htmlName + '<td class="doc-preview" style="text-align: center;">预览</td>';
+            }
+            htmlName = htmlName +
+                '<td style="text-align: center;">' + authEnum[auth] + '</td>' +
                 '<td style="text-align: center;">' + author + '</td>' +
-                '<td style="text-align: center;">' + editor + '</td>' +
-                '<td style="text-align: center;">' + updateTime + '</td>';
+                '<td class="doc-editor" style="text-align: center;">' + editor + '</td>' +
+                '<td class="doc-updateTime" style="text-align: center;">' + updateTime + '</td>';
             if (isEdit == "true" && isActive == "false") {
+                htmlName = htmlName + '<td style="text-align: center;">' + activeEnum[active] + '</td>';
                 if (id != 200) {
                     htmlName = htmlName + '<td style="text-align: center;"><a onclick="editeDoc(\'' + element.id + '\');" class="clickAction">编辑</a>'
 
                         + '<a class="clickAction" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'remove\'' + ')">放入回收站</a>'
                         + '</td>';
-                }else {
+                } else {
                     htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'recover\'' + ')">还原</a>'
                         + '<a class="clickAction" href="javascript:;" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'delete\'' + ')">永久删除</a>'
                         + '</td>';
                 }
             }
             if (isEdit == "false" && isActive == "true") {
+                htmlName = htmlName + '<td style="text-align: center;">' + activeEnum[active] + '</td>';
                 if (id != 200) {
-                    htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'active\'' + ')">通过审核</a>'
+                    htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'active\'' + ')">通过</a>'
+                        + '<a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'reject\'' + ')">不通过</a>'
                         + '</td>';
                 }
             }
@@ -399,10 +441,10 @@
                             '<td style="text-align: center;">' + sequence + '</td>' +
                             '<td style="text-align: center;">' + name + '</td>' +
                             '<td style="text-align: center;">' + email + '</td>' +
-                            '<td style="text-align: center;">' + levelEnum[level-1] + '</td>' +
+                            '<td style="text-align: center;">' + levelEnum[level - 1] + '</td>' +
                             '<td style="text-align: center;">';
                         if (level <= 1) {
-                            htmlName = htmlName + '<a style="display: block; cursor: pointer; color: blue;" href="javascript:;" onclick="doClickGrantVIP(' + element.id + ',' + curPage + ');">升级用户</a>';
+                            htmlName = htmlName + '<a class="clickAction" href="javascript:;" onclick="doClickGrantVIP(' + element.id + ',' + curPage + ');">升级用户</a>';
                         } else {
                             htmlName = htmlName + '升级用户';
                         }
@@ -436,7 +478,7 @@
         });
     }
 
-    function doclickShowPdf(attachment){
+    function doclickShowPdf(attachment) {
         document.getElementById("blog-main-left").style.display = "none";
         document.getElementById("blog-main-right").style.display = "none";
         var height = window.innerHeight - 67;
@@ -454,26 +496,33 @@
     }
 
     function doClickShowInfo(obj) {
-        var documentName = obj.name;
+        var name = obj.name;
         var topic = obj.topic;
         var year = obj.year;
         var editor = obj.editor;
         var digest = obj.digest;
         var author = obj.author;
-        var note = obj.note;
-        var name = obj.affiliationList[0].name;
+        var authorIntro = obj.authorIntro==null?"":obj.authorIntro;
+        var note = obj.note==null?"":obj.note;
+        var auth = obj.auth;
+        var affiliation = obj.affiliationList[0].name;
+        if (obj.affiliationList[1] != null) {
+            affiliation += "->" + obj.affiliationList[1].name;
+        }
         var keywords = obj.keywords;
         var createTime = timestampToDate(obj.createTime);
         var updateTime = timestampToDate(obj.updateTime);
-        var html = '标题：' + documentName +
+        var html = '标题：' + name +
+            '<br><br>作者：' + author +
+            '<br><br>作者简介：' + authorIntro +
             '<br><br>摘要：' + digest +
             '<br><br>关键字：' + keywords +
-            '<br><br>文献作者：' + author +
+            '<br><br>主题：' + topic +
+            '<br><br>归属：' + affiliation +
+            '<br><br>备注：' + note +
+            '<br><br>密级：' + authEnum[auth] +
+            '<br><br>年份：' + year +
             '<br><br>编辑人：' + editor +
-            '<br><br>文献归属：' + name +
-            '<br><br>文献备注：' + note +
-            '<br><br>文献主题：' + topic +
-            '<br><br>文献年份：' + year +
             '<br><br>创建时间：' + createTime +
             '<br><br>修改时间：' + updateTime;
         $("#body-content-right").html(html);
@@ -486,6 +535,7 @@
         var D = date.getDate() + ' ';
         return Y + M + D;
     }
+
     function timestampToDate(timestamp) {
         var date = new Date(timestamp);
         var Y = date.getFullYear() + '-';
@@ -507,7 +557,7 @@
             dataType: "json",
             success: function (data) {
                 if (data.code != 200) {
-                    layer.msg(data.msg,{icon: 2});
+                    layer.msg(data.msg, {icon: 2});
                     return '';
                 } else {
                     layer.msg(data.msg, {icon: 1});
@@ -529,7 +579,7 @@
             dataType: "json",
             success: function (data) {
                 if (data.code != 200) {
-                    layer.msg(data.msg,{icon: 2});
+                    layer.msg(data.msg, {icon: 2});
                     return false;
                 } else {
                     layer.msg(data.msg, {icon: 1});
@@ -554,7 +604,7 @@
             dataType: "json",
             success: function (data) {
                 if (data.code != 200) {
-                    layer.msg(data.msg,{icon: 2});
+                    layer.msg(data.msg, {icon: 2});
                     return false;
                 } else {
                     fillDocsTable(data, affiliationId, curPage, isEdit, isActive);
@@ -568,8 +618,43 @@
 
     function editeDoc(docId) {
         location.href = '${ctx}/docOperation';
-        window.localStorage.setItem('docId',docId);
+        window.localStorage.setItem('docId', docId);
     }
+
+    var leftNavFlag = false;
+    function showLeftNav() {
+        if(leftNavFlag == false){
+            $(".left-nav-index").show();
+            leftNavFlag = true;
+        }else{
+            $(".left-nav-index").hide();
+            leftNavFlag = false;
+        }
+
+    }
+
+    // 二维码分享
+    $(".share").unbind("click").bind('click', function () {
+        var url = document.location;
+        var qrcode = new QRCode('qrcode', {
+            text: String(url),
+            width: 220,
+            height: 220,
+            colorDark : '#000000',
+            colorLight : '#ffffff',
+            correctLevel : QRCode.CorrectLevel.H
+        });
+        layer.open({
+            title: '分享此网页',
+            type: 1,
+            resize: false,
+            area: ['280px', '280px'],
+            content: $('#popQRCode'),
+            cancel: function (index, layer0) {
+                qrcode.clear();
+                $('#qrcode').html('');
+            }
+        });
+    });
 </script>
-</body>
 </html>

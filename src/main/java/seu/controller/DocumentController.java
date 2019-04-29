@@ -112,9 +112,9 @@ public class DocumentController {
 
     @RequestMapping("/delete")
     @ResponseBody
-    public String deleteDocument(Integer id){
+    public String deleteDocument(Integer id, HttpServletRequest request){
         try{
-            documentService.deleteDocument(id);
+            documentService.deleteDocument(id, request);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "删除文档成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
@@ -177,12 +177,27 @@ public class DocumentController {
     public String activeDocument(Integer id) {
         try{
             documentService.activeDocument(id);
-            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档审核成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档审核通过").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         }catch (Exception e){
             LOGGER.error("/document/active" + " parameter: id={}", id, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
+    @RequestMapping("/reject")
+    @ResponseBody
+    public String rejectDocument(Integer id) {
+        try{
+            documentService.rejectDocument(id);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文档审核不通过").toJSONString();
+        }catch (COIPIBException e){
+            LOGGER.info(e.getMessage() + " parameter: id={}", id);
+            return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
+        }catch (Exception e){
+            LOGGER.error("/document/reject" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
@@ -230,6 +245,23 @@ public class DocumentController {
             return new CommonResponse(e.getCodeEnum().getValue(), e.getMessage()).toJSONString();
         } catch (Exception e) {
             LOGGER.error("/document/findDocById parameter:id={}", id, e);
+            return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
+        }
+    }
+
+    /**
+     * 删除PDF
+     * @param attachment
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/deleteAttachment")
+    public String deleteAttachment(String attachment, HttpServletRequest request) {
+        try {
+            documentService.deleteAttachment(attachment, request);
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "文件删除成功").toJSONString();
+        } catch (Exception e) {
+            LOGGER.error("/document/deleteDocFile parameter:attachment={}", attachment, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }

@@ -3,9 +3,9 @@
 <mapper namespace="seu.dao.DocumentDAO">
 
 	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
-		insert into document(name,author,keywords,digest,topic,affiliation_id, year,
+		insert into document(name,author, author_intro, keywords,digest,topic,affiliation_id, year,
 				note, attachment, editor_id, auth)
-	    values(#{name}, #{author}, #{keywords}, #{digest}, #{topic}, #{affiliationId}, #{year},
+	    values(#{name}, #{author}, #{authorIntro}, #{keywords}, #{digest}, #{topic}, #{affiliationId}, #{year},
 	    	#{note}, #{attachment}, #{editorId}, #{auth});
 	</insert>
 
@@ -17,6 +17,9 @@
 			</if>
 			<if test="author!=null">
 				author = #{author},
+			</if>
+			<if test="authorIntro!=null">
+				author_intro = #{authorIntro},
 			</if>
 			<if test="keywords!=null">
 				keywords = #{keywords},
@@ -66,7 +69,6 @@
                 </otherwise>
             </choose>
             <if test="user.level!=3"> <!-- 非管理员用户 -->
-                and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
                 <if test="affiliationId==200 or (isEdit and !isActive)"> <!-- 如果请求回收站或者编辑页 -->
                     and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
                 </if>
@@ -83,8 +85,8 @@
 	<select id="countSimpleSearch" resultType="java.lang.Integer">
 		select count(id) from document where
 		name like '%${content}%'
+		and affiliation_id &gt; 0
 		<if test="user.level!=3"> <!-- 非管理员用户 -->
-			and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
 			<if test="isEdit and !isActive"> <!-- 如果请求编辑页 -->
 				and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
 			</if>
@@ -100,8 +102,8 @@
 	<select id="simpleSearch" resultType="seu.model.Document">
 		select * from document where
 		name like '%${content}%'
+		and affiliation_id &gt; 0
 		<if test="user.level!=3"> <!-- 非管理员用户 -->
-			and auth &lt;= #{user.level} <!-- 只显示密级不高于自己级别的文献 -->
 			<if test="isEdit and !isActive"> <!-- 如果请求编辑页 -->
 				and editor_id = #{user.id} <!-- 那么只显示本人上传文献 -->
 			</if>

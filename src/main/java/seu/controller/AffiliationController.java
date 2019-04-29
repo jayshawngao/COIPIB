@@ -31,7 +31,7 @@ public class AffiliationController {
             List<Affiliation> resultList = affiliationService.showFirstLevel();
             HashMap<String, Object> data = new HashMap<>();
             data.put("affiliationList", resultList);
-            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "查询成功", data).toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "查询一级归属成功", data).toJSONString();
         }catch (Exception e){
             LOGGER.error("/affiliation/showFirstLayer", e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -45,7 +45,7 @@ public class AffiliationController {
             List<Affiliation> children = affiliationService.showAllChildren(parentId);
             HashMap<String, Object> data = new HashMap<>();
             data.put("childrenList", children);
-            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "查询成功", data).toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "查询二级归属成功", data).toJSONString();
         }catch (Exception e){
             LOGGER.error("/affiliation/showNextLayer parameter: parentId={}", parentId, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -60,7 +60,7 @@ public class AffiliationController {
                 affiliation.setParentId(0);
             }
             affiliationService.insertNewAffiliation(affiliation);
-            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "插入归属地成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "插入归属成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: affiliation={}", affiliation);
             return new CommonResponse(CodeEnum.AFFILIATION_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -76,7 +76,7 @@ public class AffiliationController {
         try{
 
             affiliationService.deleteAffiliationById(id);
-            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "删除归属地成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "删除归属成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: id={}", id);
             return new CommonResponse(CodeEnum.AFFILIATION_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -94,7 +94,7 @@ public class AffiliationController {
                 affiliation.setParentId(0);
             }
             affiliationService.editAffiliation(affiliation);
-            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "修改归属地成功").toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "修改归属成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: affiliation={}", affiliation);
             return new CommonResponse(CodeEnum.AFFILIATION_ERROR.getValue(), e.getMessage()).toJSONString();
@@ -111,7 +111,7 @@ public class AffiliationController {
             Affiliation affiliation = affiliationService.getById(id);
             HashMap<String, Object> data = new HashMap<>();
             data.put("affiliation", affiliation);
-            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "修改归属地成功", data).toJSONString();
+            return new CommonResponse(CodeEnum.SUCCESS.getValue(), "获取归属成功", data).toJSONString();
         }catch (Exception e){
             LOGGER.error("/affiliation/getById" + " parameter: id={}", id, e);
             return new CommonResponse(CodeEnum.UNKNOWN_ERROR.getValue(), e.getMessage()).toJSONString();
