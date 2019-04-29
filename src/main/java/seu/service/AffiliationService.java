@@ -38,7 +38,7 @@ public class AffiliationService {
         }
     }
 
-    public void EditAffiliation(Affiliation affiliation)throws COIPIBException{
+    public void editAffiliation(Affiliation affiliation)throws COIPIBException{
         if (affiliationDAO.update(affiliation) != 1){
             throw new COIPIBException(CodeEnum.AFFILIATION_ERROR, "归属更新失败");
         }

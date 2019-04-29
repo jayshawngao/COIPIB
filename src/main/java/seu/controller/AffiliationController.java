@@ -93,7 +93,7 @@ public class AffiliationController {
             if (affiliation.getParentId() == null){
                 affiliation.setParentId(0);
             }
-            affiliationService.EditAffiliation(affiliation);
+            affiliationService.editAffiliation(affiliation);
             return new CommonResponse(CodeEnum.SUCCESS.getValue(), "修改归属地成功").toJSONString();
         }catch (COIPIBException e){
             LOGGER.info(e.getMessage() + " parameter: affiliation={}", affiliation);
