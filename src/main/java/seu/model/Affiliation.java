@@ -50,7 +50,7 @@ public class Affiliation {
         return deleted;
     }
 
-    public void setDelete(Integer delete) {
+    public void setDeleted(Integer deleted) {
         this.deleted = deleted;
     }
 

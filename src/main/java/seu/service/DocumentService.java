@@ -15,6 +15,7 @@ import seu.model.Document;
 import seu.model.HostHolder;
 import seu.model.User;
 
+import javax.print.Doc;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.ArrayList;
@@ -39,9 +40,9 @@ public class DocumentService {
     @Autowired
     private HostHolder hostHolder;
 
-    public void insertNewDocument(Document document) throws COIPIBException{
+    public void insertNewDocument(Document document) throws COIPIBException {
         checkDocument(document);
-        if (documentDAO.insert(document) != 1){
+        if (documentDAO.insert(document) != 1) {
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文档插入失败");
         }
     }
@@ -49,7 +50,7 @@ public class DocumentService {
     public void updateDocument(Document document) throws COIPIBException {
         document.setActive(1);
         checkDocument(document);
-        if (documentDAO.update(document) != 1){
+        if (documentDAO.update(document) != 1) {
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "文档更新失败");
         }
     }
@@ -73,7 +74,22 @@ public class DocumentService {
         documentDAO.update(document);
     }
 
-    public void moveDocumentToBin(Integer id) throws COIPIBException{
+    /**
+     * 管理员不通过
+     *
+     * @param id
+     * @throws COIPIBException
+     */
+    public void rejectDocument(Integer id) throws COIPIBException {
+        checkDocumentId(id);
+        userService.adminAuth();
+
+        Document document = documentDAO.selectById(id);
+        document.setActive(2);
+        documentDAO.update(document);
+    }
+
+    public void moveDocumentToBin(Integer id) throws COIPIBException {
         checkDocumentId(id);
 
         Document document = documentDAO.selectById(id);
@@ -88,12 +104,7 @@ public class DocumentService {
 
         documentDAO.delete(id);
 
-        String fileName = document.getAttachment().substring(document.getAttachment().lastIndexOf('/')+1,document.getAttachment().length());
-        String filePath = request.getServletContext().getRealPath("/") + "/static/file/" + fileName;
-        File file = new File(filePath);
-        if (file.exists()) {
-            file.delete();
-        }
+        doDeleteFile(document.getAttachment(), request);
     }
 
     public void recoverDocument(Integer id) throws COIPIBException {
@@ -105,7 +116,7 @@ public class DocumentService {
     }
 
     public Pagination<Document> queryAllDocument(Integer affiliationId, Integer page, Boolean isEdit, Boolean isActive)
-                                                                                            throws COIPIBException{
+            throws COIPIBException {
         if (affiliationId == null) {
             affiliationId = 100; // 未分类
         }
@@ -132,7 +143,7 @@ public class DocumentService {
             if (affiliation.getParentId() == 0) {
                 // 查询所有子归属包含的文档
                 List<Affiliation> childList = affiliationService.showAllChildren(affiliation.getId());
-                for (Affiliation child: childList) {
+                for (Affiliation child : childList) {
                     documentList.addAll(documentDAO.selectByAffiliationId(child.getId(), hostHolder.getUser(), isEdit, isActive));
                 }
             }
@@ -141,10 +152,10 @@ public class DocumentService {
 
     }
 
-    private Pagination<Document> buildPagination(List<Document> documentList, Integer page){
+    private Pagination<Document> buildPagination(List<Document> documentList, Integer page) {
         PageInfo pageInfo = new PageInfo(documentList.size(), page);
         documentList = documentList.subList(pageInfo.getBeginIndex(), pageInfo.getEndIndex());
-        for (Document document: documentList) {
+        for (Document document : documentList) {
             fillDocument(document);
         }
         return new Pagination<Document>(documentList, pageInfo);
@@ -165,6 +176,11 @@ public class DocumentService {
         if (affiliation != null) {
             document.setAffiliationList(affiliationService.queryAffiliationList(affiliation.getId()));
         }
+        if (document.getAuth() != null) {
+            if (document.getAuth() > hostHolder.getUser().getLevel()) {
+                document.setAttachment(null);
+            }
+        }
 
     }
 
@@ -178,7 +194,7 @@ public class DocumentService {
         }
     }
 
-    public Pagination<Document> simpleSearch(String name, Integer page, Boolean isEdit, Boolean isActive) throws COIPIBException{
+    public Pagination<Document> simpleSearch(String name, Integer page, Boolean isEdit, Boolean isActive) throws COIPIBException {
         if (StringUtils.isBlank(name)) {
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "搜索内容不能为空！");
         }
@@ -201,20 +217,37 @@ public class DocumentService {
         PageInfo pageInfo = new PageInfo(totalRow, page);
         List<Document> documentList = documentDAO.simpleSearch(name, hostHolder.getUser(), isEdit, isActive,
                 pageInfo.getBeginIndex(), pageInfo.getEndIndex());
-        for (Document document: documentList) {
+        for (Document document : documentList) {
             fillDocument(document);
         }
         return new Pagination<Document>(documentList, pageInfo);
     }
 
-    public Document findDocById(Integer id) throws COIPIBException{
-        if(id == null){
+    public Document findDocById(Integer id) throws COIPIBException {
+        if (id == null) {
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "参数不能为空！");
         }
         Document document = documentDAO.selectById(id);
-        if(document == null){
+        if (document == null) {
             throw new COIPIBException(CodeEnum.DOCUMENT_ERROR, "没有该文献！");
         }
         return document;
+    }
+
+    public void deleteAttachment(String attachment, HttpServletRequest request) {
+        if (attachment == null) {
+            return;
+        }
+        doDeleteFile(attachment, request);
+
+    }
+
+    private void doDeleteFile(String attachment, HttpServletRequest request) {
+        String fileName = attachment.substring(attachment.lastIndexOf('/') + 1, attachment.length());
+        String filePath = request.getServletContext().getRealPath("/") + "/static/file/" + fileName;
+        File file = new File(filePath);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 }

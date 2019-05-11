@@ -58,6 +58,13 @@
                         </div>
 
                         <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">作者简介</label>
+                            <div class="layui-input-block">
+                                <textarea name="authorIntro" id="authorIntro" placeholder="请输入作者简介" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item layui-form-text">
                             <label class="layui-form-label">文献摘要
                                 <scan>*</scan>
                             </label>
@@ -156,6 +163,8 @@
     var attachment = "";
     var updateOrInsert = null;
     var docId = window.localStorage.getItem('docId');
+    var affiliationId = null;
+    var parentId = null;
 
     $(function () {
        console.log("docId = " + docId);
@@ -174,6 +183,7 @@
                        var doc = data.data.document;
                        var name = doc.name;
                        var author = doc.author;
+                       var authorIntro = doc.authorIntro;
                        var digest = doc.digest;
                        var keywords = doc.keywords;
                        var topic = doc.topic;
@@ -181,11 +191,31 @@
                        var auth = doc.auth;
                        var year = doc.year;
                        attachment = doc.attachment;
+                       affiliationId = doc.affiliationId;
+                       $.ajax({
+                           type: 'post',
+                           url: '${ctx}/affiliation/getById',
+                           data: {"id": affiliationId},
+                           dataType: 'json',
+                           success: function (data) {
+                               if (data.code != 200) {
+                                   layer.msg(data.msg, {icon: 2});
+                                   return false;
+                               } else {
+                                    parentId = data.data.affiliation.parentId;
+                                    if (parentId == 0) {
+                                        parentId = affiliationId;
+                                        affiliationId = null;
+                                    }
+                               }
+                           }
+                       });
 
                        console.log("name = " + name);
 
                        $("#name").val(name);
                        $("#author").val(author);
+                       $("#authorIntro").val(authorIntro);
                        $("#digest").val(digest);
                        $("#keywords").val(keywords);
                        $("#topic").val(topic);
@@ -251,6 +281,19 @@
                     return false;
                 } else {
                     layer.msg("文件上传成功", {icon: 6});
+                    <!--删除旧文件-->
+                    $.ajax({
+                        type: 'get',
+                        url: "${ctx}/document/deleteAttachment",
+                        data: {"attachment": attachment},
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.code != 200) {
+                                layer.msg(data.msg,{icon: 2});
+                                return '';
+                            }
+                        }
+                    });
                     attachment = res.data.attachment;
                     console.log(attachment);
                     return false;
@@ -260,6 +303,7 @@
 
         //自定义验证规则
         form.verify({});
+
 
         $(function () {
             getAffiliationParent();
@@ -281,7 +325,12 @@
                             var name = element.name;
                             var id = element.id;
                             if (element.deleted == 1 && element.parentId == 0) {
-                                html = html + '<option value="' + id + '">' + name + '</option>';
+                                if (element.id == parentId) {
+                                    html = html + '<option value="' + id + '" selected="selected">' + name + '</option>';
+                                    getAffiliationChild(parentId);
+                                } else {
+                                    html = html + '<option value="' + id + '">' + name + '</option>';
+                                }
                             }
                         });
                         console.log("html_1 = " + html);
@@ -292,12 +341,11 @@
             });
         }
 
-        //监听指定开关
-        form.on('select(affiliation-parent)', function (data) {
+        function getAffiliationChild(parentId) {
             $.ajax({
                 type: 'POST',
                 url: '${ctx}/affiliation/showNextLayer',
-                data: {"parentId": data.value},
+                data: {"parentId": parentId},
                 dataType: 'json',
                 success: function (result) {
                     if (result.code != 200) {
@@ -310,7 +358,11 @@
                             var name = element.name;
                             var id = element.id;
                             if (element.deleted == 1) {
-                                html = html + '<option value="' + id + '">' + name + '</option>';
+                                if (element.id == affiliationId) {
+                                    html = html + '<option value="' + id + '" selected="selected">' + name + '</option>';
+                                } else {
+                                    html = html + '<option value="' + id + '">' + name + '</option>';
+                                }
                             }
                         });
                         console.log("html_2 = " + html);
@@ -319,13 +371,18 @@
                     }
                 }
             });
+        }
+
+        //监听指定开关
+        form.on('select(affiliation-parent)', function (data) {
+            getAffiliationChild(data.value);
         });
 
         //监听提交
         form.on('submit(submit)', function (data) {
 
             console.log("attachment = " + attachment);
-            if (attachment =="") {
+            if (attachment == null || attachment.trim() == "") {
                 layer.msg("请选择您要上传的文献", {icon: 2});
                 return false;
             }
@@ -339,6 +396,7 @@
             }
             var name = $("#name").val();  // 文献名称
             var author = $("#author").val(); // 文献作者
+            var authorIntro = $("#authorIntro").val(); // 作者简介
             var digest = $("#digest").val();  // 文献摘要
             var keywords = $("#keywords").val();  // 文献关键字
             var topic = $("#topic").val();  // 文献主题
@@ -376,6 +434,7 @@
                     "editorId": editorId,
                     "auth": auth,
                     "author": author,
+                    "authorIntro": authorIntro,
                 },
                 dataType: 'json',
                 success: function (result) {

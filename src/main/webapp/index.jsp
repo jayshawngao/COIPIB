@@ -53,7 +53,7 @@
                 <input type="text" name="" class="layui-input doc-search" id="simSearchKey" placeholder="请输入：关键字">
             </li>
             <li class="layui-nav-item">
-                <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="doClickSimplySearch();">搜索
+                <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="doClickSimplySearch();" id="simpleSearch">搜索
                 </button>
             </li>
         </ul>
@@ -91,6 +91,8 @@
                 <div style="padding: 15px;" id="body-content-right"></div>
             </div>
             <div id="showPdf" style="width: 100%;"></div>
+
+            <div><span class="share">立即分享</span></div>
         </div>
         <div class="clear"></div>
     </div>
@@ -105,9 +107,14 @@
 </div>
 <input type="hidden" id="isEdit" value="false">
 <input type="hidden" id="isActive" value="false">
+<!--二维码弹层-->
+<div id="popQRCode"><div id="qrcode" style="margin-left: 30px; margin-top: 8px;"></div></div>
+</body>
+
 <script src="./static/plug/layui/layui.js"></script>
 <script src='./static/js/jquery/jquery.min.js'></script>
 <script src='./static/js/pdfobject.js'></script>
+<script src="./static/plug/qrcodejs/qrcode.js"></script>
 <script>
 
     // js全局变量
@@ -118,6 +125,7 @@
     userInfo.level = "${user.level}";
     userInfo.active = "${user.active}";
     var authEnum = ["游客可见", "注册用户可见", "VIP用户可见", "管理员可见"];
+    var activeEnum = ["通过", "待审核", "未通过"];
 
     // layui框架导航模块初始化，禁止删除
     var layer, element;
@@ -131,8 +139,18 @@
         checkUserLogin();
     });
 
+    $('#simSearchKey').on('keypress',function (event) {
+        if(event.keyCode == 13) {
+            $('#simpleSearch').trigger('click');
+        }
+
+    })
+
     // 点击水平导航栏“编辑”、“文件”、“文件审核”显示文件
     function doClickHorizontalMenu(isActive, isEdit) {
+        if (isActive == "false" && isEdit == "true" && userInfo.level == 0) {
+            location = '${ctx}/login';
+        }
         clearVerticalMenuCSS();
         $("#isActive").val(isActive);
         $("#isEdit").val(isEdit);
@@ -297,13 +315,14 @@
     function fillDocsTable(data, id, curPage, isEdit, isActive) {
         var htmlName = '<div class="layui-form"><table class="layui-table"><thead><tr>' +
             '<th style="width: 5%;text-align: center">序号</th>' +
-            '<th style="width: 35%;text-align: center"">标题</th>' +
+            '<th style="width: 30%;text-align: center"">标题</th>' +
             '<th class="doc-preview" style="width: 6%;text-align: center"">预览</th>' +
             '<th style="width: 11%;text-align: center"">密级</th>' +
             '<th style="width: 10%;text-align: center"">作者</th>' +
             '<th class="doc-editor" style="width: 10%;text-align: center"">编辑人</th>' +
             '<th class="doc-updateTime" style="width: 10%;text-align: center"">更新日期</th>';
         if ((isEdit == "true" && isActive == "false") || (isEdit == "false" && isActive == "true")) {
+            htmlName = htmlName + '<th style="width: 8%;text-align: center"">审核状态</th>';
             htmlName = htmlName + '<th style="width: 14%;text-align: center"">操作</th>';
         }
         htmlName = htmlName + '</tr></thead>';
@@ -321,16 +340,23 @@
             var author = element.author;
             var attachment = element.attachment;
             var auth = element.auth;
+            var active = element.active;
             var updateTime = timestampToTime(element.updateTime);
             htmlName = htmlName + '<tr>' +
                 '<td style="text-align: center;">' + sequence + '</td>' +
-                '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>' +
-                '<td class="doc-preview" style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>' +
+                '<td><a style="cursor:pointer" onclick="doClickShowInfo(' + JSON.stringify(element).replace(/\"/g,"'") + ')">' + name + '</a></td>';
+            if (attachment != null) {
+                htmlName = htmlName + '<td class="doc-preview" style="text-align: center;"><a class="clickAction" onclick="doclickShowPdf(\''+attachment+'\')">预览</a></td>';
+            } else {
+                htmlName = htmlName + '<td class="doc-preview" style="text-align: center;">预览</td>';
+            }
+            htmlName = htmlName +
                 '<td style="text-align: center;">' + authEnum[auth] + '</td>' +
                 '<td style="text-align: center;">' + author + '</td>' +
                 '<td class="doc-editor" style="text-align: center;">' + editor + '</td>' +
                 '<td class="doc-updateTime" style="text-align: center;">' + updateTime + '</td>';
             if (isEdit == "true" && isActive == "false") {
+                htmlName = htmlName + '<td style="text-align: center;">' + activeEnum[active] + '</td>';
                 if (id != 200) {
                     htmlName = htmlName + '<td style="text-align: center;"><a onclick="editeDoc(\'' + element.id + '\');" class="clickAction">编辑</a>'
 
@@ -343,8 +369,10 @@
                 }
             }
             if (isEdit == "false" && isActive == "true") {
+                htmlName = htmlName + '<td style="text-align: center;">' + activeEnum[active] + '</td>';
                 if (id != 200) {
-                    htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'active\'' + ')">通过审核</a>'
+                    htmlName = htmlName + '<td style="text-align: center;"><a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'active\'' + ')">通过</a>'
+                        + '<a class="clickAction" onclick="doClickPerformDocActions(' + element.id + ',' + id + ',' + curPage + ', \'reject\'' + ')">不通过</a>'
                         + '</td>';
                 }
             }
@@ -474,7 +502,8 @@
         var editor = obj.editor;
         var digest = obj.digest;
         var author = obj.author;
-        var note = obj.note;
+        var authorIntro = obj.authorIntro==null?"":obj.authorIntro;
+        var note = obj.note==null?"":obj.note;
         var auth = obj.auth;
         var affiliation = obj.affiliationList[0].name;
         if (obj.affiliationList[1] != null) {
@@ -485,6 +514,7 @@
         var updateTime = timestampToDate(obj.updateTime);
         var html = '标题：' + name +
             '<br><br>作者：' + author +
+            '<br><br>作者简介：' + authorIntro +
             '<br><br>摘要：' + digest +
             '<br><br>关键字：' + keywords +
             '<br><br>主题：' + topic +
@@ -602,6 +632,29 @@
         }
 
     }
+
+    // 二维码分享
+    $(".share").unbind("click").bind('click', function () {
+        var url = document.location;
+        var qrcode = new QRCode('qrcode', {
+            text: String(url),
+            width: 220,
+            height: 220,
+            colorDark : '#000000',
+            colorLight : '#ffffff',
+            correctLevel : QRCode.CorrectLevel.H
+        });
+        layer.open({
+            title: '分享此网页',
+            type: 1,
+            resize: false,
+            area: ['280px', '280px'],
+            content: $('#popQRCode'),
+            cancel: function (index, layer0) {
+                qrcode.clear();
+                $('#qrcode').html('');
+            }
+        });
+    });
 </script>
-</body>
 </html>
