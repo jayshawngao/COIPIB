@@ -25,7 +25,7 @@
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
-    <div class="layui-header">
+    <div class="layui-header position: absolute;">
         <a href="${ctx}/index">
             <div class="layui-logo doc-logo" style="font-weight: bold">COIPIB</div>
         </a>
